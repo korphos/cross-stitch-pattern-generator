@@ -275,15 +275,15 @@ function App() {
               <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>
             )}
 
-            <div className="flex flex-1 overflow-hidden">
-              <div className="w-64 shrink-0 border-r border-neutral-800 bg-neutral-900">
+            <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
+              <div className="order-2 w-full shrink-0 border-b border-neutral-800 bg-neutral-900 lg:order-1 lg:h-full lg:w-64 lg:overflow-y-auto lg:border-b-0 lg:border-r">
                 {hasImage && project.activeTab === 'grid' && <GridControls project={project} dispatch={dispatch} />}
                 {hasImage && project.activeTab === 'palette' && (
                   <PalettePanel project={project} dispatch={dispatch} sizeUnit={settings.sizeUnit} />
                 )}
               </div>
 
-              <div className="relative flex-1 overflow-hidden">
+              <div className="relative order-1 h-[55vh] w-full shrink-0 lg:order-2 lg:h-full lg:flex-1">
                 {!hasImage && !isRestoring && (
                   <UploadDropzone
                     onFile={handleFile}
@@ -327,7 +327,7 @@ function App() {
                 )}
               </div>
 
-              <div className="w-64 shrink-0 border-l border-neutral-800 bg-neutral-900">
+              <div className="order-3 max-h-[40vh] w-full shrink-0 overflow-y-auto border-t border-neutral-800 bg-neutral-900 lg:h-full lg:max-h-none lg:w-64 lg:border-t-0 lg:border-l">
                 {project.palette && (
                   <DmcColorList
                     palette={project.palette}

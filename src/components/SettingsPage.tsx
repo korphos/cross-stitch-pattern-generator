@@ -98,12 +98,12 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
             onChange={(e) => setSearch(e.target.value)}
             className="mb-3 w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2.5 text-base text-neutral-100"
           />
-          <ul className="divide-y divide-neutral-800 rounded-md border border-neutral-800">
+          <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filtered.map((d) => {
               const owned = ownedCodes.has(d.code)
               return (
                 <li key={d.code}>
-                  <label className="flex cursor-pointer items-center gap-2 px-3 py-1.5 active:bg-neutral-800">
+                  <label className="flex cursor-pointer items-center gap-2 rounded-md border border-neutral-800 px-3 py-1.5 hover:bg-neutral-900 active:bg-neutral-800">
                     <input
                       type="checkbox"
                       checked={owned}
@@ -121,7 +121,9 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
                 </li>
               )
             })}
-            {filtered.length === 0 && <li className="px-3 py-6 text-center text-sm text-neutral-500">No matches</li>}
+            {filtered.length === 0 && (
+              <li className="col-span-full px-3 py-6 text-center text-sm text-neutral-500">No matches</li>
+            )}
           </ul>
         </section>
       </div>
