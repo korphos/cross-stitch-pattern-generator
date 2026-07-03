@@ -3,6 +3,7 @@ import type { PatternProject } from '../lib/types'
 import { computeCanvasSize, renderPattern, setupCanvasForDpr } from '../lib/renderPattern'
 import { Legend } from './Legend'
 import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize } from '../lib/physicalSize'
+import { estimateThreadUsage } from '../lib/threadEstimate'
 
 interface Props {
   project: PatternProject
@@ -34,6 +35,9 @@ export function PrintablePage({ project }: Props) {
   const cellPx = grid ? Math.max(2, Math.min(30, Math.floor(PAGE_USABLE_WIDTH_PX / grid.cols))) : 0
   const size = grid ? computePhysicalSize(grid.cols, grid.rows, project.fabricCount) : null
   const fabricLabel = FABRIC_COUNTS.find((f) => f.stitchesPerInch === project.fabricCount)?.label
+  const threadEstimates = palette ? estimateThreadUsage(palette, project.fabricCount, project.strands) : []
+  const skeinsByCode = new Map(threadEstimates.map((e) => [e.code, e.skeins]))
+  const totalSkeins = threadEstimates.reduce((sum, e) => sum + e.skeins, 0)
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current
@@ -70,10 +74,11 @@ export function PrintablePage({ project }: Props) {
           style={{ width: PAGE_USABLE_WIDTH_PX, transform: `scale(${fit.scale})`, transformOrigin: 'top center' }}
         >
           <div className="w-full text-center text-sm text-gray-600">
-            {grid.cols}×{grid.rows} stitches — {formatPhysicalSize(size)} on {fabricLabel}
+            {grid.cols}×{grid.rows} stitches — {formatPhysicalSize(size)} on {fabricLabel} — ~{totalSkeins} skein
+            {totalSkeins > 1 ? 's' : ''} total ({project.strands} strand{project.strands > 1 ? 's' : ''})
           </div>
           <canvas ref={canvasRef} />
-          <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" />
+          <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" skeinsByCode={skeinsByCode} />
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ export interface PersistedProject {
   grid: DetectedGrid
   clusterThreshold: number
   fabricCount: number
+  strands: number
   activeTab: ActiveTab
   palette: PaletteEntry[]
   cellAssignment: string[]

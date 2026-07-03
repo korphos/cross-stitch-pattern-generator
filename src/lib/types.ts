@@ -92,6 +92,8 @@ export interface PatternProject {
   cellAssignment: string[] | null
   /** stitches per inch of the fabric the user intends to use */
   fabricCount: number
+  /** number of floss strands the user intends to stitch with, for the thread-usage estimate */
+  strands: number
   /** undo/redo stacks for manual color edits; reset whenever the grid/threshold regenerates the palette from scratch */
   history: { past: EditSnapshot[]; future: EditSnapshot[] }
 }

@@ -3,12 +3,14 @@ import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
 import { contrastTextColor } from './symbolAssignment'
+import { FABRIC_COUNTS } from './physicalSize'
 
 export type ProjectAction =
   | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid }
   | { type: 'UPDATE_GRID'; grid: DetectedGrid }
   | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
   | { type: 'SET_FABRIC_COUNT'; stitchesPerInch: number }
+  | { type: 'SET_STRANDS'; strands: number }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
   | { type: 'RECOLOR_CELL'; cellIndex: number; dmcCode: string }
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
@@ -23,6 +25,7 @@ export type ProjectAction =
       grid: DetectedGrid
       clusterThreshold: number
       fabricCount: number
+      strands: number
       activeTab: ActiveTab
       palette: PaletteEntry[]
       cellAssignment: string[]
@@ -35,6 +38,10 @@ const MAX_HISTORY = 50
 
 const emptyHistory = (): PatternProject['history'] => ({ past: [], future: [] })
 
+function defaultStrandsFor(stitchesPerInch: number): number {
+  return FABRIC_COUNTS.find((f) => f.stitchesPerInch === stitchesPerInch)?.defaultStrands ?? 2
+}
+
 export const initialProject: PatternProject = {
   activeTab: 'palette',
   imageData: null,
@@ -46,6 +53,7 @@ export const initialProject: PatternProject = {
   palette: null,
   cellAssignment: null,
   fabricCount: DEFAULT_FABRIC_COUNT,
+  strands: defaultStrandsFor(DEFAULT_FABRIC_COUNT),
   history: emptyHistory(),
 }
 
@@ -100,7 +108,12 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
     }
 
     case 'SET_FABRIC_COUNT':
-      return { ...project, fabricCount: action.stitchesPerInch }
+      // Switching fabric resets strands to that count's typical usage;
+      // the user can still override it afterward via SET_STRANDS.
+      return { ...project, fabricCount: action.stitchesPerInch, strands: defaultStrandsFor(action.stitchesPerInch) }
+
+    case 'SET_STRANDS':
+      return { ...project, strands: action.strands }
 
     case 'SET_ACTIVE_TAB':
       return { ...project, activeTab: action.tab }
@@ -199,6 +212,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         cellColors: sampleGridColors(action.imageData, action.grid),
         clusterThreshold: action.clusterThreshold,
         fabricCount: action.fabricCount,
+        strands: action.strands,
         activeTab: action.activeTab,
         palette: action.palette,
         cellAssignment: action.cellAssignment,

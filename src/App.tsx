@@ -45,6 +45,7 @@ function App() {
           grid: saved.grid,
           clusterThreshold: saved.clusterThreshold,
           fabricCount: saved.fabricCount,
+          strands: saved.strands,
           activeTab: saved.activeTab,
           palette: saved.palette,
           cellAssignment: saved.cellAssignment,
@@ -75,6 +76,7 @@ function App() {
         grid,
         clusterThreshold: project.clusterThreshold,
         fabricCount: project.fabricCount,
+        strands: project.strands,
         activeTab: project.activeTab,
         palette,
         cellAssignment,
@@ -86,6 +88,7 @@ function App() {
     project.confirmedGrid,
     project.clusterThreshold,
     project.fabricCount,
+    project.strands,
     project.activeTab,
     project.palette,
     project.cellAssignment,
@@ -231,7 +234,14 @@ function App() {
           </div>
 
           <div className="w-64 shrink-0 border-l border-neutral-800 bg-neutral-900">
-            {project.palette && <DmcColorList palette={project.palette} onEdit={setEditingCode} />}
+            {project.palette && (
+              <DmcColorList
+                palette={project.palette}
+                stitchesPerInch={project.fabricCount}
+                strands={project.strands}
+                onEdit={setEditingCode}
+              />
+            )}
           </div>
         </div>
 
