@@ -23,6 +23,8 @@ export function GridPanel({ project, dispatch }: Props) {
   const dragRef = useRef<{ corner: Corner; startGrid: DetectedGrid } | null>(null)
   const scaleRef = useRef(scale)
   scaleRef.current = scale
+  const imageSizeRef = useRef({ width: imageData.width, height: imageData.height })
+  imageSizeRef.current = { width: imageData.width, height: imageData.height }
 
   const updateGrid = useCallback((next: DetectedGrid) => dispatch({ type: 'UPDATE_GRID', grid: next }), [dispatch])
 
@@ -52,8 +54,13 @@ export function GridPanel({ project, dispatch }: Props) {
       } else {
         const minX = start.bbox.x + start.cellWidth
         const minY = start.bbox.y + start.cellHeight
-        const newWidth = Math.max(minX, x) - start.bbox.x
-        const newHeight = Math.max(minY, y) - start.bbox.y
+        // Keep the grid from being dragged past the image edge - cells
+        // beyond it would sample garbage (see cellSampling.ts's clamping
+        // for the rest of that defense).
+        const maxWidth = imageSizeRef.current.width - start.bbox.x
+        const maxHeight = imageSizeRef.current.height - start.bbox.y
+        const newWidth = Math.min(maxWidth, Math.max(minX, x) - start.bbox.x)
+        const newHeight = Math.min(maxHeight, Math.max(minY, y) - start.bbox.y)
         updateGrid({
           ...start,
           bbox: { ...start.bbox, width: newWidth, height: newHeight },

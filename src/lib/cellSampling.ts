@@ -21,9 +21,12 @@ export function sampleCell(
 ): RGB {
   const insetX = Math.max(1, Math.round(cellW * insetRatio))
   const insetY = Math.max(1, Math.round(cellH * insetRatio))
-  const x0 = Math.min(img.width - 1, cellX + insetX)
+  // Clamp on both ends: a grid nudged (or resized) past the image edge must
+  // never produce a negative or out-of-range index, which would read
+  // `undefined` out of the pixel buffer and poison the DMC match downstream.
+  const x0 = Math.max(0, Math.min(img.width - 1, cellX + insetX))
   const x1 = Math.max(x0, Math.min(img.width - 1, cellX + cellW - insetX - 1))
-  const y0 = Math.min(img.height - 1, cellY + insetY)
+  const y0 = Math.max(0, Math.min(img.height - 1, cellY + insetY))
   const y1 = Math.max(y0, Math.min(img.height - 1, cellY + cellH - insetY - 1))
 
   const counts = new Map<string, { color: RGB; count: number }>()

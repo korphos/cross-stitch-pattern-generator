@@ -331,7 +331,7 @@ function App() {
                 {project.palette && (
                   <DmcColorList
                     palette={project.palette}
-                    showOwned={project.ownedThreadCodes.length > 0}
+                    showOwned={project.paletteMode === 'ownedOnly' && project.ownedThreadCodes.length > 0}
                     onEdit={setEditingCode}
                   />
                 )}

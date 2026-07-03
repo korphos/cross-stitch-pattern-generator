@@ -25,9 +25,20 @@ export function GridControls({ project, dispatch }: Props) {
     const cellHeight = patch.cellHeight ?? grid.cellHeight
     const cols = patch.cols ?? grid.cols
     const rows = patch.rows ?? grid.rows
+    if (![offsetX, offsetY, cellWidth, cellHeight, cols, rows].every(Number.isFinite)) return
     if (cellWidth <= 0 || cellHeight <= 0 || cols <= 0 || rows <= 0) return
+
+    // Keep the grid fully inside the source image - an offset or cell size
+    // that pushes it past the edge would sample garbage for the cells that
+    // fall outside the image (see cellSampling.ts's clamping for the rest
+    // of that defense).
+    const width = cols * cellWidth
+    const height = rows * cellHeight
+    const x = Math.min(Math.max(0, offsetX), Math.max(0, imageData.width - width))
+    const y = Math.min(Math.max(0, offsetY), Math.max(0, imageData.height - height))
+
     updateGrid({
-      bbox: { x: offsetX, y: offsetY, width: cols * cellWidth, height: rows * cellHeight },
+      bbox: { x, y, width, height },
       cellWidth,
       cellHeight,
       cols,

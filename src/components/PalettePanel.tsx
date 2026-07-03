@@ -102,7 +102,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
             <dt className="text-neutral-500">Thread needed</dt>
             <dd>{totalSkeins} skeins</dd>
           </div>
-          {hasInventory && (
+          {project.paletteMode === 'ownedOnly' && hasInventory && (
             <div className="flex justify-between gap-2">
               <dt className="text-neutral-500">Need to buy</dt>
               <dd>{notOwnedCount} colors</dd>
