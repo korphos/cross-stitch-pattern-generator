@@ -7,11 +7,9 @@ interface Props {
   className?: string
   /** the swatch colors are always the true DMC colors; this only affects surrounding text/chrome */
   dark?: boolean
-  /** DMC code -> estimated skeins needed, shown after each entry's name if provided */
-  skeinsByCode?: Map<string, number>
 }
 
-export function Legend({ palette, cols, rows, className, dark = false, skeinsByCode }: Props) {
+export function Legend({ palette, cols, rows, className, dark = false }: Props) {
   return (
     <div className={className}>
       <h3 className={`mb-2 text-sm font-semibold ${dark ? 'text-neutral-100' : 'text-gray-900'}`}>
@@ -33,9 +31,6 @@ export function Legend({ palette, cols, rows, className, dark = false, skeinsByC
               {entry.dmc.code} - {entry.dmc.name}
               {entry.dmc.finish === 'metallic' && (
                 <span className={dark ? 'text-neutral-500' : 'text-gray-500'}> (Metallic)</span>
-              )}
-              {skeinsByCode && (
-                <span className={dark ? 'text-neutral-500' : 'text-gray-500'}> ({skeinsByCode.get(entry.dmc.code) ?? 1} skein{(skeinsByCode.get(entry.dmc.code) ?? 1) > 1 ? 's' : ''})</span>
               )}
             </span>
           </li>

@@ -37,7 +37,6 @@ export function PrintablePage({ project, sizeUnit }: Props) {
   const size = grid ? computePhysicalSize(grid.cols, grid.rows, project.fabricCount) : null
   const fabricLabel = FABRIC_COUNTS.find((f) => f.stitchesPerInch === project.fabricCount)?.label
   const threadEstimates = palette ? estimateThreadUsage(palette, project.fabricCount, project.strands) : []
-  const skeinsByCode = new Map(threadEstimates.map((e) => [e.code, e.skeins]))
   const totalSkeins = threadEstimates.reduce((sum, e) => sum + e.skeins, 0)
 
   useLayoutEffect(() => {
@@ -79,7 +78,7 @@ export function PrintablePage({ project, sizeUnit }: Props) {
             {totalSkeins > 1 ? 's' : ''} total ({project.strands} strand{project.strands > 1 ? 's' : ''})
           </div>
           <canvas ref={canvasRef} />
-          <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" skeinsByCode={skeinsByCode} />
+          <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" />
         </div>
       </div>
     </div>
