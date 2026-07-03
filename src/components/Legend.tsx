@@ -5,12 +5,14 @@ interface Props {
   cols: number
   rows: number
   className?: string
+  /** the swatch colors are always the true DMC colors; this only affects surrounding text/chrome */
+  dark?: boolean
 }
 
-export function Legend({ palette, cols, rows, className }: Props) {
+export function Legend({ palette, cols, rows, className, dark = false }: Props) {
   return (
     <div className={className}>
-      <h3 className="mb-2 text-sm font-semibold text-gray-900">
+      <h3 className={`mb-2 text-sm font-semibold ${dark ? 'text-neutral-100' : 'text-gray-900'}`}>
         DMC Palette — {palette.length} colors | {cols}×{rows} stitches
       </h3>
       <ul className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-3">
@@ -25,7 +27,7 @@ export function Legend({ palette, cols, rows, className }: Props) {
             >
               {entry.symbol}
             </span>
-            <span className="text-gray-800">
+            <span className={dark ? 'text-neutral-300' : 'text-gray-800'}>
               DMC {entry.dmc.code} — {entry.dmc.name}
             </span>
           </li>

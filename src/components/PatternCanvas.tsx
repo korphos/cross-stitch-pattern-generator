@@ -22,8 +22,8 @@ export function PatternCanvas({ cols, rows, cellAssignment, palette, cellPx = 24
   }, [cols, rows, cellAssignment, palette, cellPx])
 
   return (
-    <div className="max-w-full flex-1 overflow-auto rounded border border-gray-300 bg-white">
-      <canvas ref={canvasRef} />
+    <div className="flex h-full items-center justify-center overflow-auto p-8">
+      <canvas ref={canvasRef} className="shadow-lg" />
     </div>
   )
 }

@@ -1,50 +1,116 @@
-import { useReducer } from 'react'
+import { useCallback, useReducer, useRef, useState } from 'react'
+import type { DragEvent } from 'react'
 import { initialProject, projectReducer } from './lib/projectReducer'
-import type { WizardStep } from './lib/types'
-import { UploadStep } from './components/UploadStep'
-import { GridAdjustStep } from './components/GridAdjustStep'
-import { PaletteStep } from './components/PaletteStep'
-import { PrintView } from './components/PrintView'
-import { Stepper } from './components/Stepper'
-
-function canNavigateTo(project: ReturnType<typeof projectReducer>, step: WizardStep): boolean {
-  switch (step) {
-    case 'upload':
-      return true
-    case 'adjust':
-      return project.confirmedGrid !== null
-    case 'palette':
-    case 'print':
-      return project.palette !== null
-  }
-}
+import { detectGrid } from './lib/gridDetection'
+import { loadImageFile } from './lib/imageLoader'
+import { AppHeader } from './components/AppHeader'
+import { TabBar } from './components/TabBar'
+import { UploadDropzone } from './components/UploadDropzone'
+import { GridPanel } from './components/GridPanel'
+import { GridControls } from './components/GridControls'
+import { PatternCanvas } from './components/PatternCanvas'
+import { PalettePanel } from './components/PalettePanel'
+import { DmcColorList } from './components/DmcColorList'
+import { PrintablePage } from './components/PrintablePage'
 
 function App() {
   const [project, dispatch] = useReducer(projectReducer, initialProject)
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const dragCounterRef = useRef(0)
+
+  const handleFile = useCallback(async (file: File) => {
+    setUploadError(null)
+    setIsUploading(true)
+    try {
+      const { imageData, dataUrl } = await loadImageFile(file)
+      const detectedGrid = detectGrid(imageData)
+      dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid })
+    } catch (e) {
+      setUploadError(e instanceof Error ? e.message : 'Error while loading the image')
+    } finally {
+      setIsUploading(false)
+    }
+  }, [])
+
+  // A file can be dropped anywhere in the app at any time to replace the
+  // current image, not just onto a dedicated dropzone.
+  const handleDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    dragCounterRef.current += 1
+    if (e.dataTransfer.types.includes('Files')) setIsDraggingOver(true)
+  }
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    dragCounterRef.current = Math.max(0, dragCounterRef.current - 1)
+    if (dragCounterRef.current === 0) setIsDraggingOver(false)
+  }
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => e.preventDefault()
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    dragCounterRef.current = 0
+    setIsDraggingOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) void handleFile(file)
+  }
+
+  const hasImage = project.imageData !== null
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="screen-only border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-5xl px-4 py-4">
-          <h1 className="text-xl font-semibold text-gray-900">Cross-Stitch Pattern Generator</h1>
-          <div className="mt-2">
-            <Stepper
-              step={project.step}
-              canNavigateTo={(step) => canNavigateTo(project, step)}
-              onSelect={(step) => dispatch({ type: 'GO_TO_STEP', step })}
-            />
+    <div
+      className="flex h-screen flex-col bg-neutral-950"
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      <div className="screen-only flex h-full flex-col">
+        <AppHeader
+          onFile={handleFile}
+          isUploading={isUploading}
+          canPrint={project.palette !== null}
+          onPrint={() => window.print()}
+        />
+        {uploadError && <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>}
+
+        <div className="flex flex-1 overflow-hidden">
+          <div className="w-64 shrink-0 border-r border-neutral-800 bg-neutral-900">
+            {hasImage && project.activeTab === 'grid' && <GridControls project={project} dispatch={dispatch} />}
+            {hasImage && project.activeTab === 'palette' && <PalettePanel project={project} dispatch={dispatch} />}
+          </div>
+
+          <div className="flex-1 overflow-hidden">
+            {!hasImage && (
+              <UploadDropzone
+                onFile={handleFile}
+                isUploading={isUploading}
+                error={uploadError}
+                isDraggingOver={isDraggingOver}
+              />
+            )}
+            {hasImage && project.activeTab === 'grid' && <GridPanel project={project} dispatch={dispatch} />}
+            {hasImage && project.activeTab === 'palette' && project.palette && (
+              <PatternCanvas
+                cols={project.confirmedGrid!.cols}
+                rows={project.confirmedGrid!.rows}
+                cellAssignment={project.cellAssignment!}
+                palette={project.palette}
+              />
+            )}
+          </div>
+
+          <div className="w-64 shrink-0 border-l border-neutral-800 bg-neutral-900">
+            {project.palette && <DmcColorList palette={project.palette} />}
           </div>
         </div>
-      </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">
-        {project.step === 'upload' && <UploadStep dispatch={dispatch} />}
-        {project.step === 'adjust' && project.confirmedGrid && (
-          <GridAdjustStep project={project} dispatch={dispatch} />
+        {hasImage && (
+          <TabBar activeTab={project.activeTab} onSelect={(tab) => dispatch({ type: 'SET_ACTIVE_TAB', tab })} />
         )}
-        {project.step === 'palette' && project.palette && <PaletteStep project={project} dispatch={dispatch} />}
-        {project.step === 'print' && project.palette && <PrintView project={project} dispatch={dispatch} />}
-      </main>
+      </div>
+
+      <PrintablePage project={project} />
     </div>
   )
 }

@@ -62,10 +62,10 @@ export interface PaletteEntry {
   count: number
 }
 
-export type WizardStep = 'upload' | 'adjust' | 'palette' | 'print'
+export type ActiveTab = 'grid' | 'palette'
 
 export interface PatternProject {
-  step: WizardStep
+  activeTab: ActiveTab
   imageData: PixelBuffer | null
   imageDataUrl: string | null
   detectedGrid: DetectedGrid | null

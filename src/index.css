@@ -1,8 +1,26 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
 @page {
   size: letter;
   margin: 0.5in;
+}
+
+.print-only {
+  display: none;
 }
 
 @media print {
@@ -10,6 +28,17 @@
     display: none !important;
   }
 
+  .print-only {
+    display: block;
+  }
+
+  /*
+   * Without this, browsers drop CSS background-colors when printing
+   * unless the user manually enables "Background graphics" - so the
+   * legend swatches (background-color) would print blank while the
+   * pattern grid (drawn as canvas pixels, unaffected by this setting)
+   * would print fine. Force colors to always print.
+   */
   * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
