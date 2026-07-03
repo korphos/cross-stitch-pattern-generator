@@ -64,6 +64,12 @@ export interface PaletteEntry {
 
 export type ActiveTab = 'grid' | 'palette'
 
+/** A snapshot of the user-editable result, for undo/redo. */
+export interface EditSnapshot {
+  palette: PaletteEntry[]
+  cellAssignment: string[]
+}
+
 export interface PatternProject {
   activeTab: ActiveTab
   imageData: PixelBuffer | null
@@ -75,8 +81,10 @@ export interface PatternProject {
   cellColors: RGB[] | null
   clusterThreshold: number
   palette: PaletteEntry[] | null
-  /** index into `palette` per cell, row-major */
-  cellAssignment: number[] | null
+  /** DMC code (matches a `palette` entry's `dmc.code`) per cell, row-major */
+  cellAssignment: string[] | null
   /** stitches per inch of the fabric the user intends to use */
   fabricCount: number
+  /** undo/redo stacks for manual color edits; reset whenever the grid/threshold regenerates the palette from scratch */
+  history: { past: EditSnapshot[]; future: EditSnapshot[] }
 }

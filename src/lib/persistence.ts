@@ -1,11 +1,13 @@
-import type { DetectedGrid, ActiveTab } from './types'
+import type { DetectedGrid, ActiveTab, PaletteEntry } from './types'
 
 /**
- * Everything needed to fully reconstruct the app on reload - deliberately
- * NOT the full PatternProject: derived data (raw pixel buffer, sampled
- * cell colors, palette, cell assignment) is recomputed from this on load
- * rather than stored, keeping the persisted record small and avoiding
- * two sources of truth.
+ * Everything needed to fully reconstruct the app on reload. The raw pixel
+ * buffer and per-cell sampled colors are NOT stored - they're recomputed
+ * from `imageDataUrl` + `grid` on load. `palette`/`cellAssignment` ARE
+ * stored as-is (not regenerated from `grid`/`clusterThreshold`) because
+ * manual color edits (recolor/merge) can diverge from what a fresh
+ * clustering pass would produce; regenerating them would silently discard
+ * those edits on every reload.
  */
 export interface PersistedProject {
   imageDataUrl: string
@@ -14,6 +16,8 @@ export interface PersistedProject {
   clusterThreshold: number
   fabricCount: number
   activeTab: ActiveTab
+  palette: PaletteEntry[]
+  cellAssignment: string[]
 }
 
 const DB_NAME = 'cross-stitch-pattern-generator'

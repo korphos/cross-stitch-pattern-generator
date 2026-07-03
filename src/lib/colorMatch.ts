@@ -32,3 +32,11 @@ export function nearestDmc(rgb: RGB, table: DmcColor[] = dmcColors): DmcMatch {
 export function colorDistance(a: RGB, b: RGB): number {
   return deltaE(rgbToLab(a), rgbToLab(b))
 }
+
+/** All DMC colors sorted nearest-first (by CIEDE2000) to `target`, e.g. for a "recolor to..." picker. */
+export function sortedBySimilarity(target: RGB, table: DmcColor[] = dmcColors): (DmcColor & { deltaE: number })[] {
+  const targetLab = rgbToLab(target)
+  return table
+    .map((entry) => ({ ...entry, deltaE: deltaE(targetLab, dmcLabByCode.get(entry.code) ?? rgbToLab(entry)) }))
+    .sort((a, b) => a.deltaE - b.deltaE)
+}

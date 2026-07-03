@@ -5,9 +5,13 @@ interface Props {
   isUploading: boolean
   canPrint: boolean
   onPrint: () => void
+  canUndo: boolean
+  canRedo: boolean
+  onUndo: () => void
+  onRedo: () => void
 }
 
-export function AppHeader({ onFile, isUploading, canPrint, onPrint }: Props) {
+export function AppHeader({ onFile, isUploading, canPrint, onPrint, canUndo, canRedo, onUndo, onRedo }: Props) {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFile(file)
@@ -16,10 +20,30 @@ export function AppHeader({ onFile, isUploading, canPrint, onPrint }: Props) {
 
   return (
     <header className="screen-only grid grid-cols-[1fr_auto_1fr] items-center border-b border-neutral-800 bg-neutral-900 px-4 py-2">
-      <label className="w-fit cursor-pointer justify-self-start rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700">
-        {isUploading ? 'Loading…' : 'Replace image'}
-        <input type="file" accept="image/*" className="hidden" onChange={handleChange} disabled={isUploading} />
-      </label>
+      <div className="flex items-center gap-2 justify-self-start">
+        <label className="w-fit cursor-pointer rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700">
+          {isUploading ? 'Loading…' : 'Replace image'}
+          <input type="file" accept="image/*" className="hidden" onChange={handleChange} disabled={isUploading} />
+        </label>
+        <button
+          type="button"
+          disabled={!canUndo}
+          onClick={onUndo}
+          title="Undo (Ctrl+Z)"
+          className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Undo
+        </button>
+        <button
+          type="button"
+          disabled={!canRedo}
+          onClick={onRedo}
+          title="Redo (Ctrl+Y)"
+          className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Redo
+        </button>
+      </div>
       <button
         type="button"
         disabled={!canPrint}

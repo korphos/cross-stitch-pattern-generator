@@ -5,8 +5,8 @@ import { assignSymbols, contrastTextColor } from './symbolAssignment'
 
 export interface PaletteResult {
   palette: PaletteEntry[]
-  /** index into `palette` per input cell, same order/length as `cellColors` */
-  cellAssignment: number[]
+  /** DMC code (matches a `palette` entry's `dmc.code`) per input cell, same order/length as `cellColors` */
+  cellAssignment: string[]
 }
 
 /**
@@ -52,11 +52,7 @@ export function buildPalette(cellColors: RGB[], deltaEThreshold: number): Palett
     textColor: contrastTextColor(entry.color),
   }))
 
-  const dmcCodeToPaletteIndex = new Map(palette.map((entry, idx) => [entry.dmc.code, idx]))
-  const cellAssignment = sampleToCluster.map((clusterId) => {
-    const dmcCode = clusterIdToDmcCode.get(clusterId)!
-    return dmcCodeToPaletteIndex.get(dmcCode)!
-  })
+  const cellAssignment = sampleToCluster.map((clusterId) => clusterIdToDmcCode.get(clusterId)!)
 
   return { palette, cellAssignment }
 }

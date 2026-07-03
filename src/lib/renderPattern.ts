@@ -3,9 +3,25 @@ import type { PaletteEntry } from './types'
 export interface RenderGridInput {
   cols: number
   rows: number
-  /** index into `palette` per cell, row-major, length cols*rows */
-  cellAssignment: number[]
+  /** DMC code (matches a `palette` entry's `dmc.code`) per cell, row-major, length cols*rows */
+  cellAssignment: string[]
   palette: PaletteEntry[]
+}
+
+/** Cell index (row*cols+col) under a click/pointer point in the same CSS-px space the canvas was rendered in, or null if outside the grid. */
+export function cellIndexFromPoint(
+  x: number,
+  y: number,
+  cols: number,
+  rows: number,
+  cellPx: number,
+  showRulers = true,
+): number | null {
+  const { rulerMargin } = computeCanvasSize(cols, rows, cellPx, showRulers)
+  const col = Math.floor((x - rulerMargin) / cellPx)
+  const row = Math.floor((y - rulerMargin) / cellPx)
+  if (col < 0 || col >= cols || row < 0 || row >= rows) return null
+  return row * cols + col
 }
 
 export interface RenderOptions {
@@ -56,13 +72,14 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
   const { rulerMargin, width, height } = computeCanvasSize(cols, rows, cellPx, showRulers)
   const originX = rulerMargin
   const originY = rulerMargin
+  const paletteByCode = new Map(palette.map((entry) => [entry.dmc.code, entry]))
 
   ctx.clearRect(0, 0, width, height)
 
   // 1. cell fills
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      const entry = palette[cellAssignment[row * cols + col]]
+      const entry = paletteByCode.get(cellAssignment[row * cols + col])
       if (!entry) continue
       ctx.fillStyle = `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})`
       ctx.fillRect(originX + col * cellPx, originY + row * cellPx, cellPx, cellPx)
@@ -75,7 +92,7 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
   ctx.font = `${Math.round(cellPx * 0.62)}px ${fontFamily}`
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      const entry = palette[cellAssignment[row * cols + col]]
+      const entry = paletteByCode.get(cellAssignment[row * cols + col])
       if (!entry) continue
       ctx.fillStyle = entry.textColor
       ctx.fillText(entry.symbol, originX + col * cellPx + cellPx / 2, originY + row * cellPx + cellPx / 2 + cellPx * 0.03)
