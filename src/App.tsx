@@ -36,6 +36,7 @@ function App() {
   const [sourceFileName, setSourceFileName] = useState<string | null>(null)
   const [isRestoring, setIsRestoring] = useState(true)
   const [selectedCellIndex, setSelectedCellIndex] = useState<number | null>(null)
+  const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
   const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
   const [view, setView] = useState<'workspace' | 'settings'>('workspace')
@@ -314,7 +315,9 @@ function App() {
                       palette={project.palette}
                       cellPx={cellPx}
                       selectedCellIndex={selectedCellIndex}
+                      highlightCode={hoveredCode}
                       onCellClick={setSelectedCellIndex}
+                      onCellHover={setHoveredCode}
                     />
                     <ZoomControls
                       cellPx={cellPx}
@@ -333,6 +336,8 @@ function App() {
                     palette={project.palette}
                     showOwned={project.paletteMode === 'ownedOnly' && project.ownedThreadCodes.length > 0}
                     onEdit={setEditingCode}
+                    onHoverCode={setHoveredCode}
+                    highlightCode={hoveredCode}
                   />
                 )}
               </div>

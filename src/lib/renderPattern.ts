@@ -6,6 +6,8 @@ export interface RenderGridInput {
   /** DMC code (matches a `palette` entry's `dmc.code`) per cell, row-major, length cols*rows */
   cellAssignment: string[]
   palette: PaletteEntry[]
+  /** when set, every cell whose code doesn't match is dimmed so this color stands out (e.g. hovering it in the sidebar) */
+  highlightCode?: string | null
 }
 
 /** Cell index (row*cols+col) under a click/pointer point in the same CSS-px space the canvas was rendered in, or null if outside the grid. */
@@ -66,7 +68,7 @@ export function setupCanvasForDpr(
  * lines always paint on top, then row/column ruler numbers every 5.
  */
 export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInput, options: RenderOptions): void {
-  const { cols, rows, cellAssignment, palette } = grid
+  const { cols, rows, cellAssignment, palette, highlightCode } = grid
   const { cellPx, fontFamily = 'ui-monospace, Menlo, Consolas, monospace' } = options
   const showRulers = options.showRulers ?? true
   const { rulerMargin, width, height } = computeCanvasSize(cols, rows, cellPx, showRulers)
@@ -146,7 +148,19 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
     if (row % THICK_EVERY === 0) drawHLine(row, 2.2, '#000')
   }
 
-  // 4. rulers
+  // 4. highlight - dim every cell that isn't the hovered color, so it pops
+  // out against the rest of the pattern.
+  if (highlightCode) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        if (cellAssignment[row * cols + col] === highlightCode) continue
+        ctx.fillRect(originX + col * cellPx, originY + row * cellPx, cellPx, cellPx)
+      }
+    }
+  }
+
+  // 5. rulers
   if (showRulers) {
     ctx.fillStyle = '#000'
     ctx.font = `${Math.max(9, Math.round(cellPx * 0.4))}px ${fontFamily}`

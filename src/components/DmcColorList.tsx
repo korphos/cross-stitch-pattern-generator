@@ -5,16 +5,24 @@ interface Props {
   /** show an "owned"/"buy" flag per color - only meaningful once the user has marked at least one thread as owned in Settings */
   showOwned?: boolean
   onEdit?: (code: string) => void
+  /** reports the hovered entry's DMC code (or null on mouse-leave), e.g. to highlight it on the pattern canvas */
+  onHoverCode?: (code: string | null) => void
+  /** DMC code to visually highlight, e.g. while hovering the matching pixels on the canvas */
+  highlightCode?: string | null
 }
 
-export function DmcColorList({ palette, showOwned = false, onEdit }: Props) {
+export function DmcColorList({ palette, showOwned = false, onEdit, onHoverCode, highlightCode = null }: Props) {
   return (
     <ul className="h-full divide-y divide-neutral-800 overflow-y-auto">
       {palette.map((entry) => (
         <li
           key={entry.dmc.code}
-          className={`group flex items-center gap-2 px-3 py-1.5 text-sm ${onEdit ? 'cursor-pointer hover:bg-neutral-800' : ''}`}
+          className={`group flex items-center gap-2 px-3 py-1.5 text-sm ${onEdit ? 'cursor-pointer hover:bg-neutral-800' : ''} ${
+            entry.dmc.code === highlightCode ? 'bg-indigo-950' : ''
+          }`}
           onClick={onEdit ? () => onEdit(entry.dmc.code) : undefined}
+          onMouseEnter={() => onHoverCode?.(entry.dmc.code)}
+          onMouseLeave={() => onHoverCode?.(null)}
         >
           <span
             className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-black/20 font-mono text-[11px]"
