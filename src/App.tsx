@@ -258,6 +258,10 @@ function App() {
             dispatch({ type: 'RECOLOR_PALETTE_ENTRY', code: editingEntry.dmc.code, newDmc })
             setEditingCode(null)
           }}
+          onDelete={() => {
+            dispatch({ type: 'DELETE_COLOR', code: editingEntry.dmc.code })
+            setEditingCode(null)
+          }}
           onClose={() => setEditingCode(null)}
         />
       )}

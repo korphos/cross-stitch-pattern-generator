@@ -76,12 +76,13 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
 
   ctx.clearRect(0, 0, width, height)
 
-  // 1. cell fills
+  // 1. cell fills - cells with no matching palette entry (deleted colors,
+  // e.g. a background left unstitched) are filled plain white rather than
+  // left transparent, so they read as blank fabric, not a rendering gap.
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const entry = paletteByCode.get(cellAssignment[row * cols + col])
-      if (!entry) continue
-      ctx.fillStyle = `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})`
+      ctx.fillStyle = entry ? `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})` : '#ffffff'
       ctx.fillRect(originX + col * cellPx, originY + row * cellPx, cellPx, cellPx)
     }
   }

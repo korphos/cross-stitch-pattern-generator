@@ -64,6 +64,13 @@ export interface PaletteEntry {
 
 export type ActiveTab = 'grid' | 'palette'
 
+/**
+ * Sentinel `cellAssignment` value meaning "no stitch" - a blank square
+ * with no fill/symbol, e.g. for a background color the user doesn't want
+ * to actually stitch. No real DMC code is ever an empty string.
+ */
+export const EMPTY_CELL = ''
+
 /** A snapshot of the user-editable result, for undo/redo. */
 export interface EditSnapshot {
   palette: PaletteEntry[]

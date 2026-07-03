@@ -1,4 +1,5 @@
 import type { PatternProject, DetectedGrid, PixelBuffer, ActiveTab, PaletteEntry, DmcColor, EditSnapshot } from './types'
+import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
 import { contrastTextColor } from './symbolAssignment'
@@ -12,6 +13,7 @@ export type ProjectAction =
   | { type: 'RECOLOR_CELL'; cellIndex: number; dmcCode: string }
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
   | { type: 'RECOLOR_PALETTE_ENTRY'; code: string; newDmc: DmcColor }
+  | { type: 'DELETE_COLOR'; code: string }
   | { type: 'UNDO' }
   | { type: 'REDO' }
   | {
@@ -148,6 +150,17 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           )
 
       return { ...project, history, cellAssignment, palette: recomputeCounts(palette, cellAssignment) }
+    }
+
+    case 'DELETE_COLOR': {
+      if (!project.cellAssignment || !project.palette) return project
+      const history = pushHistory(project)
+      const cellAssignment = project.cellAssignment.map((code) => (code === action.code ? EMPTY_CELL : code))
+      const palette = recomputeCounts(
+        project.palette.filter((entry) => entry.dmc.code !== action.code),
+        cellAssignment,
+      )
+      return { ...project, history, cellAssignment, palette }
     }
 
     case 'UNDO': {

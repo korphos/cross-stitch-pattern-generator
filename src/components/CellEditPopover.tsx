@@ -1,4 +1,5 @@
 import type { PaletteEntry } from '../lib/types'
+import { EMPTY_CELL } from '../lib/types'
 
 interface Props {
   cellIndex: number
@@ -34,6 +35,16 @@ export function CellEditPopover({ cellIndex, cols, palette, currentCode, onPick,
             {entry.symbol}
           </button>
         ))}
+        <button
+          type="button"
+          title="No stitch (blank)"
+          onClick={() => onPick(EMPTY_CELL)}
+          className={`flex h-7 w-7 items-center justify-center rounded-sm border bg-white text-xs text-neutral-400 ${
+            currentCode === EMPTY_CELL ? 'border-indigo-400 ring-2 ring-indigo-400' : 'border-black/20'
+          }`}
+        >
+          ×
+        </button>
       </div>
       <button
         type="button"

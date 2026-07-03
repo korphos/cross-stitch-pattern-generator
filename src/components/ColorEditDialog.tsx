@@ -8,11 +8,12 @@ interface Props {
   otherEntries: PaletteEntry[]
   onMergeInto: (toCode: string) => void
   onRecolor: (newDmc: DmcColor) => void
+  onDelete: () => void
   onClose: () => void
 }
 
-/** Modal for editing one palette color: merge it into another color already in the pattern, or recolor it to any DMC thread (sorted by similarity). */
-export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, onClose }: Props) {
+/** Modal for editing one palette color: merge it into another color already in the pattern, recolor it to any DMC thread (sorted by similarity), or remove it entirely. */
+export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, onDelete, onClose }: Props) {
   const [search, setSearch] = useState('')
 
   const candidates = useMemo(() => {
@@ -44,12 +45,23 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
           </h3>
           <button
             type="button"
+            onClick={onDelete}
+            className="ml-auto rounded-md px-2 py-1 text-sm text-red-400 hover:bg-red-950 hover:text-red-300"
+          >
+            Remove color
+          </button>
+          <button
+            type="button"
             onClick={onClose}
-            className="ml-auto rounded-md px-2 py-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
+            className="rounded-md px-2 py-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
           >
             Close
           </button>
         </div>
+        <p className="-mt-2 text-xs text-neutral-500">
+          "Remove color" leaves every "{entry.symbol}" stitch blank (no fill, no symbol) - useful for a background you
+          don't want to stitch.
+        </p>
 
         {otherEntries.length > 0 && (
           <div>
