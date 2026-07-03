@@ -1,8 +1,9 @@
-import { useCallback, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
 import { initialProject, projectReducer } from './lib/projectReducer'
 import { detectGrid } from './lib/gridDetection'
-import { loadImageFile } from './lib/imageLoader'
+import { loadImageFile, decodeDataUrlToImageData } from './lib/imageLoader'
+import { loadPersistedProject, savePersistedProject } from './lib/persistence'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
 import { UploadDropzone } from './components/UploadDropzone'
@@ -19,7 +20,65 @@ function App() {
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [sourceFileName, setSourceFileName] = useState<string | null>(null)
+  const [isRestoring, setIsRestoring] = useState(true)
   const dragCounterRef = useRef(0)
+
+  // Restore whatever was last worked on, so a page refresh doesn't lose
+  // anything - only the image + form settings are persisted; everything
+  // else (sampled colors, palette, ...) is recomputed via RESTORE.
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const saved = await loadPersistedProject()
+        if (!saved || cancelled) return
+        const imageData = await decodeDataUrlToImageData(saved.imageDataUrl)
+        if (cancelled) return
+        setSourceFileName(saved.fileName)
+        dispatch({
+          type: 'RESTORE',
+          imageData,
+          imageDataUrl: saved.imageDataUrl,
+          grid: saved.grid,
+          clusterThreshold: saved.clusterThreshold,
+          fabricCount: saved.fabricCount,
+          activeTab: saved.activeTab,
+        })
+      } catch {
+        // no usable saved state (first visit, corrupted record, etc.) - start fresh
+      } finally {
+        if (!cancelled) setIsRestoring(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  // Persist on every change relevant to reconstructing the project, debounced
+  // so dragging a grid handle doesn't hammer IndexedDB on every pointermove.
+  useEffect(() => {
+    if (!project.imageDataUrl || !project.confirmedGrid) return
+    const grid = project.confirmedGrid
+    const handle = setTimeout(() => {
+      void savePersistedProject({
+        imageDataUrl: project.imageDataUrl!,
+        fileName: sourceFileName,
+        grid,
+        clusterThreshold: project.clusterThreshold,
+        fabricCount: project.fabricCount,
+        activeTab: project.activeTab,
+      })
+    }, 300)
+    return () => clearTimeout(handle)
+  }, [
+    project.imageDataUrl,
+    project.confirmedGrid,
+    project.clusterThreshold,
+    project.fabricCount,
+    project.activeTab,
+    sourceFileName,
+  ])
 
   const handleFile = useCallback(async (file: File) => {
     setUploadError(null)
@@ -98,7 +157,7 @@ function App() {
           </div>
 
           <div className="flex-1 overflow-hidden">
-            {!hasImage && (
+            {!hasImage && !isRestoring && (
               <UploadDropzone
                 onFile={handleFile}
                 isUploading={isUploading}

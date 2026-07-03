@@ -1,11 +1,4 @@
-export async function loadImageFile(file: File): Promise<{ imageData: ImageData; dataUrl: string }> {
-  const dataUrl = await new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result as string)
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
-
+export async function decodeDataUrlToImageData(dataUrl: string): Promise<ImageData> {
   const img = new Image()
   await new Promise<void>((resolve, reject) => {
     img.onload = () => resolve()
@@ -19,6 +12,16 @@ export async function loadImageFile(file: File): Promise<{ imageData: ImageData;
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
   if (!ctx) throw new Error('2D canvas unavailable')
   ctx.drawImage(img, 0, 0)
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  return ctx.getImageData(0, 0, canvas.width, canvas.height)
+}
+
+export async function loadImageFile(file: File): Promise<{ imageData: ImageData; dataUrl: string }> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+  const imageData = await decodeDataUrlToImageData(dataUrl)
   return { imageData, dataUrl }
 }

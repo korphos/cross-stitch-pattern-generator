@@ -8,6 +8,15 @@ export type ProjectAction =
   | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
   | { type: 'SET_FABRIC_COUNT'; stitchesPerInch: number }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
+  | {
+      type: 'RESTORE'
+      imageData: PixelBuffer
+      imageDataUrl: string
+      grid: DetectedGrid
+      clusterThreshold: number
+      fabricCount: number
+      activeTab: ActiveTab
+    }
   | { type: 'RESET' }
 
 export const DEFAULT_CLUSTER_THRESHOLD = 2.3
@@ -64,6 +73,20 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'SET_ACTIVE_TAB':
       return { ...project, activeTab: action.tab }
+
+    case 'RESTORE':
+      return resample(
+        {
+          ...initialProject,
+          imageData: action.imageData,
+          imageDataUrl: action.imageDataUrl,
+          detectedGrid: action.grid,
+          clusterThreshold: action.clusterThreshold,
+          fabricCount: action.fabricCount,
+          activeTab: action.activeTab,
+        },
+        action.grid,
+      )
 
     case 'RESET':
       return initialProject
