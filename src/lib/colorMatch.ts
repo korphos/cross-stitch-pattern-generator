@@ -1,6 +1,7 @@
 import { converter, differenceCiede2000, type Lab } from 'culori'
 import type { RGB, DmcColor } from './types'
 import { dmcColors } from '../data/dmcColors'
+import { dmcSpecialtyColors } from '../data/dmcSpecialtyColors'
 
 const toLab = converter('lab')
 const deltaE = differenceCiede2000()
@@ -9,7 +10,9 @@ function rgbToLab(rgb: RGB): Lab {
   return toLab({ mode: 'rgb', r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 })
 }
 
-const dmcLabByCode = new Map<string, Lab>(dmcColors.map((d) => [d.code, rgbToLab(d)]))
+const dmcLabByCode = new Map<string, Lab>(
+  [...dmcColors, ...dmcSpecialtyColors].map((d) => [d.code, rgbToLab(d)]),
+)
 
 export interface DmcMatch {
   dmc: DmcColor
@@ -39,4 +42,18 @@ export function sortedBySimilarity(target: RGB, table: DmcColor[] = dmcColors): 
   return table
     .map((entry) => ({ ...entry, deltaE: deltaE(targetLab, dmcLabByCode.get(entry.code) ?? rgbToLab(entry)) }))
     .sort((a, b) => a.deltaE - b.deltaE)
+}
+
+/**
+ * A specialty thread (metallic/satin) close enough to `dmc` to be worth
+ * offering as a switchable alternative - or, when `dmc` is itself already a
+ * specialty thread, the nearest standard floss (so the user can switch
+ * back). Undefined when nothing of the other kind is close enough.
+ */
+const FINISH_ALTERNATIVE_DELTA_E = 8
+
+export function findFinishAlternative(dmc: DmcColor): { dmc: DmcColor; deltaE: number } | undefined {
+  const table = dmc.finish ? dmcColors : dmcSpecialtyColors
+  const match = nearestDmc(dmc, table)
+  return match.deltaE <= FINISH_ALTERNATIVE_DELTA_E ? match : undefined
 }

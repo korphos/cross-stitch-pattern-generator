@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { dmcColors } from '../data/dmcColors'
+import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   onClose: () => void
 }
 
-type FilterMode = 'all' | 'owned'
+type FilterMode = 'all' | 'owned' | 'specialty'
 
 /**
  * A standalone full-page view (not a modal) so it's comfortable to use on a
@@ -22,7 +22,9 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
-    const base = filterMode === 'owned' ? dmcColors.filter((d) => ownedCodes.has(d.code)) : dmcColors
+    let base = allDmcColors
+    if (filterMode === 'owned') base = base.filter((d) => ownedCodes.has(d.code))
+    else if (filterMode === 'specialty') base = base.filter((d) => d.finish)
     if (!q) return base
     return base.filter((d) => d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q))
   }, [search, filterMode, ownedCodes])
@@ -65,16 +67,17 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
           <div className="mb-2 flex items-baseline justify-between">
             <h2 className="text-sm font-semibold">My DMC threads</h2>
             <span className="text-xs text-neutral-500">
-              {ownedCodes.size} / {dmcColors.length} owned
+              {ownedCodes.size} / {allDmcColors.length} owned
             </span>
           </div>
           <p className="mb-3 text-xs text-neutral-500">
             Mark the threads you already have. The "Only my threads" palette mode will prefer these when generating a
-            pattern.
+            pattern. Includes standard floss plus Light Effects metallics and Satin threads, which can be suggested
+            as shiny alternatives to a close standard color.
           </p>
 
-          <div className="mb-3 flex gap-2">
-            {(['all', 'owned'] as const).map((mode) => (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {(['all', 'owned', 'specialty'] as const).map((mode) => (
               <button
                 key={mode}
                 type="button"
@@ -85,7 +88,7 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
                     : 'rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800'
                 }
               >
-                {mode === 'all' ? 'All threads' : 'Owned only'}
+                {mode === 'all' ? 'All threads' : mode === 'owned' ? 'Owned only' : 'Metallic & Satin'}
               </button>
             ))}
           </div>
@@ -117,6 +120,11 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
                     <span className="flex-1 truncate text-sm text-neutral-200">
                       {d.code} - {d.name}
                     </span>
+                    {d.finish && (
+                      <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
+                        {d.finish}
+                      </span>
+                    )}
                   </label>
                 </li>
               )

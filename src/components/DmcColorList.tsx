@@ -28,6 +28,14 @@ export function DmcColorList({ palette, showOwned = false, onEdit }: Props) {
           <span className="flex-1 truncate text-neutral-300">
             {entry.dmc.code} - {entry.dmc.name}
           </span>
+          {entry.finishAlternative && (
+            <span
+              className="shrink-0 text-xs text-amber-400"
+              title={`${entry.dmc.finish ? 'Standard' : 'Shiny'} alternative available: ${entry.finishAlternative.dmc.code} - ${entry.finishAlternative.dmc.name}`}
+            >
+              ✨
+            </span>
+          )}
           {showOwned && !entry.owned && (
             <span className="shrink-0 rounded bg-amber-950 px-1.5 py-0.5 text-xs text-amber-400" title="Not in your thread inventory">
               buy

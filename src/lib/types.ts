@@ -42,6 +42,8 @@ export interface DmcColor {
   r: number
   g: number
   b: number
+  /** absent = standard 6-strand cotton floss; set for specialty threads (Light Effects metallics, Satin) */
+  finish?: 'metallic' | 'satin'
 }
 
 /** A cluster of near-identical sampled cell colors, before DMC matching. */
@@ -62,6 +64,13 @@ export interface PaletteEntry {
   count: number
   /** true if this DMC code is in the user's owned-threads list (see Settings) */
   owned: boolean
+  /**
+   * A specialty thread (metallic/satin) close enough to this entry's own
+   * finish=standard color to offer as a switchable alternative, or - when
+   * this entry itself already is a specialty thread - the nearest standard
+   * floss, so the user can switch back. Undefined when nothing is close.
+   */
+  finishAlternative?: { dmc: DmcColor; deltaE: number }
 }
 
 export type ActiveTab = 'grid' | 'palette'

@@ -12,6 +12,7 @@ import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
 import { contrastTextColor } from './symbolAssignment'
+import { findFinishAlternative } from './colorMatch'
 import { FABRIC_COUNTS } from './physicalSize'
 
 export type ProjectAction =
@@ -214,6 +215,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
                   color: { r: newDmc.r, g: newDmc.g, b: newDmc.b },
                   textColor: contrastTextColor(newDmc),
                   owned,
+                  finishAlternative: findFinishAlternative(newDmc),
                 }
               : entry,
           )

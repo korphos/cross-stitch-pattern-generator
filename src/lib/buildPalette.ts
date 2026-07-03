@@ -1,8 +1,8 @@
 import type { RGB, DmcColor, PaletteEntry, PaletteMode } from './types'
 import { clusterColors } from './colorClustering'
-import { nearestDmc } from './colorMatch'
+import { nearestDmc, findFinishAlternative } from './colorMatch'
 import { assignSymbols, contrastTextColor } from './symbolAssignment'
-import { dmcColors } from '../data/dmcColors'
+import { allDmcColors } from '../data/dmcSpecialtyColors'
 
 export interface PaletteResult {
   palette: PaletteEntry[]
@@ -40,7 +40,7 @@ export function buildPalette(
   options: BuildPaletteOptions = DEFAULT_OPTIONS,
 ): PaletteResult {
   const { clusters, sampleToCluster } = clusterColors(cellColors, deltaEThreshold)
-  const ownedTable = options.ownedCodes.size > 0 ? dmcColors.filter((d) => options.ownedCodes.has(d.code)) : []
+  const ownedTable = options.ownedCodes.size > 0 ? allDmcColors.filter((d) => options.ownedCodes.has(d.code)) : []
 
   interface Accum {
     dmc: DmcColor
@@ -83,6 +83,7 @@ export function buildPalette(
     deltaE: acc.deltaESum / acc.count,
     count: acc.count,
     owned: acc.owned,
+    finishAlternative: findFinishAlternative(acc.dmc),
   }))
 
   const withSymbols = assignSymbols(merged)

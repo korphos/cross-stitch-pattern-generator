@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { MouseEvent } from 'react'
 import type { PaletteEntry, DmcColor } from '../lib/types'
 import { sortedBySimilarity } from '../lib/colorMatch'
+import { allDmcColors } from '../data/dmcSpecialtyColors'
 
 interface Props {
   entry: PaletteEntry
@@ -17,7 +18,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
   const [search, setSearch] = useState('')
 
   const candidates = useMemo(() => {
-    const sorted = sortedBySimilarity(entry.color)
+    const sorted = sortedBySimilarity(entry.color, allDmcColors)
     const q = search.trim().toLowerCase()
     const filtered = q ? sorted.filter((d) => d.code.toLowerCase().includes(q) || d.name.toLowerCase().includes(q)) : sorted
     return filtered.slice(0, 40)
@@ -62,6 +63,33 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
           "Remove color" leaves every "{entry.symbol}" stitch blank (no fill, no symbol) - useful for a background you
           don't want to stitch.
         </p>
+
+        {entry.finishAlternative && (
+          <div className="flex items-center gap-3 rounded-md border border-amber-900/60 bg-amber-950/30 px-3 py-2">
+            <span
+              className="h-6 w-6 shrink-0 rounded-sm border border-black/20"
+              style={{
+                backgroundColor: `rgb(${entry.finishAlternative.dmc.r}, ${entry.finishAlternative.dmc.g}, ${entry.finishAlternative.dmc.b})`,
+              }}
+            />
+            <p className="flex-1 text-xs text-amber-200">
+              {entry.dmc.finish ? 'Standard alternative available: ' : 'Shiny alternative available: '}
+              <span className="font-medium">
+                {entry.finishAlternative.dmc.code} - {entry.finishAlternative.dmc.name}
+              </span>
+              {entry.finishAlternative.dmc.finish && (
+                <span className="ml-1 uppercase text-amber-400">({entry.finishAlternative.dmc.finish})</span>
+              )}
+            </p>
+            <button
+              type="button"
+              onClick={() => onRecolor(entry.finishAlternative!.dmc)}
+              className="shrink-0 rounded-md bg-amber-600 px-2 py-1 text-xs font-medium text-white hover:bg-amber-500"
+            >
+              Switch
+            </button>
+          </div>
+        )}
 
         {otherEntries.length > 0 && (
           <div>
@@ -114,6 +142,11 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
                   <span className="truncate">
                     {d.code} - {d.name}
                   </span>
+                  {d.finish && (
+                    <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
+                      {d.finish}
+                    </span>
+                  )}
                   <span className="ml-auto shrink-0 text-xs text-neutral-500">ΔE {d.deltaE.toFixed(1)}</span>
                 </button>
               </li>
