@@ -18,6 +18,7 @@ function App() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [sourceFileName, setSourceFileName] = useState<string | null>(null)
   const dragCounterRef = useRef(0)
 
   const handleFile = useCallback(async (file: File) => {
@@ -26,6 +27,7 @@ function App() {
     try {
       const { imageData, dataUrl } = await loadImageFile(file)
       const detectedGrid = detectGrid(imageData)
+      setSourceFileName(file.name)
       dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid })
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : 'Error while loading the image')
@@ -33,6 +35,21 @@ function App() {
       setIsUploading(false)
     }
   }, [])
+
+  // The browser's "Save as PDF" dialog suggests `document.title` as the
+  // default filename, so swap it in for the moment of printing and put it
+  // back afterward (the page's own title stays what's in index.html).
+  const handlePrint = useCallback(() => {
+    const base = sourceFileName ? sourceFileName.replace(/\.[^./\\]+$/, '') : 'cross-stitch-pattern'
+    const previousTitle = document.title
+    document.title = `${base}-pattern`
+    const restoreTitle = () => {
+      document.title = previousTitle
+      window.removeEventListener('afterprint', restoreTitle)
+    }
+    window.addEventListener('afterprint', restoreTitle)
+    window.print()
+  }, [sourceFileName])
 
   // A file can be dropped anywhere in the app at any time to replace the
   // current image, not just onto a dedicated dropzone.
@@ -59,18 +76,18 @@ function App() {
 
   return (
     <div
-      className="flex h-screen flex-col bg-neutral-950"
+      className="flex h-screen flex-col"
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      <div className="screen-only flex h-full flex-col">
+      <div className="screen-only flex h-full flex-col bg-neutral-950">
         <AppHeader
           onFile={handleFile}
           isUploading={isUploading}
           canPrint={project.palette !== null}
-          onPrint={() => window.print()}
+          onPrint={handlePrint}
         />
         {uploadError && <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>}
 

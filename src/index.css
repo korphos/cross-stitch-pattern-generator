@@ -19,8 +19,19 @@ body {
   margin: 0.5in;
 }
 
+/*
+ * `display: none` would make the printable block un-layoutable (its
+ * scrollHeight would always read 0), which breaks the "shrink to fit one
+ * page" measurement in PrintablePage.tsx - `visibility: hidden` keeps it
+ * laid out (so it can be measured) while still being invisible and
+ * non-interactive on screen.
+ */
 .print-only {
-  display: none;
+  visibility: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }
 
 @media print {
@@ -29,7 +40,8 @@ body {
   }
 
   .print-only {
-    display: block;
+    visibility: visible;
+    position: static;
   }
 
   /*
@@ -37,9 +49,11 @@ body {
    * unless the user manually enables "Background graphics" - so the
    * legend swatches (background-color) would print blank while the
    * pattern grid (drawn as canvas pixels, unaffected by this setting)
-   * would print fine. Force colors to always print.
+   * would print fine. Scoped to the printed subtree only, so it doesn't
+   * force the app's dark screen background to print too.
    */
-  * {
+  .print-only,
+  .print-only * {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }

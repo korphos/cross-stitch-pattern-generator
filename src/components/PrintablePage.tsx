@@ -55,7 +55,14 @@ export function PrintablePage({ project }: Props) {
     <div className="print-only">
       <div
         className="mx-auto overflow-hidden bg-white"
-        style={{ width: `${PAGE_WIDTH_IN}in`, height: fit.naturalHeight ? `${fit.naturalHeight * fit.scale}px` : undefined }}
+        style={{
+          // `@page { margin: 0.5in }` already insets the printable area,
+          // so this box must match that *usable* size, not the raw paper
+          // size - sizing it to the full 8.5in would overflow past the
+          // printable area on the right/bottom.
+          width: PAGE_USABLE_WIDTH_PX,
+          height: fit.naturalHeight ? `${fit.naturalHeight * fit.scale}px` : undefined,
+        }}
       >
         <div
           ref={contentRef}

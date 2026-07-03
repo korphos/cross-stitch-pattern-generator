@@ -28,7 +28,7 @@ export function Legend({ palette, cols, rows, className, dark = false }: Props) 
               {entry.symbol}
             </span>
             <span className={dark ? 'text-neutral-300' : 'text-gray-800'}>
-              DMC {entry.dmc.code} — {entry.dmc.name}
+              {entry.dmc.code} — {entry.dmc.name}
             </span>
           </li>
         ))}
