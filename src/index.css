@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@page {
+  size: letter;
+  margin: 0.5in;
+}
+
+@media print {
+  .screen-only {
+    display: none !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -1,0 +1,34 @@
+import { converter, differenceCiede2000, type Lab } from 'culori'
+import type { RGB, DmcColor } from './types'
+import { dmcColors } from '../data/dmcColors'
+
+const toLab = converter('lab')
+const deltaE = differenceCiede2000()
+
+function rgbToLab(rgb: RGB): Lab {
+  return toLab({ mode: 'rgb', r: rgb.r / 255, g: rgb.g / 255, b: rgb.b / 255 })
+}
+
+const dmcLabByCode = new Map<string, Lab>(dmcColors.map((d) => [d.code, rgbToLab(d)]))
+
+export interface DmcMatch {
+  dmc: DmcColor
+  deltaE: number
+}
+
+/** Nearest DMC floss color to `rgb`, by perceptual CIEDE2000 distance in Lab space. */
+export function nearestDmc(rgb: RGB, table: DmcColor[] = dmcColors): DmcMatch {
+  const targetLab = rgbToLab(rgb)
+  let best: DmcMatch | null = null
+  for (const entry of table) {
+    const entryLab = dmcLabByCode.get(entry.code) ?? rgbToLab(entry)
+    const d = deltaE(targetLab, entryLab)
+    if (!best || d < best.deltaE) best = { dmc: entry, deltaE: d }
+  }
+  return best!
+}
+
+/** CIEDE2000 perceptual distance between two sRGB colors. */
+export function colorDistance(a: RGB, b: RGB): number {
+  return deltaE(rgbToLab(a), rgbToLab(b))
+}
