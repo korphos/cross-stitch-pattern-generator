@@ -25,7 +25,7 @@ export function CellEditPopover({ cellIndex, cols, palette, currentCode, onPick,
           <button
             key={entry.dmc.code}
             type="button"
-            title={`DMC ${entry.dmc.code} — ${entry.dmc.name}`}
+            title={`DMC ${entry.dmc.code} - ${entry.dmc.name}`}
             onClick={() => onPick(entry.dmc.code)}
             className={`flex h-7 w-7 items-center justify-center rounded-sm border font-mono text-xs ${
               entry.dmc.code === currentCode ? 'border-indigo-400 ring-2 ring-indigo-400' : 'border-black/20'

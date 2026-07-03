@@ -30,7 +30,7 @@ export function Legend({ palette, cols, rows, className, dark = false, skeinsByC
               {entry.symbol}
             </span>
             <span className={dark ? 'text-neutral-300' : 'text-gray-800'}>
-              {entry.dmc.code} — {entry.dmc.name}
+              {entry.dmc.code} - {entry.dmc.name}
               {skeinsByCode && (
                 <span className={dark ? 'text-neutral-500' : 'text-gray-500'}> ({skeinsByCode.get(entry.dmc.code) ?? 1} skein{(skeinsByCode.get(entry.dmc.code) ?? 1) > 1 ? 's' : ''})</span>
               )}

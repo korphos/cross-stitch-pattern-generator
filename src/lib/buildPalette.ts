@@ -1,7 +1,8 @@
-import type { RGB, DmcColor, PaletteEntry } from './types'
+import type { RGB, DmcColor, PaletteEntry, PaletteMode } from './types'
 import { clusterColors } from './colorClustering'
 import { nearestDmc } from './colorMatch'
 import { assignSymbols, contrastTextColor } from './symbolAssignment'
+import { dmcColors } from '../data/dmcColors'
 
 export interface PaletteResult {
   palette: PaletteEntry[]
@@ -9,33 +10,70 @@ export interface PaletteResult {
   cellAssignment: string[]
 }
 
+export interface BuildPaletteOptions {
+  mode: PaletteMode
+  ownedCodes: ReadonlySet<string>
+}
+
+const DEFAULT_OPTIONS: BuildPaletteOptions = { mode: 'best', ownedCodes: new Set() }
+
+/**
+ * In 'ownedOnly' mode, a thread from the user's inventory is used only if
+ * it's within this CIEDE2000 distance of the sampled color; beyond that,
+ * the match would look visibly wrong, so the single best overall match is
+ * used instead (and flagged as not-owned, meaning "you'd need to buy this").
+ */
+const OWNED_FALLBACK_DELTA_E = 10
+
 /**
  * Full pipeline from raw per-cell sampled colors to a print-ready palette:
- * cluster near-identical colors, match each cluster to its nearest DMC
- * floss, merge clusters that land on the *same* DMC code (two visually
- * close but distinct sampled colors can round to one floss color - they
- * should share a single legend row/symbol, not two), then assign glyphs.
+ * cluster near-identical colors, match each cluster to a DMC floss (either
+ * the closest thread overall, or preferring the user's owned inventory -
+ * see `options.mode`), merge clusters that land on the *same* DMC code
+ * (two visually close but distinct sampled colors can round to one floss
+ * color - they should share a single legend row/symbol, not two), then
+ * assign glyphs.
  */
-export function buildPalette(cellColors: RGB[], deltaEThreshold: number): PaletteResult {
+export function buildPalette(
+  cellColors: RGB[],
+  deltaEThreshold: number,
+  options: BuildPaletteOptions = DEFAULT_OPTIONS,
+): PaletteResult {
   const { clusters, sampleToCluster } = clusterColors(cellColors, deltaEThreshold)
+  const ownedTable = options.ownedCodes.size > 0 ? dmcColors.filter((d) => options.ownedCodes.has(d.code)) : []
 
   interface Accum {
     dmc: DmcColor
     count: number
     deltaESum: number
+    owned: boolean
   }
   const byDmcCode = new Map<string, Accum>()
   const clusterIdToDmcCode = new Map<number, string>()
 
   for (const cluster of clusters) {
-    const match = nearestDmc(cluster.color)
+    let match = nearestDmc(cluster.color)
+    let owned = options.ownedCodes.has(match.dmc.code)
+
+    if (options.mode === 'ownedOnly' && ownedTable.length > 0) {
+      const ownedMatch = nearestDmc(cluster.color, ownedTable)
+      if (ownedMatch.deltaE <= OWNED_FALLBACK_DELTA_E) {
+        match = ownedMatch
+        owned = true
+      } else {
+        // Nothing owned is close enough - keep the best overall match
+        // (already computed above) but flag it as not-owned.
+        owned = false
+      }
+    }
+
     clusterIdToDmcCode.set(cluster.id, match.dmc.code)
     const existing = byDmcCode.get(match.dmc.code)
     if (existing) {
       existing.count += cluster.count
       existing.deltaESum += match.deltaE * cluster.count
     } else {
-      byDmcCode.set(match.dmc.code, { dmc: match.dmc, count: cluster.count, deltaESum: match.deltaE * cluster.count })
+      byDmcCode.set(match.dmc.code, { dmc: match.dmc, count: cluster.count, deltaESum: match.deltaE * cluster.count, owned })
     }
   }
 
@@ -44,6 +82,7 @@ export function buildPalette(cellColors: RGB[], deltaEThreshold: number): Palett
     dmc: acc.dmc,
     deltaE: acc.deltaESum / acc.count,
     count: acc.count,
+    owned: acc.owned,
   }))
 
   const withSymbols = assignSymbols(merged)

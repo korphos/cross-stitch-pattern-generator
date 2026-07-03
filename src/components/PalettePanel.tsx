@@ -1,19 +1,22 @@
 import type { Dispatch } from 'react'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
-import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize } from '../lib/physicalSize'
+import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
 import { estimateThreadUsage } from '../lib/threadEstimate'
 
 interface Props {
   project: PatternProject
   dispatch: Dispatch<ProjectAction>
+  sizeUnit: SizeUnit
 }
 
-export function PalettePanel({ project, dispatch }: Props) {
+export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
   const grid = project.confirmedGrid!
   const size = computePhysicalSize(grid.cols, grid.rows, project.fabricCount)
   const threadEstimates = project.palette ? estimateThreadUsage(project.palette, project.fabricCount, project.strands) : []
   const totalSkeins = threadEstimates.reduce((sum, e) => sum + e.skeins, 0)
+  const hasInventory = project.ownedThreadCodes.length > 0
+  const notOwnedCount = project.palette?.filter((p) => !p.owned).length ?? 0
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
@@ -29,6 +32,23 @@ export function PalettePanel({ project, dispatch }: Props) {
           value={project.clusterThreshold}
           onChange={(e) => dispatch({ type: 'SET_CLUSTER_THRESHOLD', threshold: Number(e.target.value) })}
         />
+      </label>
+
+      <label className="flex flex-col gap-1 text-sm text-neutral-300">
+        Colors to use
+        <select
+          value={project.paletteMode}
+          onChange={(e) => dispatch({ type: 'SET_PALETTE_MODE', mode: e.target.value as 'best' | 'ownedOnly' })}
+          className="rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1 text-neutral-100"
+        >
+          <option value="best">Best possible match</option>
+          <option value="ownedOnly">Only my threads</option>
+        </select>
+        {project.paletteMode === 'ownedOnly' && !hasInventory && (
+          <span className="text-xs text-amber-400">
+            No threads marked as owned yet - add some in Settings, otherwise this behaves like "Best possible match".
+          </span>
+        )}
       </label>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
@@ -72,7 +92,7 @@ export function PalettePanel({ project, dispatch }: Props) {
           </div>
           <div className="flex justify-between gap-2">
             <dt className="text-neutral-500">Approx. size</dt>
-            <dd>{formatPhysicalSize(size)}</dd>
+            <dd>{formatPhysicalSize(size, sizeUnit)}</dd>
           </div>
           <div className="flex justify-between gap-2">
             <dt className="text-neutral-500">Colors</dt>
@@ -82,6 +102,12 @@ export function PalettePanel({ project, dispatch }: Props) {
             <dt className="text-neutral-500">Thread needed</dt>
             <dd>{totalSkeins} skeins</dd>
           </div>
+          {hasInventory && (
+            <div className="flex justify-between gap-2">
+              <dt className="text-neutral-500">Need to buy</dt>
+              <dd>{notOwnedCount} colors</dd>
+            </div>
+          )}
         </dl>
         <p className="mt-2 text-xs text-neutral-500">Thread estimate is approximate - buy a bit extra of each color.</p>
       </div>

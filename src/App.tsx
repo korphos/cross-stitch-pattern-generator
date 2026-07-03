@@ -3,7 +3,8 @@ import type { DragEvent } from 'react'
 import { initialProject, projectReducer } from './lib/projectReducer'
 import { detectGrid } from './lib/gridDetection'
 import { loadImageFile, decodeDataUrlToImageData } from './lib/imageLoader'
-import { loadPersistedProject, savePersistedProject } from './lib/persistence'
+import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
+import type { SizeUnit } from './lib/physicalSize'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
 import { UploadDropzone } from './components/UploadDropzone'
@@ -15,6 +16,7 @@ import { DmcColorList } from './components/DmcColorList'
 import { CellEditPopover } from './components/CellEditPopover'
 import { ColorEditDialog } from './components/ColorEditDialog'
 import { ZoomControls } from './components/ZoomControls'
+import { SettingsPage } from './components/SettingsPage'
 import { PrintablePage } from './components/PrintablePage'
 
 const DEFAULT_CELL_PX = 24
@@ -36,6 +38,8 @@ function App() {
   const [selectedCellIndex, setSelectedCellIndex] = useState<number | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
   const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
+  const [view, setView] = useState<'workspace' | 'settings'>('workspace')
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
 
   const zoomIn = useCallback(() => setCellPx((z) => clampCellPx(z + ZOOM_STEP)), [])
@@ -60,28 +64,38 @@ function App() {
   }, [])
 
   // Restore whatever was last worked on, so a page refresh doesn't lose
-  // anything - image, form settings, AND any manual color edits.
+  // anything - image, form settings, manual color edits, AND the global
+  // owned-threads inventory / size unit preference (which live in a
+  // separate store since they're not tied to any one project).
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
-        const saved = await loadPersistedProject()
-        if (!saved || cancelled) return
-        const imageData = await decodeDataUrlToImageData(saved.imageDataUrl)
+        const [savedSettings, savedProject] = await Promise.all([loadSettings(), loadPersistedProject()])
         if (cancelled) return
-        setSourceFileName(saved.fileName)
-        dispatch({
-          type: 'RESTORE',
-          imageData,
-          imageDataUrl: saved.imageDataUrl,
-          grid: saved.grid,
-          clusterThreshold: saved.clusterThreshold,
-          fabricCount: saved.fabricCount,
-          strands: saved.strands,
-          activeTab: saved.activeTab,
-          palette: saved.palette,
-          cellAssignment: saved.cellAssignment,
-        })
+        setSettings(savedSettings)
+
+        if (savedProject) {
+          const imageData = await decodeDataUrlToImageData(savedProject.imageDataUrl)
+          if (cancelled) return
+          setSourceFileName(savedProject.fileName)
+          dispatch({
+            type: 'RESTORE',
+            imageData,
+            imageDataUrl: savedProject.imageDataUrl,
+            grid: savedProject.grid,
+            clusterThreshold: savedProject.clusterThreshold,
+            fabricCount: savedProject.fabricCount,
+            strands: savedProject.strands,
+            paletteMode: savedProject.paletteMode,
+            ownedThreadCodes: savedSettings.ownedThreadCodes,
+            activeTab: savedProject.activeTab,
+            palette: savedProject.palette,
+            cellAssignment: savedProject.cellAssignment,
+          })
+        } else if (savedSettings.ownedThreadCodes.length > 0) {
+          dispatch({ type: 'SET_OWNED_THREADS', codes: savedSettings.ownedThreadCodes })
+        }
       } catch {
         // no usable saved state (first visit, corrupted record, etc.) - start fresh
       } finally {
@@ -109,6 +123,7 @@ function App() {
         clusterThreshold: project.clusterThreshold,
         fabricCount: project.fabricCount,
         strands: project.strands,
+        paletteMode: project.paletteMode,
         activeTab: project.activeTab,
         palette,
         cellAssignment,
@@ -121,6 +136,7 @@ function App() {
     project.clusterThreshold,
     project.fabricCount,
     project.strands,
+    project.paletteMode,
     project.activeTab,
     project.palette,
     project.cellAssignment,
@@ -156,6 +172,27 @@ function App() {
     window.addEventListener('afterprint', restoreTitle)
     window.print()
   }, [sourceFileName])
+
+  const handleToggleOwned = useCallback((code: string) => {
+    setSettings((prev) => {
+      const isOwned = prev.ownedThreadCodes.includes(code)
+      const ownedThreadCodes = isOwned
+        ? prev.ownedThreadCodes.filter((c) => c !== code)
+        : [...prev.ownedThreadCodes, code]
+      const next = { ...prev, ownedThreadCodes }
+      void saveSettings(next)
+      dispatch({ type: 'SET_OWNED_THREADS', codes: ownedThreadCodes })
+      return next
+    })
+  }, [])
+
+  const handleSetSizeUnit = useCallback((unit: SizeUnit) => {
+    setSettings((prev) => {
+      const next = { ...prev, sizeUnit: unit }
+      void saveSettings(next)
+      return next
+    })
+  }, [])
 
   // Ctrl/Cmd+Z to undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z to redo - ignored
   // while typing in a form field so native text-undo still works there.
@@ -213,86 +250,104 @@ function App() {
       onDrop={handleDrop}
     >
       <div className="screen-only flex h-full flex-col bg-neutral-950">
-        <AppHeader
-          onFile={handleFile}
-          isUploading={isUploading}
-          canPrint={project.palette !== null}
-          onPrint={handlePrint}
-          canUndo={project.history.past.length > 0}
-          canRedo={project.history.future.length > 0}
-          onUndo={() => dispatch({ type: 'UNDO' })}
-          onRedo={() => dispatch({ type: 'REDO' })}
-        />
-        {uploadError && <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>}
-
-        <div className="flex flex-1 overflow-hidden">
-          <div className="w-64 shrink-0 border-r border-neutral-800 bg-neutral-900">
-            {hasImage && project.activeTab === 'grid' && <GridControls project={project} dispatch={dispatch} />}
-            {hasImage && project.activeTab === 'palette' && <PalettePanel project={project} dispatch={dispatch} />}
-          </div>
-
-          <div className="relative flex-1 overflow-hidden">
-            {!hasImage && !isRestoring && (
-              <UploadDropzone
-                onFile={handleFile}
-                isUploading={isUploading}
-                error={uploadError}
-                isDraggingOver={isDraggingOver}
-              />
+        {view === 'settings' ? (
+          <SettingsPage
+            ownedCodes={new Set(settings.ownedThreadCodes)}
+            onToggleOwned={handleToggleOwned}
+            sizeUnit={settings.sizeUnit}
+            onSetSizeUnit={handleSetSizeUnit}
+            onClose={() => setView('workspace')}
+          />
+        ) : (
+          <>
+            <AppHeader
+              onFile={handleFile}
+              isUploading={isUploading}
+              canPrint={project.palette !== null}
+              onPrint={handlePrint}
+              canUndo={project.history.past.length > 0}
+              canRedo={project.history.future.length > 0}
+              onUndo={() => dispatch({ type: 'UNDO' })}
+              onRedo={() => dispatch({ type: 'REDO' })}
+              onSettings={() => setView('settings')}
+            />
+            {uploadError && (
+              <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>
             )}
-            {hasImage && project.activeTab === 'grid' && <GridPanel project={project} dispatch={dispatch} />}
-            {hasImage && project.activeTab === 'palette' && project.palette && (
-              <div className="h-full" ref={attachWheelZoom}>
-                {selectedCellIndex !== null && (
-                  <CellEditPopover
-                    cellIndex={selectedCellIndex}
-                    cols={project.confirmedGrid!.cols}
-                    palette={project.palette}
-                    currentCode={project.cellAssignment![selectedCellIndex]}
-                    onPick={(dmcCode) => dispatch({ type: 'RECOLOR_CELL', cellIndex: selectedCellIndex, dmcCode })}
-                    onClose={() => setSelectedCellIndex(null)}
+
+            <div className="flex flex-1 overflow-hidden">
+              <div className="w-64 shrink-0 border-r border-neutral-800 bg-neutral-900">
+                {hasImage && project.activeTab === 'grid' && <GridControls project={project} dispatch={dispatch} />}
+                {hasImage && project.activeTab === 'palette' && (
+                  <PalettePanel project={project} dispatch={dispatch} sizeUnit={settings.sizeUnit} />
+                )}
+              </div>
+
+              <div className="relative flex-1 overflow-hidden">
+                {!hasImage && !isRestoring && (
+                  <UploadDropzone
+                    onFile={handleFile}
+                    isUploading={isUploading}
+                    error={uploadError}
+                    isDraggingOver={isDraggingOver}
                   />
                 )}
-                <PatternCanvas
-                  cols={project.confirmedGrid!.cols}
-                  rows={project.confirmedGrid!.rows}
-                  cellAssignment={project.cellAssignment!}
-                  palette={project.palette}
-                  cellPx={cellPx}
-                  selectedCellIndex={selectedCellIndex}
-                  onCellClick={setSelectedCellIndex}
-                />
-                <ZoomControls
-                  cellPx={cellPx}
-                  defaultCellPx={DEFAULT_CELL_PX}
-                  onZoomIn={zoomIn}
-                  onZoomOut={zoomOut}
-                  onReset={zoomReset}
-                />
+                {hasImage && project.activeTab === 'grid' && <GridPanel project={project} dispatch={dispatch} />}
+                {hasImage && project.activeTab === 'palette' && project.palette && (
+                  <div className="h-full" ref={attachWheelZoom}>
+                    {selectedCellIndex !== null && (
+                      <CellEditPopover
+                        cellIndex={selectedCellIndex}
+                        cols={project.confirmedGrid!.cols}
+                        palette={project.palette}
+                        currentCode={project.cellAssignment![selectedCellIndex]}
+                        onPick={(dmcCode) =>
+                          dispatch({ type: 'RECOLOR_CELL', cellIndex: selectedCellIndex, dmcCode })
+                        }
+                        onClose={() => setSelectedCellIndex(null)}
+                      />
+                    )}
+                    <PatternCanvas
+                      cols={project.confirmedGrid!.cols}
+                      rows={project.confirmedGrid!.rows}
+                      cellAssignment={project.cellAssignment!}
+                      palette={project.palette}
+                      cellPx={cellPx}
+                      selectedCellIndex={selectedCellIndex}
+                      onCellClick={setSelectedCellIndex}
+                    />
+                    <ZoomControls
+                      cellPx={cellPx}
+                      defaultCellPx={DEFAULT_CELL_PX}
+                      onZoomIn={zoomIn}
+                      onZoomOut={zoomOut}
+                      onReset={zoomReset}
+                    />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <div className="w-64 shrink-0 border-l border-neutral-800 bg-neutral-900">
-            {project.palette && (
-              <DmcColorList
-                palette={project.palette}
-                stitchesPerInch={project.fabricCount}
-                strands={project.strands}
-                onEdit={setEditingCode}
+              <div className="w-64 shrink-0 border-l border-neutral-800 bg-neutral-900">
+                {project.palette && (
+                  <DmcColorList
+                    palette={project.palette}
+                    showOwned={project.ownedThreadCodes.length > 0}
+                    onEdit={setEditingCode}
+                  />
+                )}
+              </div>
+            </div>
+
+            {hasImage && (
+              <TabBar
+                activeTab={project.activeTab}
+                onSelect={(tab) => {
+                  setSelectedCellIndex(null)
+                  dispatch({ type: 'SET_ACTIVE_TAB', tab })
+                }}
               />
             )}
-          </div>
-        </div>
-
-        {hasImage && (
-          <TabBar
-            activeTab={project.activeTab}
-            onSelect={(tab) => {
-              setSelectedCellIndex(null)
-              dispatch({ type: 'SET_ACTIVE_TAB', tab })
-            }}
-          />
+          </>
         )}
       </div>
 
@@ -316,7 +371,7 @@ function App() {
         />
       )}
 
-      <PrintablePage project={project} />
+      <PrintablePage project={project} sizeUnit={settings.sizeUnit} />
     </div>
   )
 }

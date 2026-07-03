@@ -1,4 +1,5 @@
-import type { DetectedGrid, ActiveTab, PaletteEntry } from './types'
+import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode } from './types'
+import type { SizeUnit } from './physicalSize'
 
 /**
  * Everything needed to fully reconstruct the app on reload. The raw pixel
@@ -16,21 +17,35 @@ export interface PersistedProject {
   clusterThreshold: number
   fabricCount: number
   strands: number
+  paletteMode: PaletteMode
   activeTab: ActiveTab
   palette: PaletteEntry[]
   cellAssignment: string[]
 }
 
+/** App-wide settings (not tied to any one pattern project). */
+export interface AppSettings {
+  /** DMC codes the user has told us they already own a skein of. */
+  ownedThreadCodes: string[]
+  sizeUnit: SizeUnit
+}
+
+export const DEFAULT_SETTINGS: AppSettings = { ownedThreadCodes: [], sizeUnit: 'cm' }
+
 const DB_NAME = 'cross-stitch-pattern-generator'
-const DB_VERSION = 1
-const STORE_NAME = 'project'
-const RECORD_KEY = 'current'
+const DB_VERSION = 2
+const PROJECT_STORE_NAME = 'project'
+const PROJECT_RECORD_KEY = 'current'
+const SETTINGS_STORE_NAME = 'settings'
+const SETTINGS_RECORD_KEY = 'app'
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION)
     request.onupgradeneeded = () => {
-      request.result.createObjectStore(STORE_NAME)
+      const db = request.result
+      if (!db.objectStoreNames.contains(PROJECT_STORE_NAME)) db.createObjectStore(PROJECT_STORE_NAME)
+      if (!db.objectStoreNames.contains(SETTINGS_STORE_NAME)) db.createObjectStore(SETTINGS_STORE_NAME)
     }
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(request.error)
@@ -41,8 +56,8 @@ export async function savePersistedProject(project: PersistedProject): Promise<v
   const db = await openDb()
   try {
     await new Promise<void>((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite')
-      tx.objectStore(STORE_NAME).put(project, RECORD_KEY)
+      const tx = db.transaction(PROJECT_STORE_NAME, 'readwrite')
+      tx.objectStore(PROJECT_STORE_NAME).put(project, PROJECT_RECORD_KEY)
       tx.oncomplete = () => resolve()
       tx.onerror = () => reject(tx.error)
     })
@@ -55,11 +70,40 @@ export async function loadPersistedProject(): Promise<PersistedProject | null> {
   const db = await openDb()
   try {
     return await new Promise<PersistedProject | null>((resolve, reject) => {
-      const tx = db.transaction(STORE_NAME, 'readonly')
-      const request = tx.objectStore(STORE_NAME).get(RECORD_KEY)
+      const tx = db.transaction(PROJECT_STORE_NAME, 'readonly')
+      const request = tx.objectStore(PROJECT_STORE_NAME).get(PROJECT_RECORD_KEY)
       request.onsuccess = () => resolve(request.result ?? null)
       request.onerror = () => reject(request.error)
     })
+  } finally {
+    db.close()
+  }
+}
+
+export async function saveSettings(settings: AppSettings): Promise<void> {
+  const db = await openDb()
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const tx = db.transaction(SETTINGS_STORE_NAME, 'readwrite')
+      tx.objectStore(SETTINGS_STORE_NAME).put(settings, SETTINGS_RECORD_KEY)
+      tx.oncomplete = () => resolve()
+      tx.onerror = () => reject(tx.error)
+    })
+  } finally {
+    db.close()
+  }
+}
+
+export async function loadSettings(): Promise<AppSettings> {
+  const db = await openDb()
+  try {
+    const stored = await new Promise<Partial<AppSettings> | null>((resolve, reject) => {
+      const tx = db.transaction(SETTINGS_STORE_NAME, 'readonly')
+      const request = tx.objectStore(SETTINGS_STORE_NAME).get(SETTINGS_RECORD_KEY)
+      request.onsuccess = () => resolve(request.result ?? null)
+      request.onerror = () => reject(request.error)
+    })
+    return { ...DEFAULT_SETTINGS, ...stored }
   } finally {
     db.close()
   }

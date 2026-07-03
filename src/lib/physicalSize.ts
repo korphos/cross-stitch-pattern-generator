@@ -16,6 +16,8 @@ export const FABRIC_COUNTS: FabricCount[] = [
 
 const CM_PER_INCH = 2.54
 
+export type SizeUnit = 'cm' | 'in'
+
 export interface PhysicalSize {
   widthCm: number
   heightCm: number
@@ -28,6 +30,9 @@ export function computePhysicalSize(cols: number, rows: number, stitchesPerInch:
   }
 }
 
-export function formatPhysicalSize(size: PhysicalSize): string {
+export function formatPhysicalSize(size: PhysicalSize, unit: SizeUnit = 'cm'): string {
+  if (unit === 'in') {
+    return `${(size.widthCm / CM_PER_INCH).toFixed(1)} in x ${(size.heightCm / CM_PER_INCH).toFixed(1)} in`
+  }
   return `${size.widthCm.toFixed(1)} cm x ${size.heightCm.toFixed(1)} cm`
 }

@@ -2,11 +2,12 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import type { PatternProject } from '../lib/types'
 import { computeCanvasSize, renderPattern, setupCanvasForDpr } from '../lib/renderPattern'
 import { Legend } from './Legend'
-import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize } from '../lib/physicalSize'
+import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
 import { estimateThreadUsage } from '../lib/threadEstimate'
 
 interface Props {
   project: PatternProject
+  sizeUnit: SizeUnit
 }
 
 // The CSS "in" unit is defined as exactly 96px, so working in that
@@ -24,7 +25,7 @@ const PAGE_USABLE_HEIGHT_PX = (PAGE_HEIGHT_IN - 2 * MARGIN_IN) * PX_PER_INCH
  * `.print-only` / `@media print` rules in index.css. There's no in-app
  * "print preview" screen: the OS print dialog already provides one.
  */
-export function PrintablePage({ project }: Props) {
+export function PrintablePage({ project, sizeUnit }: Props) {
   const grid = project.confirmedGrid
   const palette = project.palette
   const cellAssignment = project.cellAssignment
@@ -74,7 +75,7 @@ export function PrintablePage({ project }: Props) {
           style={{ width: PAGE_USABLE_WIDTH_PX, transform: `scale(${fit.scale})`, transformOrigin: 'top center' }}
         >
           <div className="w-full text-center text-sm text-gray-600">
-            {grid.cols}×{grid.rows} stitches — {formatPhysicalSize(size)} on {fabricLabel} — ~{totalSkeins} skein
+            {grid.cols}×{grid.rows} stitches — {formatPhysicalSize(size, sizeUnit)} on {fabricLabel} — ~{totalSkeins} skein
             {totalSkeins > 1 ? 's' : ''} total ({project.strands} strand{project.strands > 1 ? 's' : ''})
           </div>
           <canvas ref={canvasRef} />

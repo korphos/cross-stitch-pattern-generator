@@ -10,6 +10,7 @@ function makeEntry(code: string, count: number): PaletteEntry {
     symbol: 'A',
     textColor: 'black',
     count,
+    owned: false,
   }
 }
 

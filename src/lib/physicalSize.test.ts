@@ -24,7 +24,11 @@ describe('computePhysicalSize', () => {
 })
 
 describe('formatPhysicalSize', () => {
-  it('formats to one decimal with a "cm x cm" suffix', () => {
+  it('formats to one decimal with a "cm x cm" suffix by default', () => {
     expect(formatPhysicalSize({ widthCm: 5.04, heightCm: 4.06 })).toBe('5.0 cm x 4.1 cm')
+  })
+
+  it('formats in inches when the unit is "in"', () => {
+    expect(formatPhysicalSize({ widthCm: 2.54, heightCm: 5.08 }, 'in')).toBe('1.0 in x 2.0 in')
   })
 })

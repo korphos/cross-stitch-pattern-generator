@@ -1,4 +1,13 @@
-import type { PatternProject, DetectedGrid, PixelBuffer, ActiveTab, PaletteEntry, DmcColor, EditSnapshot } from './types'
+import type {
+  PatternProject,
+  DetectedGrid,
+  PixelBuffer,
+  ActiveTab,
+  PaletteEntry,
+  DmcColor,
+  EditSnapshot,
+  PaletteMode,
+} from './types'
 import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
@@ -11,6 +20,8 @@ export type ProjectAction =
   | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
   | { type: 'SET_FABRIC_COUNT'; stitchesPerInch: number }
   | { type: 'SET_STRANDS'; strands: number }
+  | { type: 'SET_PALETTE_MODE'; mode: PaletteMode }
+  | { type: 'SET_OWNED_THREADS'; codes: string[] }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
   | { type: 'RECOLOR_CELL'; cellIndex: number; dmcCode: string }
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
@@ -26,6 +37,8 @@ export type ProjectAction =
       clusterThreshold: number
       fabricCount: number
       strands: number
+      paletteMode: PaletteMode
+      ownedThreadCodes: string[]
       activeTab: ActiveTab
       palette: PaletteEntry[]
       cellAssignment: string[]
@@ -54,6 +67,8 @@ export const initialProject: PatternProject = {
   cellAssignment: null,
   fabricCount: DEFAULT_FABRIC_COUNT,
   strands: defaultStrandsFor(DEFAULT_FABRIC_COUNT),
+  paletteMode: 'best',
+  ownedThreadCodes: [],
   history: emptyHistory(),
 }
 
@@ -66,7 +81,10 @@ export const initialProject: PatternProject = {
 function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
   if (!project.imageData) return { ...project, confirmedGrid: grid }
   const cellColors = sampleGridColors(project.imageData, grid)
-  const { palette, cellAssignment } = buildPalette(cellColors, project.clusterThreshold)
+  const { palette, cellAssignment } = buildPalette(cellColors, project.clusterThreshold, {
+    mode: project.paletteMode,
+    ownedCodes: new Set(project.ownedThreadCodes),
+  })
   return { ...project, confirmedGrid: grid, cellColors, palette, cellAssignment, history: emptyHistory() }
 }
 
@@ -87,9 +105,13 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
     case 'IMAGE_LOADED':
       // Trust the auto-detection by default and land straight on the
       // palette view; the grid tab remains one click away for correction.
+      // Owned-threads inventory and palette mode are user-level
+      // preferences, not per-image, so they carry over to the new image.
       return resample(
         {
           ...initialProject,
+          ownedThreadCodes: project.ownedThreadCodes,
+          paletteMode: project.paletteMode,
           imageData: action.imageData,
           imageDataUrl: action.imageDataUrl,
           detectedGrid: action.detectedGrid,
@@ -103,7 +125,10 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'SET_CLUSTER_THRESHOLD': {
       if (!project.cellColors) return { ...project, clusterThreshold: action.threshold }
-      const { palette, cellAssignment } = buildPalette(project.cellColors, action.threshold)
+      const { palette, cellAssignment } = buildPalette(project.cellColors, action.threshold, {
+        mode: project.paletteMode,
+        ownedCodes: new Set(project.ownedThreadCodes),
+      })
       return { ...project, clusterThreshold: action.threshold, palette, cellAssignment, history: emptyHistory() }
     }
 
@@ -114,6 +139,35 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'SET_STRANDS':
       return { ...project, strands: action.strands }
+
+    case 'SET_PALETTE_MODE': {
+      if (!project.cellColors) return { ...project, paletteMode: action.mode }
+      const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
+        mode: action.mode,
+        ownedCodes: new Set(project.ownedThreadCodes),
+      })
+      return { ...project, paletteMode: action.mode, palette, cellAssignment, history: emptyHistory() }
+    }
+
+    case 'SET_OWNED_THREADS': {
+      const ownedThreadCodes = action.codes
+      if (!project.cellColors || !project.palette) return { ...project, ownedThreadCodes }
+      if (project.paletteMode === 'ownedOnly') {
+        // Which threads get used at all can change, so this is a full
+        // regenerate, same as changing the merge threshold.
+        const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
+          mode: project.paletteMode,
+          ownedCodes: new Set(ownedThreadCodes),
+        })
+        return { ...project, ownedThreadCodes, palette, cellAssignment, history: emptyHistory() }
+      }
+      // In 'best' mode, ownership doesn't affect color matching, only the
+      // informational "owned" flag - patch it in place without discarding
+      // any manual edits or undo history.
+      const ownedSet = new Set(ownedThreadCodes)
+      const palette = project.palette.map((entry) => ({ ...entry, owned: ownedSet.has(entry.dmc.code) }))
+      return { ...project, ownedThreadCodes, palette }
+    }
 
     case 'SET_ACTIVE_TAB':
       return { ...project, activeTab: action.tab }
@@ -145,6 +199,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       const history = pushHistory(project)
       const collidesWithExisting = project.palette.some((entry) => entry.dmc.code === newDmc.code)
       const cellAssignment = project.cellAssignment.map((c) => (c === code ? newDmc.code : c))
+      const owned = project.ownedThreadCodes.includes(newDmc.code)
 
       // If the newly chosen DMC color already exists elsewhere in the
       // palette, the two entries are now identical - merge them instead
@@ -158,6 +213,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
                   dmc: newDmc,
                   color: { r: newDmc.r, g: newDmc.g, b: newDmc.b },
                   textColor: contrastTextColor(newDmc),
+                  owned,
                 }
               : entry,
           )
@@ -213,6 +269,8 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         clusterThreshold: action.clusterThreshold,
         fabricCount: action.fabricCount,
         strands: action.strands,
+        paletteMode: action.paletteMode,
+        ownedThreadCodes: action.ownedThreadCodes,
         activeTab: action.activeTab,
         palette: action.palette,
         cellAssignment: action.cellAssignment,

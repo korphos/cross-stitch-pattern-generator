@@ -9,9 +9,20 @@ interface Props {
   canRedo: boolean
   onUndo: () => void
   onRedo: () => void
+  onSettings: () => void
 }
 
-export function AppHeader({ onFile, isUploading, canPrint, onPrint, canUndo, canRedo, onUndo, onRedo }: Props) {
+export function AppHeader({
+  onFile,
+  isUploading,
+  canPrint,
+  onPrint,
+  canUndo,
+  canRedo,
+  onUndo,
+  onRedo,
+  onSettings,
+}: Props) {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFile(file)
@@ -52,6 +63,15 @@ export function AppHeader({ onFile, isUploading, canPrint, onPrint, canUndo, can
       >
         Print
       </button>
+      <div className="justify-self-end">
+        <button
+          type="button"
+          onClick={onSettings}
+          className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700"
+        >
+          Settings
+        </button>
+      </div>
     </header>
   )
 }

@@ -60,9 +60,19 @@ export interface PaletteEntry {
   /** glyph color to draw on top of this cell's fill for print legibility */
   textColor: 'black' | 'white'
   count: number
+  /** true if this DMC code is in the user's owned-threads list (see Settings) */
+  owned: boolean
 }
 
 export type ActiveTab = 'grid' | 'palette'
+
+/**
+ * 'best' matches every color to the closest DMC thread regardless of what
+ * the user owns. 'ownedOnly' prefers a thread from the user's inventory
+ * when one is close enough, falling back to the single best overall match
+ * (flagged as not-owned) when nothing owned is close enough.
+ */
+export type PaletteMode = 'best' | 'ownedOnly'
 
 /**
  * Sentinel `cellAssignment` value meaning "no stitch" - a blank square
@@ -94,6 +104,9 @@ export interface PatternProject {
   fabricCount: number
   /** number of floss strands the user intends to stitch with, for the thread-usage estimate */
   strands: number
+  paletteMode: PaletteMode
+  /** mirrors the global Settings inventory, kept in sync so buildPalette can use it synchronously */
+  ownedThreadCodes: string[]
   /** undo/redo stacks for manual color edits; reset whenever the grid/threshold regenerates the palette from scratch */
   history: { past: EditSnapshot[]; future: EditSnapshot[] }
 }

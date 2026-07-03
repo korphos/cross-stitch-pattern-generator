@@ -41,7 +41,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
             {entry.symbol}
           </span>
           <h3 className="text-base font-semibold text-neutral-100">
-            DMC {entry.dmc.code} — {entry.dmc.name}
+            DMC {entry.dmc.code} - {entry.dmc.name}
           </h3>
           <button
             type="button"
@@ -112,7 +112,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
                     style={{ backgroundColor: `rgb(${d.r}, ${d.g}, ${d.b})` }}
                   />
                   <span className="truncate">
-                    {d.code} — {d.name}
+                    {d.code} - {d.name}
                   </span>
                   <span className="ml-auto shrink-0 text-xs text-neutral-500">ΔE {d.deltaE.toFixed(1)}</span>
                 </button>
