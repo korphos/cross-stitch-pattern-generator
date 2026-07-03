@@ -1,8 +1,8 @@
 import type { ActiveTab } from '../lib/types'
 
 const TABS: { key: ActiveTab; label: string }[] = [
-  { key: 'grid', label: 'Grid' },
   { key: 'palette', label: 'Palette' },
+  { key: 'grid', label: 'Grid' },
 ]
 
 interface Props {

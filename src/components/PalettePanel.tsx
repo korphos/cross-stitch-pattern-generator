@@ -17,7 +17,7 @@ export function PalettePanel({ project, dispatch }: Props) {
       <h2 className="text-sm font-semibold text-neutral-100">Palette</h2>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
-        Merge similar colors (deltaE threshold: {project.clusterThreshold.toFixed(1)})
+        Merge similar colors
         <input
           type="range"
           min={0}
