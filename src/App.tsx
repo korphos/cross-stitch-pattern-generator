@@ -14,7 +14,17 @@ import { PalettePanel } from './components/PalettePanel'
 import { DmcColorList } from './components/DmcColorList'
 import { CellEditPopover } from './components/CellEditPopover'
 import { ColorEditDialog } from './components/ColorEditDialog'
+import { ZoomControls } from './components/ZoomControls'
 import { PrintablePage } from './components/PrintablePage'
+
+const DEFAULT_CELL_PX = 24
+const MIN_CELL_PX = 6
+const MAX_CELL_PX = 64
+const ZOOM_STEP = 4
+
+function clampCellPx(value: number): number {
+  return Math.min(MAX_CELL_PX, Math.max(MIN_CELL_PX, value))
+}
 
 function App() {
   const [project, dispatch] = useReducer(projectReducer, initialProject)
@@ -25,7 +35,29 @@ function App() {
   const [isRestoring, setIsRestoring] = useState(true)
   const [selectedCellIndex, setSelectedCellIndex] = useState<number | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
+  const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
   const dragCounterRef = useRef(0)
+
+  const zoomIn = useCallback(() => setCellPx((z) => clampCellPx(z + ZOOM_STEP)), [])
+  const zoomOut = useCallback(() => setCellPx((z) => clampCellPx(z - ZOOM_STEP)), [])
+  const zoomReset = useCallback(() => setCellPx(DEFAULT_CELL_PX), [])
+
+  // Ctrl/Cmd+scroll (and trackpad pinch, which browsers report as a wheel
+  // event with ctrlKey set) zooms the pattern canvas instead of scrolling.
+  // React's onWheel prop is attached as a passive listener, so
+  // preventDefault() inside it is silently ignored - a native listener
+  // with { passive: false } is required to actually stop page/browser
+  // zoom from also firing alongside our own zoom.
+  const attachWheelZoom = useCallback((el: HTMLDivElement | null) => {
+    if (!el) return
+    function onWheel(e: globalThis.WheelEvent) {
+      if (!(e.ctrlKey || e.metaKey)) return
+      e.preventDefault()
+      setCellPx((z) => clampCellPx(z - Math.sign(e.deltaY) * ZOOM_STEP))
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [])
 
   // Restore whatever was last worked on, so a page refresh doesn't lose
   // anything - image, form settings, AND any manual color edits.
@@ -210,7 +242,7 @@ function App() {
             )}
             {hasImage && project.activeTab === 'grid' && <GridPanel project={project} dispatch={dispatch} />}
             {hasImage && project.activeTab === 'palette' && project.palette && (
-              <>
+              <div className="h-full" ref={attachWheelZoom}>
                 {selectedCellIndex !== null && (
                   <CellEditPopover
                     cellIndex={selectedCellIndex}
@@ -226,10 +258,18 @@ function App() {
                   rows={project.confirmedGrid!.rows}
                   cellAssignment={project.cellAssignment!}
                   palette={project.palette}
+                  cellPx={cellPx}
                   selectedCellIndex={selectedCellIndex}
                   onCellClick={setSelectedCellIndex}
                 />
-              </>
+                <ZoomControls
+                  cellPx={cellPx}
+                  defaultCellPx={DEFAULT_CELL_PX}
+                  onZoomIn={zoomIn}
+                  onZoomOut={zoomOut}
+                  onReset={zoomReset}
+                />
+              </div>
             )}
           </div>
 
