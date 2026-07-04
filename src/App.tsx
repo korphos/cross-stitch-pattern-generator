@@ -449,11 +449,11 @@ function App() {
                 )}
               </div>
 
-              <div className="order-3 max-h-[40vh] w-full shrink-0 overflow-y-auto border-t border-neutral-800 bg-neutral-900 lg:h-full lg:max-h-none lg:w-64 lg:border-t-0 lg:border-l">
+              <div className="order-3 max-h-[40vh] w-full shrink-0 overflow-y-auto border-t border-neutral-800 bg-neutral-900 lg:h-full lg:max-h-none lg:w-96 lg:border-t-0 lg:border-l">
                 {project.palette && (
                   <DmcColorList
                     palette={project.palette}
-                    showOwned={project.paletteMode === 'ownedOnly' && project.ownedThreadCodes.length > 0}
+                    showOwned={project.ownedThreadCodes.length > 0}
                     onEdit={setEditingCode}
                     onHoverCode={setHoveredCode}
                     highlightCode={hoveredCode}

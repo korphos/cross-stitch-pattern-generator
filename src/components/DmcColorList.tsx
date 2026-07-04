@@ -4,7 +4,7 @@ import { AddColorDialog } from './AddColorDialog'
 
 interface Props {
   palette: PaletteEntry[]
-  /** show an "owned"/"buy" flag per color - only meaningful once the user has marked at least one thread as owned in Settings */
+  /** show an "owned" flag on colors in the user's thread inventory - only meaningful once at least one thread is marked owned in Settings */
   showOwned?: boolean
   onEdit?: (code: string) => void
   /** reports the hovered entry's DMC code (or null on mouse-leave), e.g. to highlight it on the pattern canvas */
@@ -66,21 +66,16 @@ export function DmcColorList({
             <span className="flex-1 truncate text-neutral-300">
               {entry.dmc.code} - {entry.dmc.name}
             </span>
-            {entry.finishAlternative && (
-              <span
-                className="shrink-0 text-xs text-amber-400"
-                title={`${entry.dmc.finish ? 'Standard' : 'Shiny'} alternative available: ${entry.finishAlternative.dmc.code} - ${entry.finishAlternative.dmc.name}`}
-              >
-                ✨
-              </span>
-            )}
-            {showOwned && !entry.owned && (
-              <span className="shrink-0 rounded bg-amber-950 px-1.5 py-0.5 text-xs text-amber-400" title="Not in your thread inventory">
-                buy
-              </span>
-            )}
             {onEdit && (
-              <span className="ml-1 shrink-0 text-xs text-neutral-500 opacity-0 group-hover:opacity-100">Edit</span>
+              <span className="shrink-0 text-xs text-neutral-500 opacity-0 group-hover:opacity-100">Edit</span>
+            )}
+            {showOwned && entry.owned && (
+              <span
+                className="ml-auto shrink-0 rounded bg-green-950 px-1.5 py-0.5 text-xs text-green-400"
+                title="In your thread inventory"
+              >
+                owned
+              </span>
             )}
           </li>
         ))}
