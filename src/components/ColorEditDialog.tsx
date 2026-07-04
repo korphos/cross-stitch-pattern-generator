@@ -11,10 +11,12 @@ interface Props {
   onRecolor: (newDmc: DmcColor) => void
   onDelete: () => void
   onClose: () => void
+  /** DMC codes the user already owns a skein of, so this dialog can highlight them - see Settings */
+  ownedCodes: ReadonlySet<string>
 }
 
 /** Modal for editing one palette color: merge it into another color already in the pattern, recolor it to any DMC thread (sorted by similarity), or remove it entirely. */
-export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, onDelete, onClose }: Props) {
+export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, onDelete, onClose, ownedCodes }: Props) {
   const [search, setSearch] = useState('')
 
   const candidates = useMemo(() => {
@@ -98,22 +100,29 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
               Every "{entry.symbol}" stitch becomes this color, and "{entry.symbol}" disappears from the palette.
             </p>
             <div className="flex flex-wrap gap-2">
-              {otherEntries.map((other) => (
-                <button
-                  key={other.dmc.code}
-                  type="button"
-                  onClick={() => onMergeInto(other.dmc.code)}
-                  className="flex items-center gap-2 rounded-md border border-neutral-700 px-2 py-1 text-sm text-neutral-200 hover:bg-neutral-800"
-                >
-                  <span
-                    className="flex h-5 w-5 items-center justify-center rounded-sm border border-black/20 font-mono text-[11px]"
-                    style={{ backgroundColor: `rgb(${other.color.r}, ${other.color.g}, ${other.color.b})`, color: other.textColor }}
+              {otherEntries.map((other) => {
+                const owned = ownedCodes.has(other.dmc.code)
+                return (
+                  <button
+                    key={other.dmc.code}
+                    type="button"
+                    onClick={() => onMergeInto(other.dmc.code)}
+                    title={owned ? 'You own this thread' : undefined}
+                    className={`flex items-center gap-2 rounded-md border px-2 py-1 text-sm text-neutral-200 hover:bg-neutral-800 ${
+                      owned ? 'border-green-600 bg-green-950/30' : 'border-neutral-700'
+                    }`}
                   >
-                    {other.symbol}
-                  </span>
-                  {other.dmc.code}
-                </button>
-              ))}
+                    <span
+                      className="flex h-5 w-5 items-center justify-center rounded-sm border border-black/20 font-mono text-[11px]"
+                      style={{ backgroundColor: `rgb(${other.color.r}, ${other.color.g}, ${other.color.b})`, color: other.textColor }}
+                    >
+                      {other.symbol}
+                    </span>
+                    {other.dmc.code}
+                    {owned && <span className="text-green-400">✓</span>}
+                  </button>
+                )
+              })}
             </div>
           </div>
         )}
@@ -128,29 +137,36 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
             className="mb-2 rounded-md border border-neutral-600 bg-neutral-950 px-2 py-1 text-sm text-neutral-100"
           />
           <ul className="flex-1 divide-y divide-neutral-800 overflow-y-auto rounded-md border border-neutral-800">
-            {candidates.map((d) => (
-              <li key={d.code}>
-                <button
-                  type="button"
-                  onClick={() => onRecolor(d)}
-                  className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm text-neutral-200 hover:bg-neutral-800"
-                >
-                  <span
-                    className="h-5 w-5 shrink-0 rounded-sm border border-black/20"
-                    style={{ backgroundColor: `rgb(${d.r}, ${d.g}, ${d.b})` }}
-                  />
-                  <span className="truncate">
-                    {d.code} - {d.name}
-                  </span>
-                  {d.finish && (
-                    <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
-                      {d.finish}
+            {candidates.map((d) => {
+              const owned = ownedCodes.has(d.code)
+              return (
+                <li key={d.code}>
+                  <button
+                    type="button"
+                    onClick={() => onRecolor(d)}
+                    title={owned ? 'You own this thread' : undefined}
+                    className={`flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm text-neutral-200 hover:bg-neutral-800 ${
+                      owned ? 'bg-green-950/30' : ''
+                    }`}
+                  >
+                    <span
+                      className="h-5 w-5 shrink-0 rounded-sm border border-black/20"
+                      style={{ backgroundColor: `rgb(${d.r}, ${d.g}, ${d.b})` }}
+                    />
+                    <span className="truncate">
+                      {d.code} - {d.name}
                     </span>
-                  )}
-                  <span className="ml-auto shrink-0 text-xs text-neutral-500">ΔE {d.deltaE.toFixed(1)}</span>
-                </button>
-              </li>
-            ))}
+                    {owned && <span className="shrink-0 text-green-400">✓ owned</span>}
+                    {d.finish && (
+                      <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
+                        {d.finish}
+                      </span>
+                    )}
+                    <span className="ml-auto shrink-0 text-xs text-neutral-500">ΔE {d.deltaE.toFixed(1)}</span>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </div>

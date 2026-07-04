@@ -437,6 +437,7 @@ function App() {
             setEditingCode(null)
           }}
           onClose={() => setEditingCode(null)}
+          ownedCodes={new Set(settings.ownedThreadCodes)}
         />
       )}
 
