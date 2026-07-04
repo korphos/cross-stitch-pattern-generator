@@ -7,9 +7,10 @@ import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 interface Props {
   project: PatternProject
   dispatch: Dispatch<ProjectAction>
+  onFlipHorizontal: () => void
 }
 
-export function GridControls({ project, dispatch }: Props) {
+export function GridControls({ project, dispatch, onFlipHorizontal }: Props) {
   const grid = project.confirmedGrid!
   const imageData = project.imageData!
 
@@ -81,6 +82,14 @@ export function GridControls({ project, dispatch }: Props) {
         onClick={() => updateGrid(detectGrid(imageData))}
       >
         Re-detect automatically
+      </button>
+
+      <button
+        type="button"
+        className="rounded-md border border-neutral-600 px-3 py-2 text-sm text-neutral-100 hover:bg-neutral-800"
+        onClick={onFlipHorizontal}
+      >
+        Flip horizontally
       </button>
     </div>
   )

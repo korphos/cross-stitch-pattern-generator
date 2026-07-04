@@ -2,7 +2,8 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
 import { initialProject, projectReducer } from './lib/projectReducer'
 import { detectGrid, detectBackgroundColor } from './lib/gridDetection'
-import { loadImageFile, decodeDataUrlToImageData } from './lib/imageLoader'
+import { loadImageFile, decodeDataUrlToImageData, encodeImageDataToDataUrl } from './lib/imageLoader'
+import { flipImageHorizontal } from './lib/imageTransform'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
 import type { PersistedProject } from './lib/persistence'
 import { serializeProjectFile, parseProjectFile, PROJECT_FILE_EXTENSION } from './lib/projectFile'
@@ -192,6 +193,13 @@ function App() {
     },
     [project.imageData, project.history.past.length],
   )
+
+  const handleFlipHorizontal = useCallback(() => {
+    if (!project.imageData) return
+    if (!confirmDestructiveEdit(project.history.past.length)) return
+    const flipped = flipImageHorizontal(project.imageData)
+    dispatch({ type: 'FLIP_IMAGE_HORIZONTAL', imageData: flipped, imageDataUrl: encodeImageDataToDataUrl(flipped) })
+  }, [project.imageData, project.history.past.length])
 
   const handleExport = useCallback(() => {
     if (!project.imageDataUrl || !project.confirmedGrid || !project.palette || !project.cellAssignment) return
@@ -410,7 +418,9 @@ function App() {
 
             <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
               <div className="order-2 w-full shrink-0 border-b border-neutral-800 bg-neutral-900 lg:order-1 lg:h-full lg:w-64 lg:overflow-y-auto lg:border-b-0 lg:border-r">
-                {hasImage && project.activeTab === 'grid' && <GridControls project={project} dispatch={dispatch} />}
+                {hasImage && project.activeTab === 'grid' && (
+                  <GridControls project={project} dispatch={dispatch} onFlipHorizontal={handleFlipHorizontal} />
+                )}
                 {hasImage && project.activeTab === 'palette' && (
                   <PalettePanel project={project} dispatch={dispatch} sizeUnit={settings.sizeUnit} />
                 )}

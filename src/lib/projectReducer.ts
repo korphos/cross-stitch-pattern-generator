@@ -13,6 +13,7 @@ import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
 import { findBackgroundCells } from './backgroundMask'
+import { mirrorRowMajorHorizontal } from './imageTransform'
 import { assignSymbols, contrastTextColor } from './symbolAssignment'
 import { findFinishAlternative } from './colorMatch'
 import { FABRIC_COUNTS } from './physicalSize'
@@ -20,6 +21,7 @@ import { FABRIC_COUNTS } from './physicalSize'
 export type ProjectAction =
   | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid; backgroundColor: RGB }
   | { type: 'UPDATE_GRID'; grid: DetectedGrid }
+  | { type: 'FLIP_IMAGE_HORIZONTAL'; imageData: PixelBuffer; imageDataUrl: string }
   | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
   | { type: 'SET_FABRIC_COUNT'; stitchesPerInch: number }
   | { type: 'SET_STRANDS'; strands: number }
@@ -152,6 +154,33 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'UPDATE_GRID':
       return resample(project, action.grid)
+
+    case 'FLIP_IMAGE_HORIZONTAL': {
+      // A horizontal flip is a permutation, not a re-sample: cellColors/cellAssignment are
+      // row-major cols*rows arrays, so mirroring each row's column order keeps every manual
+      // edit (recolors, merges) attached to its correct cell in the new orientation - the
+      // palette itself (which colors are used, and how many cells each has) doesn't change at
+      // all. Only the undo/redo history is reset, since past snapshots were captured in the
+      // pre-flip orientation and would no longer line up.
+      if (!project.confirmedGrid || !project.cellColors || !project.cellAssignment || !project.palette) {
+        return { ...project, imageData: action.imageData, imageDataUrl: action.imageDataUrl }
+      }
+      const grid = project.confirmedGrid
+      const flippedGrid: DetectedGrid = {
+        ...grid,
+        bbox: { ...grid.bbox, x: action.imageData.width - grid.bbox.x - grid.bbox.width },
+      }
+      return {
+        ...project,
+        imageData: action.imageData,
+        imageDataUrl: action.imageDataUrl,
+        detectedGrid: flippedGrid,
+        confirmedGrid: flippedGrid,
+        cellColors: mirrorRowMajorHorizontal(project.cellColors, grid.cols, grid.rows),
+        cellAssignment: mirrorRowMajorHorizontal(project.cellAssignment, grid.cols, grid.rows),
+        history: emptyHistory(),
+      }
+    }
 
     case 'SET_CLUSTER_THRESHOLD': {
       if (!project.cellColors) return { ...project, clusterThreshold: action.threshold }
