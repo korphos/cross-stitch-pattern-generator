@@ -1,4 +1,5 @@
 import type { RGB, DmcColor, PaletteEntry, PaletteMode } from './types'
+import { EMPTY_CELL } from './types'
 import { clusterColors } from './colorClustering'
 import { nearestDmc, findFinishAlternative } from './colorMatch'
 import { assignSymbols, contrastTextColor } from './symbolAssignment'
@@ -13,6 +14,8 @@ export interface PaletteResult {
 export interface BuildPaletteOptions {
   mode: PaletteMode
   ownedCodes: ReadonlySet<string>
+  /** indices into `cellColors` to leave blank (EMPTY_CELL) instead of matching to a thread - see `findBackgroundCells` */
+  backgroundCellIndices?: ReadonlySet<number>
 }
 
 const DEFAULT_OPTIONS: BuildPaletteOptions = { mode: 'best', ownedCodes: new Set() }
@@ -27,19 +30,31 @@ const OWNED_FALLBACK_DELTA_E = 10
 
 /**
  * Full pipeline from raw per-cell sampled colors to a print-ready palette:
- * cluster near-identical colors, match each cluster to a DMC floss (either
- * the closest thread overall, or preferring the user's owned inventory -
- * see `options.mode`), merge clusters that land on the *same* DMC code
- * (two visually close but distinct sampled colors can round to one floss
- * color - they should share a single legend row/symbol, not two), then
- * assign glyphs.
+ * exclude background cells (see `findBackgroundCells` - this only receives
+ * the already-resolved set of indices, since telling background from an
+ * interior highlight of the same color needs the grid's shape, which this
+ * function doesn't otherwise need), cluster the rest's near-identical
+ * colors, match each cluster to a DMC floss (either the closest thread
+ * overall, or preferring the user's owned inventory - see `options.mode`),
+ * merge clusters that land on the *same* DMC code (two visually close but
+ * distinct sampled colors can round to one floss color - they should share
+ * a single legend row/symbol, not two), then assign glyphs.
  */
 export function buildPalette(
   cellColors: RGB[],
   deltaEThreshold: number,
   options: BuildPaletteOptions = DEFAULT_OPTIONS,
 ): PaletteResult {
-  const { clusters, sampleToCluster } = clusterColors(cellColors, deltaEThreshold)
+  const backgroundCellIndices = options.backgroundCellIndices
+  const foregroundIndices: number[] = []
+  const foregroundColors: RGB[] = []
+  cellColors.forEach((color, index) => {
+    if (backgroundCellIndices?.has(index)) return
+    foregroundIndices.push(index)
+    foregroundColors.push(color)
+  })
+
+  const { clusters, sampleToCluster } = clusterColors(foregroundColors, deltaEThreshold)
   const ownedTable = options.ownedCodes.size > 0 ? allDmcColors.filter((d) => options.ownedCodes.has(d.code)) : []
 
   interface Accum {
@@ -92,7 +107,14 @@ export function buildPalette(
     textColor: contrastTextColor(entry.color),
   }))
 
-  const cellAssignment = sampleToCluster.map((clusterId) => clusterIdToDmcCode.get(clusterId)!)
+  // Every cell starts out EMPTY_CELL (covers the background-excluded ones);
+  // foreground cells then get their DMC code filled in at their *original*
+  // index, since `sampleToCluster`/`foregroundColors` were reindexed to
+  // skip background cells entirely.
+  const cellAssignment = new Array<string>(cellColors.length).fill(EMPTY_CELL)
+  sampleToCluster.forEach((clusterId, i) => {
+    cellAssignment[foregroundIndices[i]] = clusterIdToDmcCode.get(clusterId)!
+  })
 
   return { palette, cellAssignment }
 }

@@ -35,8 +35,20 @@ export function parseProjectFile(text: string): PersistedProject {
   }
   if (!isRecord(raw)) throw new Error('This file is not a valid project file.')
 
-  const { imageDataUrl, grid, palette, cellAssignment, fabricCount, strands, clusterThreshold, paletteMode, activeTab, fileName } =
-    raw as Partial<ProjectFile>
+  const {
+    imageDataUrl,
+    grid,
+    palette,
+    cellAssignment,
+    fabricCount,
+    strands,
+    clusterThreshold,
+    paletteMode,
+    activeTab,
+    fileName,
+    backgroundColor,
+    ignoreBackground,
+  } = raw as Partial<ProjectFile>
 
   if (
     typeof imageDataUrl !== 'string' ||
@@ -58,6 +70,10 @@ export function parseProjectFile(text: string): PersistedProject {
     fabricCount,
     strands,
     paletteMode: paletteMode === 'ownedOnly' ? 'ownedOnly' : 'best',
+    // Older exported files predate background exclusion - default to "off"
+    // rather than silently blanking cells the exporter never intended to.
+    backgroundColor: isRecord(backgroundColor) ? (backgroundColor as PersistedProject['backgroundColor']) : null,
+    ignoreBackground: ignoreBackground === true,
     activeTab: activeTab === 'grid' ? 'grid' : 'palette',
     palette: palette as PersistedProject['palette'],
     cellAssignment: cellAssignment as PersistedProject['cellAssignment'],

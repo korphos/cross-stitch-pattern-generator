@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
 import { initialProject, projectReducer } from './lib/projectReducer'
-import { detectGrid } from './lib/gridDetection'
+import { detectGrid, detectBackgroundColor } from './lib/gridDetection'
 import { loadImageFile, decodeDataUrlToImageData } from './lib/imageLoader'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
 import type { PersistedProject } from './lib/persistence'
@@ -110,6 +110,8 @@ function App() {
             strands: savedProject.strands,
             paletteMode: savedProject.paletteMode,
             ownedThreadCodes: effectiveSettings.ownedThreadCodes,
+            backgroundColor: savedProject.backgroundColor ?? null,
+            ignoreBackground: savedProject.ignoreBackground ?? false,
             activeTab: savedProject.activeTab,
             palette: savedProject.palette,
             cellAssignment: savedProject.cellAssignment,
@@ -145,6 +147,8 @@ function App() {
         fabricCount: project.fabricCount,
         strands: project.strands,
         paletteMode: project.paletteMode,
+        backgroundColor: project.backgroundColor,
+        ignoreBackground: project.ignoreBackground,
         activeTab: project.activeTab,
         palette,
         cellAssignment,
@@ -158,6 +162,8 @@ function App() {
     project.fabricCount,
     project.strands,
     project.paletteMode,
+    project.backgroundColor,
+    project.ignoreBackground,
     project.activeTab,
     project.palette,
     project.cellAssignment,
@@ -170,8 +176,9 @@ function App() {
     try {
       const { imageData, dataUrl } = await loadImageFile(file)
       const detectedGrid = detectGrid(imageData)
+      const backgroundColor = detectBackgroundColor(imageData)
       setSourceFileName(file.name)
-      dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid })
+      dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid, backgroundColor })
     } catch (e) {
       setUploadError(e instanceof Error ? e.message : 'Error while loading the image')
     } finally {
@@ -189,6 +196,8 @@ function App() {
       fabricCount: project.fabricCount,
       strands: project.strands,
       paletteMode: project.paletteMode,
+      backgroundColor: project.backgroundColor,
+      ignoreBackground: project.ignoreBackground,
       activeTab: project.activeTab,
       palette: project.palette,
       cellAssignment: project.cellAssignment,
@@ -221,6 +230,8 @@ function App() {
           strands: persisted.strands,
           paletteMode: persisted.paletteMode,
           ownedThreadCodes: project.ownedThreadCodes,
+          backgroundColor: persisted.backgroundColor,
+          ignoreBackground: persisted.ignoreBackground,
           activeTab: persisted.activeTab,
           palette: persisted.palette,
           cellAssignment: persisted.cellAssignment,

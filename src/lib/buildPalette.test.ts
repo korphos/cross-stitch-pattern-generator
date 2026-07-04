@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildPalette } from './buildPalette'
 import { dmcColors } from '../data/dmcColors'
+import { EMPTY_CELL } from './types'
 import type { RGB } from './types'
 
 function rgbOf(code: string): RGB {
@@ -49,5 +50,42 @@ describe('buildPalette', () => {
     const { palette } = buildPalette([black], 2.3)
     expect(palette[0].dmc.code).toBe('310')
     expect(palette[0].owned).toBe(false)
+  })
+
+  it('leaves cells listed in backgroundCellIndices blank instead of matching a thread', () => {
+    const white: RGB = { r: 255, g: 255, b: 255 }
+    const black = rgbOf('310')
+    const { palette, cellAssignment } = buildPalette([white, white, black], 2.3, {
+      mode: 'best',
+      ownedCodes: new Set(),
+      backgroundCellIndices: new Set([0, 1]),
+    })
+    expect(cellAssignment).toEqual([EMPTY_CELL, EMPTY_CELL, '310'])
+    expect(palette.map((p) => p.dmc.code)).toEqual(['310'])
+  })
+
+  it('matches every color normally when no backgroundCellIndices is given', () => {
+    const white: RGB = { r: 255, g: 255, b: 255 }
+    const { cellAssignment } = buildPalette([white], 2.3, { mode: 'best', ownedCodes: new Set() })
+    expect(cellAssignment).toEqual(['B5200'])
+  })
+
+  it('does not sweep a foreground color away via cluster merging just because it is not marked as background', () => {
+    // Regression test: excluding background used to run on *cluster*
+    // centroids after clustering (comparing raw colors), so a color like
+    // this light gray - close enough to white to get greedily merged into
+    // white's cluster by clusterColors at a loose threshold - would vanish
+    // along with the whole merged cluster, even when the caller correctly
+    // determined (e.g. via findBackgroundCells's flood fill) that this
+    // particular cell is NOT background. It must survive here.
+    const white: RGB = { r: 255, g: 255, b: 255 }
+    const lightGray: RGB = { r: 210, g: 210, b: 210 }
+    const { palette, cellAssignment } = buildPalette([white, white, white, lightGray], 15, {
+      mode: 'best',
+      ownedCodes: new Set(),
+      backgroundCellIndices: new Set([0, 1, 2]),
+    })
+    expect(cellAssignment[3]).not.toBe(EMPTY_CELL)
+    expect(palette.some((p) => p.count > 0)).toBe(true)
   })
 })

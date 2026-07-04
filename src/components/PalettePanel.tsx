@@ -27,12 +27,30 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
         <input
           type="range"
           min={0}
-          max={10}
+          max={20}
           step={0.1}
           value={project.clusterThreshold}
           onChange={(e) => dispatch({ type: 'SET_CLUSTER_THRESHOLD', threshold: Number(e.target.value) })}
         />
       </label>
+
+      {project.backgroundColor && (
+        <label className="flex items-center gap-2 text-sm text-neutral-300">
+          <input
+            type="checkbox"
+            checked={project.ignoreBackground}
+            onChange={(e) => dispatch({ type: 'SET_IGNORE_BACKGROUND', ignore: e.target.checked })}
+            className="h-4 w-4 accent-indigo-500"
+          />
+          <span
+            className="h-4 w-4 shrink-0 rounded-sm border border-black/20"
+            style={{
+              backgroundColor: `rgb(${project.backgroundColor.r}, ${project.backgroundColor.g}, ${project.backgroundColor.b})`,
+            }}
+          />
+          Ignore background color
+        </label>
+      )}
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
         Colors to use

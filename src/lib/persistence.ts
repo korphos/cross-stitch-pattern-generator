@@ -1,4 +1,4 @@
-import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode } from './types'
+import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, RGB } from './types'
 import type { SizeUnit } from './physicalSize'
 
 /**
@@ -18,6 +18,8 @@ export interface PersistedProject {
   fabricCount: number
   strands: number
   paletteMode: PaletteMode
+  backgroundColor: RGB | null
+  ignoreBackground: boolean
   activeTab: ActiveTab
   palette: PaletteEntry[]
   cellAssignment: string[]

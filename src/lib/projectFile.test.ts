@@ -24,6 +24,8 @@ function makeProject(): PersistedProject {
     fabricCount: 14,
     strands: 2,
     paletteMode: 'best',
+    backgroundColor: { r: 255, g: 255, b: 255 },
+    ignoreBackground: true,
     activeTab: 'palette',
     palette: [makeEntry('310')],
     cellAssignment: Array(100).fill('310'),
@@ -53,5 +55,12 @@ describe('projectFile', () => {
 
   it('rejects a plain array', () => {
     expect(() => parseProjectFile(JSON.stringify([1, 2, 3]))).toThrow()
+  })
+
+  it('defaults background exclusion to off for a file exported before that feature existed', () => {
+    const { backgroundColor: _bg, ignoreBackground: _ig, ...legacyProject } = makeProject()
+    const parsed = parseProjectFile(JSON.stringify({ version: 1, ...legacyProject }))
+    expect(parsed.backgroundColor).toBeNull()
+    expect(parsed.ignoreBackground).toBe(false)
   })
 })

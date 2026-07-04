@@ -116,6 +116,10 @@ export interface PatternProject {
   paletteMode: PaletteMode
   /** mirrors the global Settings inventory, kept in sync so buildPalette can use it synchronously */
   ownedThreadCodes: string[]
+  /** modal color of the image's outer border, detected once at load time - the best guess at "background" */
+  backgroundColor: RGB | null
+  /** when true, cells close to `backgroundColor` are left blank (no stitch) instead of matched to a DMC thread */
+  ignoreBackground: boolean
   /** undo/redo stacks for manual color edits; reset whenever the grid/threshold regenerates the palette from scratch */
   history: { past: EditSnapshot[]; future: EditSnapshot[] }
 }

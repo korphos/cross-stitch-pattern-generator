@@ -7,22 +7,25 @@ import type {
   DmcColor,
   EditSnapshot,
   PaletteMode,
+  RGB,
 } from './types'
 import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
+import { findBackgroundCells } from './backgroundMask'
 import { assignSymbols, contrastTextColor } from './symbolAssignment'
 import { findFinishAlternative } from './colorMatch'
 import { FABRIC_COUNTS } from './physicalSize'
 
 export type ProjectAction =
-  | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid }
+  | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid; backgroundColor: RGB }
   | { type: 'UPDATE_GRID'; grid: DetectedGrid }
   | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
   | { type: 'SET_FABRIC_COUNT'; stitchesPerInch: number }
   | { type: 'SET_STRANDS'; strands: number }
   | { type: 'SET_PALETTE_MODE'; mode: PaletteMode }
   | { type: 'SET_OWNED_THREADS'; codes: string[] }
+  | { type: 'SET_IGNORE_BACKGROUND'; ignore: boolean }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
   | { type: 'RECOLOR_CELLS'; cellIndices: number[]; dmcCode: string }
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
@@ -41,6 +44,8 @@ export type ProjectAction =
       strands: number
       paletteMode: PaletteMode
       ownedThreadCodes: string[]
+      backgroundColor: RGB | null
+      ignoreBackground: boolean
       activeTab: ActiveTab
       palette: PaletteEntry[]
       cellAssignment: string[]
@@ -71,7 +76,25 @@ export const initialProject: PatternProject = {
   strands: defaultStrandsFor(DEFAULT_FABRIC_COUNT),
   paletteMode: 'best',
   ownedThreadCodes: [],
+  backgroundColor: null,
+  ignoreBackground: true,
   history: emptyHistory(),
+}
+
+/**
+ * Indices of `cellColors` to leave blank, respecting the ignore-background
+ * toggle - resolved via a flood fill from the grid's border (see
+ * `findBackgroundCells`) so an interior highlight that merely shares the
+ * background's color isn't swept away with it.
+ */
+function backgroundCellIndicesFor(
+  cellColors: RGB[],
+  grid: DetectedGrid,
+  backgroundColor: RGB | null,
+  ignoreBackground: boolean,
+): Set<number> | undefined {
+  if (!ignoreBackground || !backgroundColor) return undefined
+  return findBackgroundCells(cellColors, grid.cols, grid.rows, backgroundColor)
 }
 
 /**
@@ -86,6 +109,7 @@ function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
   const { palette, cellAssignment } = buildPalette(cellColors, project.clusterThreshold, {
     mode: project.paletteMode,
     ownedCodes: new Set(project.ownedThreadCodes),
+    backgroundCellIndices: backgroundCellIndicesFor(cellColors, grid, project.backgroundColor, project.ignoreBackground),
   })
   return { ...project, confirmedGrid: grid, cellColors, palette, cellAssignment, history: emptyHistory() }
 }
@@ -107,13 +131,17 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
     case 'IMAGE_LOADED':
       // Trust the auto-detection by default and land straight on the
       // palette view; the grid tab remains one click away for correction.
-      // Owned-threads inventory and palette mode are user-level
-      // preferences, not per-image, so they carry over to the new image.
+      // Owned-threads inventory, palette mode, and the ignore-background
+      // toggle are user-level preferences, not per-image, so they carry
+      // over to the new image - only the detected background color itself
+      // is always fresh, since it depends on this specific image.
       return resample(
         {
           ...initialProject,
           ownedThreadCodes: project.ownedThreadCodes,
           paletteMode: project.paletteMode,
+          ignoreBackground: project.ignoreBackground,
+          backgroundColor: action.backgroundColor,
           imageData: action.imageData,
           imageDataUrl: action.imageDataUrl,
           detectedGrid: action.detectedGrid,
@@ -130,6 +158,12 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       const { palette, cellAssignment } = buildPalette(project.cellColors, action.threshold, {
         mode: project.paletteMode,
         ownedCodes: new Set(project.ownedThreadCodes),
+        backgroundCellIndices: backgroundCellIndicesFor(
+          project.cellColors,
+          project.confirmedGrid!,
+          project.backgroundColor,
+          project.ignoreBackground,
+        ),
       })
       return { ...project, clusterThreshold: action.threshold, palette, cellAssignment, history: emptyHistory() }
     }
@@ -147,6 +181,12 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
         mode: action.mode,
         ownedCodes: new Set(project.ownedThreadCodes),
+        backgroundCellIndices: backgroundCellIndicesFor(
+          project.cellColors,
+          project.confirmedGrid!,
+          project.backgroundColor,
+          project.ignoreBackground,
+        ),
       })
       return { ...project, paletteMode: action.mode, palette, cellAssignment, history: emptyHistory() }
     }
@@ -160,6 +200,12 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
           mode: project.paletteMode,
           ownedCodes: new Set(ownedThreadCodes),
+          backgroundCellIndices: backgroundCellIndicesFor(
+            project.cellColors,
+            project.confirmedGrid!,
+            project.backgroundColor,
+            project.ignoreBackground,
+          ),
         })
         return { ...project, ownedThreadCodes, palette, cellAssignment, history: emptyHistory() }
       }
@@ -169,6 +215,21 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       const ownedSet = new Set(ownedThreadCodes)
       const palette = project.palette.map((entry) => ({ ...entry, owned: ownedSet.has(entry.dmc.code) }))
       return { ...project, ownedThreadCodes, palette }
+    }
+
+    case 'SET_IGNORE_BACKGROUND': {
+      if (!project.cellColors || !project.palette) return { ...project, ignoreBackground: action.ignore }
+      const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
+        mode: project.paletteMode,
+        ownedCodes: new Set(project.ownedThreadCodes),
+        backgroundCellIndices: backgroundCellIndicesFor(
+          project.cellColors,
+          project.confirmedGrid!,
+          project.backgroundColor,
+          action.ignore,
+        ),
+      })
+      return { ...project, ignoreBackground: action.ignore, palette, cellAssignment, history: emptyHistory() }
     }
 
     case 'SET_ACTIVE_TAB':
@@ -299,6 +360,8 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         strands: action.strands,
         paletteMode: action.paletteMode,
         ownedThreadCodes: action.ownedThreadCodes,
+        backgroundColor: action.backgroundColor,
+        ignoreBackground: action.ignoreBackground,
         activeTab: action.activeTab,
         palette: action.palette,
         cellAssignment: action.cellAssignment,
