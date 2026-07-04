@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react'
-import { ImageUp, Undo2, Redo2, Printer, Settings } from 'lucide-react'
+import { ImageUp, Undo2, Redo2, Printer, Settings, Download, Upload } from 'lucide-react'
+import { PROJECT_FILE_EXTENSION } from '../lib/projectFile'
 
 interface Props {
   onFile: (file: File) => void
@@ -11,6 +12,10 @@ interface Props {
   onUndo: () => void
   onRedo: () => void
   onSettings: () => void
+  canExport: boolean
+  onExport: () => void
+  onImportFile: (file: File) => void
+  isImporting: boolean
 }
 
 export function AppHeader({
@@ -23,10 +28,20 @@ export function AppHeader({
   onUndo,
   onRedo,
   onSettings,
+  canExport,
+  onExport,
+  onImportFile,
+  isImporting,
 }: Props) {
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFile(file)
+    e.target.value = ''
+  }
+
+  function handleImportChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (file) onImportFile(file)
     e.target.value = ''
   }
 
@@ -68,7 +83,28 @@ export function AppHeader({
         <Printer size={18} className="shrink-0" />
         Print
       </button>
-      <div className="order-3 flex justify-center sm:justify-self-end">
+      <div className="order-3 flex flex-wrap items-center justify-center gap-2 sm:justify-self-end">
+        <label className="flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700">
+          <Upload size={16} className="shrink-0" />
+          {isImporting ? 'Loading…' : 'Import'}
+          <input
+            type="file"
+            accept={`${PROJECT_FILE_EXTENSION},application/json`}
+            className="hidden"
+            onChange={handleImportChange}
+            disabled={isImporting}
+          />
+        </label>
+        <button
+          type="button"
+          disabled={!canExport}
+          onClick={onExport}
+          title="Export the current project as a file"
+          className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Download size={16} className="shrink-0" />
+          Export
+        </button>
         <button
           type="button"
           onClick={onSettings}

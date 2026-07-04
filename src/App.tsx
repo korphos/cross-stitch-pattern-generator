@@ -4,6 +4,8 @@ import { initialProject, projectReducer } from './lib/projectReducer'
 import { detectGrid } from './lib/gridDetection'
 import { loadImageFile, decodeDataUrlToImageData } from './lib/imageLoader'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
+import type { PersistedProject } from './lib/persistence'
+import { serializeProjectFile, parseProjectFile, PROJECT_FILE_EXTENSION } from './lib/projectFile'
 import type { SizeUnit } from './lib/physicalSize'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
@@ -31,6 +33,7 @@ function clampCellPx(value: number): number {
 function App() {
   const [project, dispatch] = useReducer(projectReducer, initialProject)
   const [isUploading, setIsUploading] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [sourceFileName, setSourceFileName] = useState<string | null>(null)
@@ -159,6 +162,61 @@ function App() {
     }
   }, [])
 
+  const handleExport = useCallback(() => {
+    if (!project.imageDataUrl || !project.confirmedGrid || !project.palette || !project.cellAssignment) return
+    const persisted: PersistedProject = {
+      imageDataUrl: project.imageDataUrl,
+      fileName: sourceFileName,
+      grid: project.confirmedGrid,
+      clusterThreshold: project.clusterThreshold,
+      fabricCount: project.fabricCount,
+      strands: project.strands,
+      paletteMode: project.paletteMode,
+      activeTab: project.activeTab,
+      palette: project.palette,
+      cellAssignment: project.cellAssignment,
+    }
+    const blob = new Blob([serializeProjectFile(persisted)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const base = sourceFileName ? sourceFileName.replace(/\.[^./\\]+$/, '') : 'cross-stitch-pattern'
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${base}${PROJECT_FILE_EXTENSION}`
+    a.click()
+    URL.revokeObjectURL(url)
+  }, [project, sourceFileName])
+
+  const handleImportFile = useCallback(
+    async (file: File) => {
+      setUploadError(null)
+      setIsImporting(true)
+      try {
+        const persisted = parseProjectFile(await file.text())
+        const imageData = await decodeDataUrlToImageData(persisted.imageDataUrl)
+        setSourceFileName(persisted.fileName)
+        dispatch({
+          type: 'RESTORE',
+          imageData,
+          imageDataUrl: persisted.imageDataUrl,
+          grid: persisted.grid,
+          clusterThreshold: persisted.clusterThreshold,
+          fabricCount: persisted.fabricCount,
+          strands: persisted.strands,
+          paletteMode: persisted.paletteMode,
+          ownedThreadCodes: project.ownedThreadCodes,
+          activeTab: persisted.activeTab,
+          palette: persisted.palette,
+          cellAssignment: persisted.cellAssignment,
+        })
+      } catch (e) {
+        setUploadError(e instanceof Error ? e.message : 'Error while importing the project file')
+      } finally {
+        setIsImporting(false)
+      }
+    },
+    [project.ownedThreadCodes],
+  )
+
   // The browser's "Save as PDF" dialog suggests `document.title` as the
   // default filename, so swap it in for the moment of printing and put it
   // back afterward (the page's own title stays what's in index.html).
@@ -236,7 +294,9 @@ function App() {
     dragCounterRef.current = 0
     setIsDraggingOver(false)
     const file = e.dataTransfer.files[0]
-    if (file) void handleFile(file)
+    if (!file) return
+    if (file.name.endsWith(PROJECT_FILE_EXTENSION)) void handleImportFile(file)
+    else void handleFile(file)
   }
 
   const hasImage = project.imageData !== null
@@ -271,6 +331,10 @@ function App() {
               onUndo={() => dispatch({ type: 'UNDO' })}
               onRedo={() => dispatch({ type: 'REDO' })}
               onSettings={() => setView('settings')}
+              canExport={project.palette !== null}
+              onExport={handleExport}
+              onImportFile={handleImportFile}
+              isImporting={isImporting}
             />
             {uploadError && (
               <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>
