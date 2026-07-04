@@ -11,7 +11,7 @@ import type {
 import { EMPTY_CELL } from './types'
 import { sampleGridColors } from './cellSampling'
 import { buildPalette } from './buildPalette'
-import { contrastTextColor } from './symbolAssignment'
+import { assignSymbols, contrastTextColor } from './symbolAssignment'
 import { findFinishAlternative } from './colorMatch'
 import { FABRIC_COUNTS } from './physicalSize'
 
@@ -28,6 +28,7 @@ export type ProjectAction =
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
   | { type: 'RECOLOR_PALETTE_ENTRY'; code: string; newDmc: DmcColor }
   | { type: 'DELETE_COLOR'; code: string }
+  | { type: 'ADD_COLOR'; dmc: DmcColor }
   | { type: 'UNDO' }
   | { type: 'REDO' }
   | {
@@ -232,6 +233,31 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         cellAssignment,
       )
       return { ...project, history, cellAssignment, palette }
+    }
+
+    case 'ADD_COLOR': {
+      if (!project.cellAssignment || !project.palette) return project
+      // Already in the palette - nothing to add, just let the user pick it
+      // from the existing list instead of creating a duplicate row.
+      if (project.palette.some((entry) => entry.dmc.code === action.dmc.code)) return project
+
+      const history = pushHistory(project)
+      const newEntry: PaletteEntry = {
+        color: { r: action.dmc.r, g: action.dmc.g, b: action.dmc.b },
+        dmc: action.dmc,
+        deltaE: 0,
+        symbol: '',
+        textColor: contrastTextColor(action.dmc),
+        count: 0,
+        owned: project.ownedThreadCodes.includes(action.dmc.code),
+        finishAlternative: findFinishAlternative(action.dmc),
+      }
+      // Re-running symbol assignment (rather than just picking the next
+      // free glyph) keeps every entry's symbol consistent with its count
+      // rank; since the new entry starts at count 0 it sorts last and
+      // doesn't disturb any existing entry's symbol.
+      const palette = assignSymbols([...project.palette, newEntry])
+      return { ...project, history, palette }
     }
 
     case 'UNDO': {

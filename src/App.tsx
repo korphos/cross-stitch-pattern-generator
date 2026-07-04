@@ -431,6 +431,8 @@ function App() {
                     onEdit={setEditingCode}
                     onHoverCode={setHoveredCode}
                     highlightCode={hoveredCode}
+                    ownedCodes={new Set(settings.ownedThreadCodes)}
+                    onAddColor={(dmc) => dispatch({ type: 'ADD_COLOR', dmc })}
                   />
                 )}
               </div>
