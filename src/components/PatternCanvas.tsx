@@ -10,11 +10,12 @@ interface Props {
   cellAssignment: string[]
   palette: PaletteEntry[]
   cellPx?: number
-  /** row*cols+col of a cell to outline (e.g. one currently being recolored) */
-  selectedCellIndex?: number | null
+  /** row*cols+col of every cell to outline (e.g. currently being recolored) */
+  selectedCellIndices?: ReadonlySet<number>
   /** DMC code to dim every other cell against, e.g. while hovering it in the sidebar */
   highlightCode?: string | null
-  onCellClick?: (cellIndex: number) => void
+  /** `additive` is true when the click was Ctrl/Cmd+click, meaning "add to (or remove from) the selection" rather than "replace it" */
+  onCellClick?: (cellIndex: number, additive: boolean) => void
   /** reports the DMC code under the pointer (or null off-grid/blank), e.g. to highlight it in the sidebar */
   onCellHover?: (code: string | null) => void
 }
@@ -25,7 +26,7 @@ export function PatternCanvas({
   cellAssignment,
   palette,
   cellPx = 24,
-  selectedCellIndex = null,
+  selectedCellIndices,
   highlightCode = null,
   onCellClick,
   onCellHover,
@@ -40,20 +41,22 @@ export function PatternCanvas({
     const ctx = setupCanvasForDpr(canvas, width, height)
     renderPattern(ctx, { cols, rows, cellAssignment, palette, highlightCode }, { cellPx })
 
-    if (selectedCellIndex !== null) {
-      const row = Math.floor(selectedCellIndex / cols)
-      const col = selectedCellIndex % cols
+    if (selectedCellIndices) {
       ctx.strokeStyle = '#6366f1'
       ctx.lineWidth = 3
-      ctx.strokeRect(rulerMargin + col * cellPx + 1.5, rulerMargin + row * cellPx + 1.5, cellPx - 3, cellPx - 3)
+      for (const index of selectedCellIndices) {
+        const row = Math.floor(index / cols)
+        const col = index % cols
+        ctx.strokeRect(rulerMargin + col * cellPx + 1.5, rulerMargin + row * cellPx + 1.5, cellPx - 3, cellPx - 3)
+      }
     }
-  }, [cols, rows, cellAssignment, palette, cellPx, selectedCellIndex, highlightCode])
+  }, [cols, rows, cellAssignment, palette, cellPx, selectedCellIndices, highlightCode])
 
   function handleClick(e: MouseEvent<HTMLCanvasElement>) {
     if (!onCellClick) return
     const rect = e.currentTarget.getBoundingClientRect()
     const cellIndex = cellIndexFromPoint(e.clientX - rect.left, e.clientY - rect.top, cols, rows, cellPx)
-    if (cellIndex !== null) onCellClick(cellIndex)
+    if (cellIndex !== null) onCellClick(cellIndex, e.ctrlKey || e.metaKey)
   }
 
   function reportHover(code: string | null) {

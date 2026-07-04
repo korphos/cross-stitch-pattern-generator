@@ -62,3 +62,40 @@ describe('projectReducer ADD_COLOR', () => {
     expect(undone.palette).toEqual(project.palette)
   })
 })
+
+describe('projectReducer RECOLOR_CELLS', () => {
+  it('recolors every listed cell to the same code in one step', () => {
+    const project = makeProject({
+      palette: [makeEntry('310', 3), makeEntry('666', 1)],
+      cellAssignment: ['310', '310', '310', '666'],
+    })
+    const next = projectReducer(project, { type: 'RECOLOR_CELLS', cellIndices: [0, 2], dmcCode: '666' })
+    expect(next.cellAssignment).toEqual(['666', '310', '666', '666'])
+  })
+
+  it('recomputes counts for every affected color', () => {
+    const project = makeProject({
+      palette: [makeEntry('310', 3), makeEntry('666', 1)],
+      cellAssignment: ['310', '310', '310', '666'],
+    })
+    const next = projectReducer(project, { type: 'RECOLOR_CELLS', cellIndices: [0, 2], dmcCode: '666' })
+    expect(next.palette?.find((p) => p.dmc.code === '310')?.count).toBe(1)
+    expect(next.palette?.find((p) => p.dmc.code === '666')?.count).toBe(3)
+  })
+
+  it('undoes the whole batch in a single step', () => {
+    const project = makeProject({
+      palette: [makeEntry('310', 3), makeEntry('666', 1)],
+      cellAssignment: ['310', '310', '310', '666'],
+    })
+    const next = projectReducer(project, { type: 'RECOLOR_CELLS', cellIndices: [0, 1, 2], dmcCode: '666' })
+    const undone = projectReducer(next, { type: 'UNDO' })
+    expect(undone.cellAssignment).toEqual(project.cellAssignment)
+  })
+
+  it('is a no-op for an empty selection', () => {
+    const project = makeProject()
+    const next = projectReducer(project, { type: 'RECOLOR_CELLS', cellIndices: [], dmcCode: '666' })
+    expect(next).toBe(project)
+  })
+})

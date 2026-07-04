@@ -39,7 +39,7 @@ function App() {
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [sourceFileName, setSourceFileName] = useState<string | null>(null)
   const [isRestoring, setIsRestoring] = useState(true)
-  const [selectedCellIndex, setSelectedCellIndex] = useState<number | null>(null)
+  const [selectedCellIndices, setSelectedCellIndices] = useState<number[]>([])
   const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
   const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
@@ -319,6 +319,21 @@ function App() {
   const hasImage = project.imageData !== null
   const editingEntry = editingCode ? (project.palette?.find((p) => p.dmc.code === editingCode) ?? null) : null
 
+  // A plain click selects only that cell; Ctrl/Cmd+click toggles it into
+  // (or out of) whatever's already selected, for a multi-cell recolor.
+  function handleCellClick(cellIndex: number, additive: boolean) {
+    setSelectedCellIndices((prev) => {
+      if (!additive) return [cellIndex]
+      return prev.includes(cellIndex) ? prev.filter((i) => i !== cellIndex) : [...prev, cellIndex]
+    })
+  }
+
+  const selectedCurrentCode = (() => {
+    if (selectedCellIndices.length === 0 || !project.cellAssignment) return null
+    const codes = new Set(selectedCellIndices.map((i) => project.cellAssignment![i]))
+    return codes.size === 1 ? [...codes][0] : null
+  })()
+
   return (
     <div
       className="flex h-screen flex-col"
@@ -389,16 +404,16 @@ function App() {
                 {hasImage && project.activeTab === 'grid' && <GridPanel project={project} dispatch={dispatch} />}
                 {hasImage && project.activeTab === 'palette' && project.palette && (
                   <div className="h-full" ref={attachWheelZoom}>
-                    {selectedCellIndex !== null && (
+                    {selectedCellIndices.length > 0 && (
                       <CellEditPopover
-                        cellIndex={selectedCellIndex}
+                        cellIndices={selectedCellIndices}
                         cols={project.confirmedGrid!.cols}
                         palette={project.palette}
-                        currentCode={project.cellAssignment![selectedCellIndex]}
+                        currentCode={selectedCurrentCode}
                         onPick={(dmcCode) =>
-                          dispatch({ type: 'RECOLOR_CELL', cellIndex: selectedCellIndex, dmcCode })
+                          dispatch({ type: 'RECOLOR_CELLS', cellIndices: selectedCellIndices, dmcCode })
                         }
-                        onClose={() => setSelectedCellIndex(null)}
+                        onClose={() => setSelectedCellIndices([])}
                       />
                     )}
                     <PatternCanvas
@@ -407,9 +422,9 @@ function App() {
                       cellAssignment={project.cellAssignment!}
                       palette={project.palette}
                       cellPx={cellPx}
-                      selectedCellIndex={selectedCellIndex}
+                      selectedCellIndices={new Set(selectedCellIndices)}
                       highlightCode={hoveredCode}
-                      onCellClick={setSelectedCellIndex}
+                      onCellClick={handleCellClick}
                       onCellHover={setHoveredCode}
                     />
                     <ZoomControls
@@ -442,7 +457,7 @@ function App() {
               <TabBar
                 activeTab={project.activeTab}
                 onSelect={(tab) => {
-                  setSelectedCellIndex(null)
+                  setSelectedCellIndices([])
                   dispatch({ type: 'SET_ACTIVE_TAB', tab })
                 }}
               />

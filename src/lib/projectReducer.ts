@@ -24,7 +24,7 @@ export type ProjectAction =
   | { type: 'SET_PALETTE_MODE'; mode: PaletteMode }
   | { type: 'SET_OWNED_THREADS'; codes: string[] }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
-  | { type: 'RECOLOR_CELL'; cellIndex: number; dmcCode: string }
+  | { type: 'RECOLOR_CELLS'; cellIndices: number[]; dmcCode: string }
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
   | { type: 'RECOLOR_PALETTE_ENTRY'; code: string; newDmc: DmcColor }
   | { type: 'DELETE_COLOR'; code: string }
@@ -174,11 +174,11 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
     case 'SET_ACTIVE_TAB':
       return { ...project, activeTab: action.tab }
 
-    case 'RECOLOR_CELL': {
-      if (!project.cellAssignment || !project.palette) return project
+    case 'RECOLOR_CELLS': {
+      if (!project.cellAssignment || !project.palette || action.cellIndices.length === 0) return project
       const history = pushHistory(project)
       const cellAssignment = [...project.cellAssignment]
-      cellAssignment[action.cellIndex] = action.dmcCode
+      for (const index of action.cellIndices) cellAssignment[index] = action.dmcCode
       return { ...project, history, cellAssignment, palette: recomputeCounts(project.palette, cellAssignment) }
     }
 
