@@ -2,6 +2,7 @@ import type { Dispatch } from 'react'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { detectGrid } from '../lib/gridDetection'
+import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 
 interface Props {
   project: PatternProject
@@ -13,6 +14,7 @@ export function GridControls({ project, dispatch }: Props) {
   const imageData = project.imageData!
 
   function updateGrid(next: typeof grid) {
+    if (!confirmDestructiveEdit(project.history.past.length)) return
     dispatch({ type: 'UPDATE_GRID', grid: next })
   }
 

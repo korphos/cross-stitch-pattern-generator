@@ -7,6 +7,7 @@ import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings,
 import type { PersistedProject } from './lib/persistence'
 import { serializeProjectFile, parseProjectFile, PROJECT_FILE_EXTENSION } from './lib/projectFile'
 import { decodeSettings, SETTINGS_SHARE_PARAM } from './lib/settingsShare'
+import { confirmDestructiveEdit } from './lib/confirmDestructive'
 import type { SizeUnit } from './lib/physicalSize'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
@@ -170,21 +171,27 @@ function App() {
     sourceFileName,
   ])
 
-  const handleFile = useCallback(async (file: File) => {
-    setUploadError(null)
-    setIsUploading(true)
-    try {
-      const { imageData, dataUrl } = await loadImageFile(file)
-      const detectedGrid = detectGrid(imageData)
-      const backgroundColor = detectBackgroundColor(imageData)
-      setSourceFileName(file.name)
-      dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid, backgroundColor })
-    } catch (e) {
-      setUploadError(e instanceof Error ? e.message : 'Error while loading the image')
-    } finally {
-      setIsUploading(false)
-    }
-  }, [])
+  const handleFile = useCallback(
+    async (file: File) => {
+      // Only a "replace image" (an image is already loaded) can discard manual edits - the
+      // initial upload has nothing to lose yet.
+      if (project.imageData && !confirmDestructiveEdit(project.history.past.length)) return
+      setUploadError(null)
+      setIsUploading(true)
+      try {
+        const { imageData, dataUrl } = await loadImageFile(file)
+        const detectedGrid = detectGrid(imageData)
+        const backgroundColor = detectBackgroundColor(imageData)
+        setSourceFileName(file.name)
+        dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid, backgroundColor })
+      } catch (e) {
+        setUploadError(e instanceof Error ? e.message : 'Error while loading the image')
+      } finally {
+        setIsUploading(false)
+      }
+    },
+    [project.imageData, project.history.past.length],
+  )
 
   const handleExport = useCallback(() => {
     if (!project.imageDataUrl || !project.confirmedGrid || !project.palette || !project.cellAssignment) return
@@ -260,18 +267,24 @@ function App() {
     window.print()
   }, [sourceFileName])
 
-  const handleToggleOwned = useCallback((code: string) => {
-    setSettings((prev) => {
-      const isOwned = prev.ownedThreadCodes.includes(code)
-      const ownedThreadCodes = isOwned
-        ? prev.ownedThreadCodes.filter((c) => c !== code)
-        : [...prev.ownedThreadCodes, code]
-      const next = { ...prev, ownedThreadCodes }
-      void saveSettings(next)
-      dispatch({ type: 'SET_OWNED_THREADS', codes: ownedThreadCodes })
-      return next
-    })
-  }, [])
+  const handleToggleOwned = useCallback(
+    (code: string) => {
+      // Only 'ownedOnly' mode rebuilds the palette from scratch for this action - in 'best' mode
+      // it just patches the owned flag in place, nothing to lose.
+      if (project.paletteMode === 'ownedOnly' && !confirmDestructiveEdit(project.history.past.length)) return
+      setSettings((prev) => {
+        const isOwned = prev.ownedThreadCodes.includes(code)
+        const ownedThreadCodes = isOwned
+          ? prev.ownedThreadCodes.filter((c) => c !== code)
+          : [...prev.ownedThreadCodes, code]
+        const next = { ...prev, ownedThreadCodes }
+        void saveSettings(next)
+        dispatch({ type: 'SET_OWNED_THREADS', codes: ownedThreadCodes })
+        return next
+      })
+    },
+    [project.paletteMode, project.history.past.length],
+  )
 
   const handleSetSizeUnit = useCallback((unit: SizeUnit) => {
     setSettings((prev) => {

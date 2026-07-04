@@ -3,6 +3,7 @@ import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
 import { estimateThreadUsage } from '../lib/threadEstimate'
+import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 
 interface Props {
   project: PatternProject
@@ -30,7 +31,10 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
           max={20}
           step={0.1}
           value={project.clusterThreshold}
-          onChange={(e) => dispatch({ type: 'SET_CLUSTER_THRESHOLD', threshold: Number(e.target.value) })}
+          onChange={(e) => {
+            if (!confirmDestructiveEdit(project.history.past.length)) return
+            dispatch({ type: 'SET_CLUSTER_THRESHOLD', threshold: Number(e.target.value) })
+          }}
         />
       </label>
 
@@ -39,7 +43,10 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
           <input
             type="checkbox"
             checked={project.ignoreBackground}
-            onChange={(e) => dispatch({ type: 'SET_IGNORE_BACKGROUND', ignore: e.target.checked })}
+            onChange={(e) => {
+              if (!confirmDestructiveEdit(project.history.past.length)) return
+              dispatch({ type: 'SET_IGNORE_BACKGROUND', ignore: e.target.checked })
+            }}
             className="h-4 w-4 accent-indigo-500"
           />
           <span
@@ -56,7 +63,10 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
         Colors to use
         <select
           value={project.paletteMode}
-          onChange={(e) => dispatch({ type: 'SET_PALETTE_MODE', mode: e.target.value as 'best' | 'ownedOnly' })}
+          onChange={(e) => {
+            if (!confirmDestructiveEdit(project.history.past.length)) return
+            dispatch({ type: 'SET_PALETTE_MODE', mode: e.target.value as 'best' | 'ownedOnly' })
+          }}
           className="rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1 text-neutral-100"
         >
           <option value="best">Best possible match</option>

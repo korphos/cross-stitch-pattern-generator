@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react'
 import type { CSSProperties, Dispatch, PointerEvent as ReactPointerEvent } from 'react'
 import type { PatternProject, DetectedGrid } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
+import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 
 interface Props {
   project: PatternProject
@@ -25,8 +26,20 @@ export function GridPanel({ project, dispatch }: Props) {
   scaleRef.current = scale
   const imageSizeRef = useRef({ width: imageData.width, height: imageData.height })
   imageSizeRef.current = { width: imageData.width, height: imageData.height }
+  // Read via a ref (not closed over directly) since the pointermove listener below is registered
+  // once per drag gesture and must see the live value, not the one from when the drag started -
+  // otherwise a confirmed edit mid-drag wouldn't stop the next pointermove tick from re-prompting
+  // with the stale pre-dispatch count.
+  const unsavedEditCountRef = useRef(project.history.past.length)
+  unsavedEditCountRef.current = project.history.past.length
 
-  const updateGrid = useCallback((next: DetectedGrid) => dispatch({ type: 'UPDATE_GRID', grid: next }), [dispatch])
+  const updateGrid = useCallback(
+    (next: DetectedGrid) => {
+      if (!confirmDestructiveEdit(unsavedEditCountRef.current)) return
+      dispatch({ type: 'UPDATE_GRID', grid: next })
+    },
+    [dispatch],
+  )
 
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
