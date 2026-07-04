@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
+import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
 
 interface Props {
   ownedCodes: ReadonlySet<string>
@@ -19,6 +20,18 @@ type FilterMode = 'all' | 'owned' | 'specialty'
 export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUnit, onClose }: Props) {
   const [search, setSearch] = useState('')
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
+  const [copied, setCopied] = useState(false)
+
+  function handleShare() {
+    const url = new URL(window.location.href)
+    url.search = ''
+    url.hash = ''
+    url.searchParams.set(SETTINGS_SHARE_PARAM, encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit }))
+    void navigator.clipboard.writeText(url.toString()).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
@@ -61,6 +74,21 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
               </button>
             ))}
           </div>
+        </section>
+
+        <section className="border-b border-neutral-800 p-4">
+          <h2 className="mb-2 text-sm font-semibold">Share settings</h2>
+          <p className="mb-3 text-xs text-neutral-500">
+            Copy a link that carries your owned threads and size unit. Opening it on another device (e.g. your phone)
+            replaces its settings with these - no import/export file needed.
+          </p>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+          >
+            {copied ? 'Copied!' : 'Copy share link'}
+          </button>
         </section>
 
         <section className="p-4">

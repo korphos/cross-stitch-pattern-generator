@@ -6,6 +6,7 @@ import { loadImageFile, decodeDataUrlToImageData } from './lib/imageLoader'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
 import type { PersistedProject } from './lib/persistence'
 import { serializeProjectFile, parseProjectFile, PROJECT_FILE_EXTENSION } from './lib/projectFile'
+import { decodeSettings, SETTINGS_SHARE_PARAM } from './lib/settingsShare'
 import type { SizeUnit } from './lib/physicalSize'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
@@ -43,6 +44,7 @@ function App() {
   const [editingCode, setEditingCode] = useState<string | null>(null)
   const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
   const [view, setView] = useState<'workspace' | 'settings'>('workspace')
+  const [sharedSettingsNotice, setSharedSettingsNotice] = useState(false)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
 
@@ -77,7 +79,22 @@ function App() {
       try {
         const [savedSettings, savedProject] = await Promise.all([loadSettings(), loadPersistedProject()])
         if (cancelled) return
-        setSettings(savedSettings)
+
+        // A shared-settings link (see SettingsPage's "Copy share link")
+        // completely replaces the local owned-threads/size-unit settings -
+        // that's the whole point, syncing them to a new device. The URL is
+        // then cleaned up so refreshing doesn't keep re-applying it.
+        const sharedToken = new URLSearchParams(window.location.search).get(SETTINGS_SHARE_PARAM)
+        const sharedSettings = sharedToken ? decodeSettings(sharedToken) : null
+        const effectiveSettings = sharedSettings ?? savedSettings
+        if (sharedSettings) {
+          void saveSettings(sharedSettings)
+          const url = new URL(window.location.href)
+          url.searchParams.delete(SETTINGS_SHARE_PARAM)
+          window.history.replaceState(null, '', url)
+          setSharedSettingsNotice(true)
+        }
+        setSettings(effectiveSettings)
 
         if (savedProject) {
           const imageData = await decodeDataUrlToImageData(savedProject.imageDataUrl)
@@ -92,13 +109,13 @@ function App() {
             fabricCount: savedProject.fabricCount,
             strands: savedProject.strands,
             paletteMode: savedProject.paletteMode,
-            ownedThreadCodes: savedSettings.ownedThreadCodes,
+            ownedThreadCodes: effectiveSettings.ownedThreadCodes,
             activeTab: savedProject.activeTab,
             palette: savedProject.palette,
             cellAssignment: savedProject.cellAssignment,
           })
-        } else if (savedSettings.ownedThreadCodes.length > 0) {
-          dispatch({ type: 'SET_OWNED_THREADS', codes: savedSettings.ownedThreadCodes })
+        } else if (effectiveSettings.ownedThreadCodes.length > 0) {
+          dispatch({ type: 'SET_OWNED_THREADS', codes: effectiveSettings.ownedThreadCodes })
         }
       } catch {
         // no usable saved state (first visit, corrupted record, etc.) - start fresh
@@ -338,6 +355,18 @@ function App() {
             />
             {uploadError && (
               <div className="bg-red-950 px-4 py-2 text-center text-sm text-red-300">{uploadError}</div>
+            )}
+            {sharedSettingsNotice && (
+              <div className="flex items-center justify-center gap-3 bg-indigo-950 px-4 py-2 text-center text-sm text-indigo-300">
+                Settings imported from a shared link (owned threads, size unit).
+                <button
+                  type="button"
+                  onClick={() => setSharedSettingsNotice(false)}
+                  className="text-indigo-400 underline hover:text-indigo-200"
+                >
+                  Dismiss
+                </button>
+              </div>
             )}
 
             <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
