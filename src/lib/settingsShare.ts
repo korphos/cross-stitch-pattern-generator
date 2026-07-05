@@ -8,11 +8,13 @@ export const SETTINGS_SHARE_PARAM = 'settings'
 // DMC colors elsewhere in the app - this encoding never looks at
 // allDmcColors, it parses/rebuilds each code's own text, so it stays valid
 // however that table changes later).
-const VERSION = 1
+const VERSION = 2
 
 const PREFIXES = ['', 'B', 'E', 'S'] as const
 const WHITE_SENTINEL = 0xfffe
 const ECRU_SENTINEL = 0xffff
+const ZERO_PAD_BIT = 1 << 13
+const NUMBER_MASK = 0x1fff
 
 function toBase64Url(bytes: Uint8Array): string {
   let binary = ''
@@ -29,24 +31,29 @@ function fromBase64Url(token: string): Uint8Array {
   return bytes
 }
 
-/** Packs one DMC code into a prefix (2 bits) + number (14 bits) pair, or null if the code doesn't match the `[BES]?<digits>` / White / Ecru shape every known DMC code follows. */
+/** Packs one DMC code into a prefix (2 bits) + zero-pad flag (1 bit) + number (13 bits), or null if the code doesn't match the `[BES]?<digits>` / White / Ecru shape every known DMC code follows. */
 function packCode(code: string): number | null {
   if (code === 'White') return WHITE_SENTINEL
   if (code === 'Ecru') return ECRU_SENTINEL
   const match = /^([BES]?)(\d+)$/.exec(code)
   if (!match) return null
   const prefixIndex = PREFIXES.indexOf(match[1] as (typeof PREFIXES)[number])
-  const number = Number(match[2])
-  if (number >= WHITE_SENTINEL) return null // never happens for a real DMC number, just a safety net
-  return (prefixIndex << 14) | number
+  const digits = match[2]
+  const number = Number(digits)
+  // codes 01-09 print with a leading zero on the real skein/label - preserve it so round-tripping
+  // through a share link doesn't silently turn "09" into "9" (a different, wrong code).
+  const zeroPad = digits.length === 2 && digits.startsWith('0') ? ZERO_PAD_BIT : 0
+  if (number > NUMBER_MASK) return null // never happens for a real DMC number, just a safety net
+  return (prefixIndex << 14) | zeroPad | number
 }
 
 function unpackCode(packed: number): string {
   if (packed === WHITE_SENTINEL) return 'White'
   if (packed === ECRU_SENTINEL) return 'Ecru'
   const prefix = PREFIXES[packed >> 14]
-  const number = packed & 0x3fff
-  return `${prefix}${number}`
+  const number = packed & NUMBER_MASK
+  const numberText = packed & ZERO_PAD_BIT ? String(number).padStart(2, '0') : String(number)
+  return `${prefix}${numberText}`
 }
 
 /**
