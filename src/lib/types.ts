@@ -114,6 +114,8 @@ export interface PatternProject {
   confirmedGrid: DetectedGrid | null
   /** raw sampled color per cell, row-major, length = cols*rows once sampled */
   cellColors: RGB[] | null
+  /** average alpha (0-255) per cell, same indexing as cellColors - lets background detection tell an actually-transparent cell (a PNG cutout's empty margin) apart from an opaque one that merely shares its RGB */
+  cellAlpha: number[] | null
   clusterThreshold: number
   palette: PaletteEntry[] | null
   /** DMC code (matches a `palette` entry's `dmc.code`) per cell, row-major */
@@ -125,8 +127,13 @@ export interface PatternProject {
   paletteMode: PaletteMode
   /** mirrors the global Settings inventory, kept in sync so buildPalette can use it synchronously */
   ownedThreadCodes: string[]
-  /** modal color of the image's outer border, detected once at load time - the best guess at "background" */
-  backgroundColor: RGB | null
+  /**
+   * Modal color of the image's outer border, detected once at load time - the best guess at
+   * "background". Includes alpha: a low `.a` means the border is actually transparent (a PNG
+   * cutout), in which case background detection switches to alpha-only matching instead of
+   * RGB - see backgroundMask.ts.
+   */
+  backgroundColor: RGBA | null
   /** when true, cells close to `backgroundColor` are left blank (no stitch) instead of matched to a DMC thread */
   ignoreBackground: boolean
   /** undo/redo stacks for manual color edits; reset whenever the grid/threshold regenerates the palette from scratch */

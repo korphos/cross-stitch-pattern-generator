@@ -8,9 +8,10 @@ import type {
   EditSnapshot,
   PaletteMode,
   RGB,
+  RGBA,
 } from './types'
 import { EMPTY_CELL } from './types'
-import { sampleGridColors } from './cellSampling'
+import { sampleGridColors, sampleGridAlpha } from './cellSampling'
 import { buildPalette } from './buildPalette'
 import { findBackgroundCells } from './backgroundMask'
 import { mirrorRowMajorHorizontal } from './imageTransform'
@@ -19,7 +20,7 @@ import { findFinishAlternative } from './colorMatch'
 import { FABRIC_COUNTS } from './physicalSize'
 
 export type ProjectAction =
-  | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid; backgroundColor: RGB }
+  | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid; backgroundColor: RGBA }
   | { type: 'UPDATE_GRID'; grid: DetectedGrid }
   | { type: 'FLIP_IMAGE_HORIZONTAL'; imageData: PixelBuffer; imageDataUrl: string }
   | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
@@ -46,7 +47,7 @@ export type ProjectAction =
       strands: number
       paletteMode: PaletteMode
       ownedThreadCodes: string[]
-      backgroundColor: RGB | null
+      backgroundColor: RGBA | null
       ignoreBackground: boolean
       activeTab: ActiveTab
       palette: PaletteEntry[]
@@ -71,6 +72,7 @@ export const initialProject: PatternProject = {
   detectedGrid: null,
   confirmedGrid: null,
   cellColors: null,
+  cellAlpha: null,
   clusterThreshold: DEFAULT_CLUSTER_THRESHOLD,
   palette: null,
   cellAssignment: null,
@@ -91,12 +93,13 @@ export const initialProject: PatternProject = {
  */
 function backgroundCellIndicesFor(
   cellColors: RGB[],
+  cellAlpha: number[] | null,
   grid: DetectedGrid,
-  backgroundColor: RGB | null,
+  backgroundColor: RGBA | null,
   ignoreBackground: boolean,
 ): Set<number> | undefined {
   if (!ignoreBackground || !backgroundColor) return undefined
-  return findBackgroundCells(cellColors, grid.cols, grid.rows, backgroundColor)
+  return findBackgroundCells(cellColors, grid.cols, grid.rows, backgroundColor, cellAlpha ?? undefined)
 }
 
 /**
@@ -108,12 +111,19 @@ function backgroundCellIndicesFor(
 function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
   if (!project.imageData) return { ...project, confirmedGrid: grid }
   const cellColors = sampleGridColors(project.imageData, grid)
+  const cellAlpha = sampleGridAlpha(project.imageData, grid)
   const { palette, cellAssignment } = buildPalette(cellColors, project.clusterThreshold, {
     mode: project.paletteMode,
     ownedCodes: new Set(project.ownedThreadCodes),
-    backgroundCellIndices: backgroundCellIndicesFor(cellColors, grid, project.backgroundColor, project.ignoreBackground),
+    backgroundCellIndices: backgroundCellIndicesFor(
+      cellColors,
+      cellAlpha,
+      grid,
+      project.backgroundColor,
+      project.ignoreBackground,
+    ),
   })
-  return { ...project, confirmedGrid: grid, cellColors, palette, cellAssignment, history: emptyHistory() }
+  return { ...project, confirmedGrid: grid, cellColors, cellAlpha, palette, cellAssignment, history: emptyHistory() }
 }
 
 function recomputeCounts(palette: PaletteEntry[], cellAssignment: string[]): PaletteEntry[] {
@@ -177,6 +187,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         detectedGrid: flippedGrid,
         confirmedGrid: flippedGrid,
         cellColors: mirrorRowMajorHorizontal(project.cellColors, grid.cols, grid.rows),
+        cellAlpha: project.cellAlpha ? mirrorRowMajorHorizontal(project.cellAlpha, grid.cols, grid.rows) : null,
         cellAssignment: mirrorRowMajorHorizontal(project.cellAssignment, grid.cols, grid.rows),
         history: emptyHistory(),
       }
@@ -189,6 +200,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         ownedCodes: new Set(project.ownedThreadCodes),
         backgroundCellIndices: backgroundCellIndicesFor(
           project.cellColors,
+          project.cellAlpha,
           project.confirmedGrid!,
           project.backgroundColor,
           project.ignoreBackground,
@@ -212,6 +224,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         ownedCodes: new Set(project.ownedThreadCodes),
         backgroundCellIndices: backgroundCellIndicesFor(
           project.cellColors,
+          project.cellAlpha,
           project.confirmedGrid!,
           project.backgroundColor,
           project.ignoreBackground,
@@ -231,6 +244,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           ownedCodes: new Set(ownedThreadCodes),
           backgroundCellIndices: backgroundCellIndicesFor(
             project.cellColors,
+            project.cellAlpha,
             project.confirmedGrid!,
             project.backgroundColor,
             project.ignoreBackground,
@@ -253,6 +267,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         ownedCodes: new Set(project.ownedThreadCodes),
         backgroundCellIndices: backgroundCellIndicesFor(
           project.cellColors,
+          project.cellAlpha,
           project.confirmedGrid!,
           project.backgroundColor,
           action.ignore,
@@ -390,6 +405,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         detectedGrid: action.grid,
         confirmedGrid: action.grid,
         cellColors: sampleGridColors(action.imageData, action.grid),
+        cellAlpha: sampleGridAlpha(action.imageData, action.grid),
         clusterThreshold: action.clusterThreshold,
         fabricCount: action.fabricCount,
         strands: action.strands,

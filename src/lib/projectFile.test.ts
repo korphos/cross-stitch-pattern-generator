@@ -32,7 +32,7 @@ function makeProject(): PersistedProject {
     fabricCount: 14,
     strands: 2,
     paletteMode: 'best',
-    backgroundColor: { r: 255, g: 255, b: 255 },
+    backgroundColor: { r: 255, g: 255, b: 255, a: 255 },
     ignoreBackground: true,
     activeTab: 'palette',
     palette: [makeEntry('310')],

@@ -1,4 +1,4 @@
-import type { RGB } from './types'
+import type { RGB, RGBA } from './types'
 import { colorDistance } from './colorMatch'
 
 /**
@@ -7,6 +7,9 @@ import { colorDistance } from './colorMatch'
  */
 const BACKGROUND_DELTA_E = 8
 
+/** Below this average alpha (0-255), a cell counts as transparent. */
+export const ALPHA_BACKGROUND_THRESHOLD = 16
+
 /**
  * Background-colored cells that are reachable from the grid's outer edge
  * by walking through other background-colored cells (4-connected). Color
@@ -14,9 +17,28 @@ const BACKGROUND_DELTA_E = 8
  * white highlight painted inside gray hair is just as pale as the actual
  * background, but it isn't background - it's only reachable by crossing
  * non-background-colored cells first, so the flood fill never reaches it.
+ *
+ * When `backgroundColor` itself is (near-)transparent - a PNG cutout whose
+ * margin is genuinely empty, not a flat color - RGB is ignored entirely and
+ * `cellAlpha` decides instead. The RGB a transparent pixel decodes to is
+ * meaningless "don't-care" data (many encoders zero it out for smaller
+ * files), so trusting it can make an opaque foreground shape that happens
+ * to share that same incidental RGB (e.g. a black hat, if transparent
+ * pixels decode to black) get swept into the background right along with
+ * the actually-empty margin.
  */
-export function findBackgroundCells(cellColors: RGB[], cols: number, rows: number, backgroundColor: RGB): Set<number> {
-  const isBackgroundColor = (index: number) => colorDistance(cellColors[index], backgroundColor) <= BACKGROUND_DELTA_E
+export function findBackgroundCells(
+  cellColors: RGB[],
+  cols: number,
+  rows: number,
+  backgroundColor: RGB | RGBA,
+  cellAlpha?: number[],
+): Set<number> {
+  const backgroundIsTransparent = 'a' in backgroundColor && backgroundColor.a < ALPHA_BACKGROUND_THRESHOLD
+  const isBackgroundColor = (index: number) =>
+    backgroundIsTransparent
+      ? (cellAlpha?.[index] ?? 255) < ALPHA_BACKGROUND_THRESHOLD
+      : colorDistance(cellColors[index], backgroundColor) <= BACKGROUND_DELTA_E
 
   const visited = new Set<number>()
   const queue: number[] = []

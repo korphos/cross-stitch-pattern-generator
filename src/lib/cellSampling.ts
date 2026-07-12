@@ -5,6 +5,30 @@ function getPixelRGB(img: PixelBuffer, x: number, y: number): RGB {
   return { r: img.data[i], g: img.data[i + 1], b: img.data[i + 2] }
 }
 
+function getPixelAlpha(img: PixelBuffer, x: number, y: number): number {
+  return img.data[(y * img.width + x) * 4 + 3]
+}
+
+/**
+ * Clamped, integer pixel bounds of one cell's center inset - shared by color and alpha
+ * sampling so both read the exact same window.
+ *
+ * Clamp on both ends: a grid nudged (or resized) past the image edge must never produce a
+ * negative or out-of-range index, which would read `undefined` out of the pixel buffer and
+ * poison the DMC match downstream. Also round to integers: cellX/cellY/cellW/cellH are
+ * frequently non-integer (e.g. cellSize = 428/31), and a fractional pixel index reads
+ * `undefined` out of the buffer just the same as an out-of-range one.
+ */
+function cellWindow(img: PixelBuffer, cellX: number, cellY: number, cellW: number, cellH: number, insetRatio: number) {
+  const insetX = Math.max(1, Math.round(cellW * insetRatio))
+  const insetY = Math.max(1, Math.round(cellH * insetRatio))
+  const x0 = Math.round(Math.max(0, Math.min(img.width - 1, cellX + insetX)))
+  const x1 = Math.max(x0, Math.round(Math.min(img.width - 1, cellX + cellW - insetX - 1)))
+  const y0 = Math.round(Math.max(0, Math.min(img.height - 1, cellY + insetY)))
+  const y1 = Math.max(y0, Math.round(Math.min(img.height - 1, cellY + cellH - insetY - 1)))
+  return { x0, x1, y0, y1 }
+}
+
 /**
  * Representative color of one cell: the modal (most frequent exact) RGB
  * value within the cell's center inset, avoiding anti-aliased edge pixels.
@@ -19,18 +43,7 @@ export function sampleCell(
   cellH: number,
   insetRatio = 0.3,
 ): RGB {
-  const insetX = Math.max(1, Math.round(cellW * insetRatio))
-  const insetY = Math.max(1, Math.round(cellH * insetRatio))
-  // Clamp on both ends: a grid nudged (or resized) past the image edge must
-  // never produce a negative or out-of-range index, which would read
-  // `undefined` out of the pixel buffer and poison the DMC match downstream.
-  // Also round to integers: cellX/cellY/cellW/cellH are frequently non-integer
-  // (e.g. cellSize = 428/31), and a fractional pixel index reads `undefined`
-  // out of the buffer just the same as an out-of-range one.
-  const x0 = Math.round(Math.max(0, Math.min(img.width - 1, cellX + insetX)))
-  const x1 = Math.max(x0, Math.round(Math.min(img.width - 1, cellX + cellW - insetX - 1)))
-  const y0 = Math.round(Math.max(0, Math.min(img.height - 1, cellY + insetY)))
-  const y1 = Math.max(y0, Math.round(Math.min(img.height - 1, cellY + cellH - insetY - 1)))
+  const { x0, x1, y0, y1 } = cellWindow(img, cellX, cellY, cellW, cellH, insetRatio)
 
   const counts = new Map<string, { color: RGB; count: number }>()
   let sumR = 0
@@ -64,6 +77,27 @@ export function sampleCell(
   return best.color
 }
 
+/** Mean alpha (0-255) within the same center inset `sampleCell` reads its color from. */
+export function averageCellAlpha(
+  img: PixelBuffer,
+  cellX: number,
+  cellY: number,
+  cellW: number,
+  cellH: number,
+  insetRatio = 0.3,
+): number {
+  const { x0, x1, y0, y1 } = cellWindow(img, cellX, cellY, cellW, cellH, insetRatio)
+  let sum = 0
+  let n = 0
+  for (let y = y0; y <= y1; y++) {
+    for (let x = x0; x <= x1; x++) {
+      sum += getPixelAlpha(img, x, y)
+      n++
+    }
+  }
+  return n === 0 ? 255 : sum / n
+}
+
 /** Samples one representative color per logical cell, row-major. */
 export function sampleGridColors(img: PixelBuffer, grid: DetectedGrid): RGB[] {
   const colors: RGB[] = []
@@ -79,4 +113,23 @@ export function sampleGridColors(img: PixelBuffer, grid: DetectedGrid): RGB[] {
     }
   }
   return colors
+}
+
+/**
+ * Mean alpha per logical cell, row-major, at the same sampling window as `sampleGridColors` -
+ * lets background detection tell an actually-transparent cell (a PNG cutout's empty margin)
+ * apart from an opaque one that merely happens to share the border's RGB. See backgroundMask.ts.
+ */
+export function sampleGridAlpha(img: PixelBuffer, grid: DetectedGrid): number[] {
+  const alphas: number[] = []
+  const offsetX = grid.sampleOffsetX ?? 0
+  const offsetY = grid.sampleOffsetY ?? 0
+  for (let row = 0; row < grid.rows; row++) {
+    for (let col = 0; col < grid.cols; col++) {
+      const cellX = grid.bbox.x + col * grid.cellSize + offsetX
+      const cellY = grid.bbox.y + row * grid.cellSize + offsetY
+      alphas.push(averageCellAlpha(img, cellX, cellY, grid.cellSize, grid.cellSize))
+    }
+  }
+  return alphas
 }

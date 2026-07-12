@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { sampleCell, sampleGridColors } from './cellSampling'
+import { sampleCell, sampleGridColors, sampleGridAlpha } from './cellSampling'
 import type { PixelBuffer, DetectedGrid } from './types'
 
 function solidImage(width: number, height: number, r: number, g: number, b: number): PixelBuffer {
@@ -82,5 +82,36 @@ describe('sampleGridColors sample offset', () => {
 
     const shifted = sampleGridColors(img, { ...baseGrid, sampleOffsetX: 10, sampleOffsetY: 10 })
     expect(shifted[0]).toEqual({ r: 10, g: 10, b: 10 })
+  })
+})
+
+describe('sampleGridAlpha', () => {
+  function imageWithAlpha(width: number, height: number, alphaFn: (x: number, y: number) => number): PixelBuffer {
+    const data = new Uint8ClampedArray(width * height * 4)
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const i = (y * width + x) * 4
+        data[i] = 0
+        data[i + 1] = 0
+        data[i + 2] = 0
+        data[i + 3] = alphaFn(x, y)
+      }
+    }
+    return { data, width, height }
+  }
+
+  it('reports full opacity for a fully opaque cell and near-zero for a fully transparent one', () => {
+    const cellSize = 10
+    const img = imageWithAlpha(cellSize * 2, cellSize, (x) => (x < cellSize ? 255 : 0))
+    const grid: DetectedGrid = {
+      bbox: { x: 0, y: 0, width: cellSize * 2, height: cellSize },
+      cellSize,
+      cols: 2,
+      rows: 1,
+      confidence: 1,
+    }
+    const alphas = sampleGridAlpha(img, grid)
+    expect(alphas[0]).toBe(255)
+    expect(alphas[1]).toBe(0)
   })
 })

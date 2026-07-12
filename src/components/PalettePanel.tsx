@@ -4,6 +4,7 @@ import type { ProjectAction } from '../lib/projectReducer'
 import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
 import { estimateThreadUsage } from '../lib/threadEstimate'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
+import { ALPHA_BACKGROUND_THRESHOLD } from '../lib/backgroundMask'
 
 interface Props {
   project: PatternProject
@@ -18,6 +19,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
   const totalSkeins = threadEstimates.reduce((sum, e) => sum + e.skeins, 0)
   const hasInventory = project.ownedThreadCodes.length > 0
   const notOwnedCount = project.palette?.filter((p) => !p.owned).length ?? 0
+  const backgroundIsTransparent = (project.backgroundColor?.a ?? 255) < ALPHA_BACKGROUND_THRESHOLD
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
@@ -49,13 +51,20 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
             }}
             className="h-4 w-4 accent-indigo-500"
           />
-          <span
-            className="h-4 w-4 shrink-0 rounded-sm border border-black/20"
-            style={{
-              backgroundColor: `rgb(${project.backgroundColor.r}, ${project.backgroundColor.g}, ${project.backgroundColor.b})`,
-            }}
-          />
-          Ignore background color
+          {backgroundIsTransparent ? (
+            <span
+              className="h-4 w-4 shrink-0 rounded-sm border border-black/20 bg-[repeating-conic-gradient(#3f3f46_0%_25%,#27272a_0%_50%)] bg-size-[6px_6px]"
+              title="Transparent"
+            />
+          ) : (
+            <span
+              className="h-4 w-4 shrink-0 rounded-sm border border-black/20"
+              style={{
+                backgroundColor: `rgb(${project.backgroundColor.r}, ${project.backgroundColor.g}, ${project.backgroundColor.b})`,
+              }}
+            />
+          )}
+          {backgroundIsTransparent ? 'Ignore transparent background' : 'Ignore background color'}
         </label>
       )}
 

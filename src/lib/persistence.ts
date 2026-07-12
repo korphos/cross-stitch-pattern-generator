@@ -1,4 +1,4 @@
-import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, RGB } from './types'
+import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, RGBA } from './types'
 import type { SizeUnit } from './physicalSize'
 import { migrateLegacyGrid } from './gridDetection'
 
@@ -19,7 +19,7 @@ export interface PersistedProject {
   fabricCount: number
   strands: number
   paletteMode: PaletteMode
-  backgroundColor: RGB | null
+  backgroundColor: RGBA | null
   ignoreBackground: boolean
   activeTab: ActiveTab
   palette: PaletteEntry[]
