@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Eye, EyeOff } from 'lucide-react'
 
 interface Props {
@@ -20,6 +21,7 @@ export function ZoomControls({
   onReset,
   onTogglePreview,
 }: Props) {
+  const { t } = useTranslation()
   const percent = Math.round((cellPx / defaultCellPx) * 100)
 
   return (
@@ -27,7 +29,7 @@ export function ZoomControls({
       <button
         type="button"
         onClick={onTogglePreview}
-        title={previewMode ? 'Show grid and symbols' : 'Hide grid and symbols (preview)'}
+        title={previewMode ? t('zoomControls.showGridSymbols') : t('zoomControls.hideGridSymbols')}
         aria-pressed={previewMode}
         className={`flex h-7 w-7 items-center justify-center rounded ${
           previewMode ? 'bg-indigo-600 text-white' : 'text-neutral-200 hover:bg-neutral-800'
@@ -39,7 +41,7 @@ export function ZoomControls({
       <button
         type="button"
         onClick={onZoomOut}
-        title="Zoom out"
+        title={t('zoomControls.zoomOut')}
         className="flex h-7 w-7 items-center justify-center rounded text-base text-neutral-200 hover:bg-neutral-800"
       >
         −
@@ -47,7 +49,7 @@ export function ZoomControls({
       <button
         type="button"
         onClick={onReset}
-        title="Reset zoom"
+        title={t('zoomControls.resetZoom')}
         className="w-14 rounded py-1 text-center text-xs text-neutral-400 hover:bg-neutral-800"
       >
         {percent}%
@@ -55,7 +57,7 @@ export function ZoomControls({
       <button
         type="button"
         onClick={onZoomIn}
-        title="Zoom in"
+        title={t('zoomControls.zoomIn')}
         className="flex h-7 w-7 items-center justify-center rounded text-base text-neutral-200 hover:bg-neutral-800"
       >
         +

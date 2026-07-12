@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PatternProject } from '../lib/types'
 import { computeCanvasSize, renderPattern, setupCanvasForDpr } from '../lib/renderPattern'
 import { Legend } from './Legend'
@@ -26,6 +27,7 @@ const PAGE_USABLE_HEIGHT_PX = (PAGE_HEIGHT_IN - 2 * MARGIN_IN) * PX_PER_INCH
  * "print preview" screen: the OS print dialog already provides one.
  */
 export function PrintablePage({ project, sizeUnit }: Props) {
+  const { t } = useTranslation()
   const grid = project.confirmedGrid
   const palette = project.palette
   const cellAssignment = project.cellAssignment
@@ -35,7 +37,8 @@ export function PrintablePage({ project, sizeUnit }: Props) {
 
   const cellPx = grid ? Math.max(2, Math.min(30, Math.floor(PAGE_USABLE_WIDTH_PX / grid.cols))) : 0
   const size = grid ? computePhysicalSize(grid.cols, grid.rows, project.fabricCount) : null
-  const fabricLabel = FABRIC_COUNTS.find((f) => f.stitchesPerInch === project.fabricCount)?.label
+  const fabricLabelKey = FABRIC_COUNTS.find((f) => f.stitchesPerInch === project.fabricCount)?.labelKey
+  const fabricLabel = fabricLabelKey ? t(`fabricCounts.${fabricLabelKey}`) : undefined
   const threadEstimates = palette ? estimateThreadUsage(palette, project.fabricCount, project.strands) : []
   const totalSkeins = threadEstimates.reduce((sum, e) => sum + e.skeins, 0)
 
@@ -74,8 +77,10 @@ export function PrintablePage({ project, sizeUnit }: Props) {
           style={{ width: PAGE_USABLE_WIDTH_PX, transform: `scale(${fit.scale})`, transformOrigin: 'top center' }}
         >
           <div className="w-full text-center text-sm text-gray-600">
-            {grid.cols}×{grid.rows} stitches — {formatPhysicalSize(size, sizeUnit)} on {fabricLabel} — ~{totalSkeins} skein
-            {totalSkeins > 1 ? 's' : ''} total ({project.strands} strand{project.strands > 1 ? 's' : ''})
+            {t('printablePage.dimensionsFabric', { cols: grid.cols, rows: grid.rows, size: formatPhysicalSize(size, sizeUnit), fabric: fabricLabel })}
+            {' — '}
+            {t('printablePage.skeinsTotal', { count: totalSkeins })}{' '}
+            {t('printablePage.strandsParen', { count: project.strands })}
           </div>
           <canvas ref={canvasRef} />
           <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" />

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { MouseEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PaletteEntry, DmcColor } from '../lib/types'
 import { sortedBySimilarity } from '../lib/colorMatch'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
@@ -17,6 +18,7 @@ interface Props {
 
 /** Modal for editing one palette color: merge it into another color already in the pattern, recolor it to any DMC thread (sorted by similarity), or remove it entirely. */
 export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, onDelete, onClose, ownedCodes }: Props) {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
 
   const candidates = useMemo(() => {
@@ -51,19 +53,18 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
             onClick={onDelete}
             className="ml-auto rounded-md px-2 py-1 text-sm text-red-400 hover:bg-red-950 hover:text-red-300"
           >
-            Remove color
+            {t('colorEditDialog.removeColor')}
           </button>
           <button
             type="button"
             onClick={onClose}
             className="rounded-md px-2 py-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
           >
-            Close
+            {t('common.close')}
           </button>
         </div>
         <p className="-mt-2 text-xs text-neutral-500">
-          "Remove color" leaves every "{entry.symbol}" stitch blank (no fill, no symbol) - useful for a background you
-          don't want to stitch.
+          {t('colorEditDialog.removeHelper', { symbol: entry.symbol })}
         </p>
 
         {entry.finishAlternative && (
@@ -75,7 +76,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
               }}
             />
             <p className="flex-1 text-xs text-amber-200">
-              {entry.dmc.finish ? 'Standard alternative available: ' : 'Shiny alternative available: '}
+              {entry.dmc.finish ? t('colorEditDialog.standardAlternative') : t('colorEditDialog.shinyAlternative')}
               <span className="font-medium">
                 {entry.finishAlternative.dmc.code} - {entry.finishAlternative.dmc.name}
               </span>
@@ -88,16 +89,16 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
               onClick={() => onRecolor(entry.finishAlternative!.dmc)}
               className="shrink-0 rounded-md bg-amber-600 px-2 py-1 text-xs font-medium text-white hover:bg-amber-500"
             >
-              Switch
+              {t('colorEditDialog.switch')}
             </button>
           </div>
         )}
 
         {otherEntries.length > 0 && (
           <div>
-            <h4 className="mb-1 text-sm font-medium text-neutral-200">Replace with another color already in this pattern</h4>
+            <h4 className="mb-1 text-sm font-medium text-neutral-200">{t('colorEditDialog.replaceTitle')}</h4>
             <p className="mb-2 text-xs text-neutral-500">
-              Every "{entry.symbol}" stitch becomes this color, and "{entry.symbol}" disappears from the palette.
+              {t('colorEditDialog.replaceHelper', { symbol: entry.symbol })}
             </p>
             <div className="flex flex-wrap gap-2">
               {otherEntries.map((other) => {
@@ -107,7 +108,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
                     key={other.dmc.code}
                     type="button"
                     onClick={() => onMergeInto(other.dmc.code)}
-                    title={owned ? 'You own this thread' : undefined}
+                    title={owned ? t('common.ownedTitle') : undefined}
                     className={`flex items-center gap-2 rounded-md border px-2 py-1 text-sm text-neutral-200 hover:bg-neutral-800 ${
                       owned ? 'border-green-600 bg-green-950/30' : 'border-neutral-700'
                     }`}
@@ -128,10 +129,10 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
         )}
 
         <div className="flex min-h-0 flex-1 flex-col">
-          <h4 className="mb-2 text-sm font-medium text-neutral-200">Change to a different DMC thread</h4>
+          <h4 className="mb-2 text-sm font-medium text-neutral-200">{t('colorEditDialog.changeTitle')}</h4>
           <input
             type="text"
-            placeholder="Search by code or name..."
+            placeholder={t('common.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mb-2 rounded-md border border-neutral-600 bg-neutral-950 px-2 py-1 text-sm text-neutral-100"
@@ -144,7 +145,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
                   <button
                     type="button"
                     onClick={() => onRecolor(d)}
-                    title={owned ? 'You own this thread' : undefined}
+                    title={owned ? t('common.ownedTitle') : undefined}
                     className={`flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm text-neutral-200 hover:bg-neutral-800 ${
                       owned ? 'bg-green-950/30' : ''
                     }`}
@@ -156,13 +157,13 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
                     <span className="truncate">
                       {d.code} - {d.name}
                     </span>
-                    {owned && <span className="shrink-0 text-green-400">✓ owned</span>}
+                    {owned && <span className="shrink-0 text-green-400">{t('common.ownedBadge')}</span>}
                     {d.finish && (
                       <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
                         {d.finish}
                       </span>
                     )}
-                    <span className="ml-auto shrink-0 text-xs text-neutral-500">ΔE {d.deltaE.toFixed(1)}</span>
+                    <span className="ml-auto shrink-0 text-xs text-neutral-500">{t('common.deltaE', { value: d.deltaE.toFixed(1) })}</span>
                   </button>
                 </li>
               )

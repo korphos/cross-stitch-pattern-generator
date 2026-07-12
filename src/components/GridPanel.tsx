@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import type { CSSProperties, Dispatch, PointerEvent as ReactPointerEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PatternProject, DetectedGrid } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
@@ -14,6 +15,7 @@ const MAX_DISPLAY_WIDTH = 720
 type DragMode = 'tl' | 'br' | 'move'
 
 export function GridPanel({ project, dispatch }: Props) {
+  const { t } = useTranslation()
   const grid = project.confirmedGrid!
   const imageData = project.imageData!
   const scale = Math.min(1, MAX_DISPLAY_WIDTH / imageData.width)
@@ -136,7 +138,7 @@ export function GridPanel({ project, dispatch }: Props) {
       >
         <img
           src={project.imageDataUrl!}
-          alt="Source pattern"
+          alt={t('gridPanel.imageAlt')}
           className="pointer-events-none absolute inset-0 h-full w-full"
           draggable={false}
         />

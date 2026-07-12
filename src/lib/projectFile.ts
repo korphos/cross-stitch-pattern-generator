@@ -4,6 +4,14 @@ import { migrateLegacyGrid } from './gridDetection'
 /** Extension used for exported project files. */
 export const PROJECT_FILE_EXTENSION = '.xstitch'
 
+/**
+ * Stable error message identifiers (not user-facing prose) - the UI layer maps these to a
+ * translated string via i18next's `errors.*` keys, since this lib has no access to `t()`.
+ */
+export const INVALID_JSON_ERROR = 'INVALID_JSON_ERROR'
+export const INVALID_PROJECT_FILE_ERROR = 'INVALID_PROJECT_FILE_ERROR'
+export const MISSING_PROJECT_DATA_ERROR = 'MISSING_PROJECT_DATA_ERROR'
+
 const PROJECT_FILE_VERSION = 1
 
 interface ProjectFile extends PersistedProject {
@@ -32,9 +40,9 @@ export function parseProjectFile(text: string): PersistedProject {
   try {
     raw = JSON.parse(text)
   } catch {
-    throw new Error('This file is not a valid project file (invalid JSON).')
+    throw new Error(INVALID_JSON_ERROR)
   }
-  if (!isRecord(raw)) throw new Error('This file is not a valid project file.')
+  if (!isRecord(raw)) throw new Error(INVALID_PROJECT_FILE_ERROR)
 
   const {
     imageDataUrl,
@@ -60,7 +68,7 @@ export function parseProjectFile(text: string): PersistedProject {
     typeof strands !== 'number' ||
     typeof clusterThreshold !== 'number'
   ) {
-    throw new Error('This file is missing data expected in a cross-stitch project file.')
+    throw new Error(MISSING_PROJECT_DATA_ERROR)
   }
 
   return {

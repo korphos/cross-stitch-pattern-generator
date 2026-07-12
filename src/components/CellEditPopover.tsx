@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { PaletteEntry } from '../lib/types'
 import { EMPTY_CELL } from '../lib/types'
 
@@ -14,10 +15,11 @@ interface Props {
 
 /** A contextual toolbar for recoloring one or more selected cells to any existing palette color (Ctrl/Cmd+click a cell to add it to the selection). */
 export function CellEditPopover({ cellIndices, cols, palette, currentCode, onPick, onClose }: Props) {
+  const { t } = useTranslation()
   const label =
     cellIndices.length === 1
-      ? `Cell (col ${cellIndices[0] % cols}, row ${Math.floor(cellIndices[0] / cols)}):`
-      : `${cellIndices.length} cells selected:`
+      ? t('cellEditPopover.cellLabel', { col: cellIndices[0] % cols, row: Math.floor(cellIndices[0] / cols) })
+      : t('cellEditPopover.cellsSelected', { count: cellIndices.length })
 
   return (
     <div className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center gap-2 border-b border-neutral-800 bg-neutral-900/95 px-4 py-2 shadow-lg">
@@ -39,7 +41,7 @@ export function CellEditPopover({ cellIndices, cols, palette, currentCode, onPic
         ))}
         <button
           type="button"
-          title="No stitch (blank)"
+          title={t('cellEditPopover.noStitchTitle')}
           onClick={() => onPick(EMPTY_CELL)}
           className={`flex h-7 w-7 items-center justify-center rounded-sm border bg-white text-xs text-neutral-400 ${
             currentCode === EMPTY_CELL ? 'border-indigo-400 ring-2 ring-indigo-400' : 'border-black/20'
@@ -53,7 +55,7 @@ export function CellEditPopover({ cellIndices, cols, palette, currentCode, onPic
         onClick={onClose}
         className="ml-auto rounded-md px-2 py-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
       >
-        Done
+        {t('common.done')}
       </button>
     </div>
   )

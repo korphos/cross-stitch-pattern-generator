@@ -1,10 +1,17 @@
 import type { PixelBuffer } from './types'
 
+/**
+ * Stable error message identifiers (not user-facing prose) - the UI layer maps these to a
+ * translated string via i18next's `errors.*` keys, since this lib has no access to `t()`.
+ */
+export const IMAGE_DECODE_ERROR = 'IMAGE_DECODE_ERROR'
+export const CANVAS_UNAVAILABLE_ERROR = 'CANVAS_UNAVAILABLE_ERROR'
+
 export async function decodeDataUrlToImageData(dataUrl: string): Promise<ImageData> {
   const img = new Image()
   await new Promise<void>((resolve, reject) => {
     img.onload = () => resolve()
-    img.onerror = () => reject(new Error('Could not load the image'))
+    img.onerror = () => reject(new Error(IMAGE_DECODE_ERROR))
     img.src = dataUrl
   })
 
@@ -12,7 +19,7 @@ export async function decodeDataUrlToImageData(dataUrl: string): Promise<ImageDa
   canvas.width = img.naturalWidth
   canvas.height = img.naturalHeight
   const ctx = canvas.getContext('2d', { willReadFrequently: true })
-  if (!ctx) throw new Error('2D canvas unavailable')
+  if (!ctx) throw new Error(CANVAS_UNAVAILABLE_ERROR)
   ctx.drawImage(img, 0, 0)
   return ctx.getImageData(0, 0, canvas.width, canvas.height)
 }
@@ -22,7 +29,7 @@ export function encodeImageDataToDataUrl(img: PixelBuffer): string {
   canvas.width = img.width
   canvas.height = img.height
   const ctx = canvas.getContext('2d')
-  if (!ctx) throw new Error('2D canvas unavailable')
+  if (!ctx) throw new Error(CANVAS_UNAVAILABLE_ERROR)
   ctx.putImageData(new ImageData(img.data as Uint8ClampedArray<ArrayBuffer>, img.width, img.height), 0, 0)
   return canvas.toDataURL('image/png')
 }

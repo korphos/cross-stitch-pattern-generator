@@ -1,12 +1,26 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { initialProject, projectReducer } from './lib/projectReducer'
 import { detectGrid, detectBackgroundColor } from './lib/gridDetection'
-import { loadImageFile, decodeDataUrlToImageData, encodeImageDataToDataUrl } from './lib/imageLoader'
+import {
+  loadImageFile,
+  decodeDataUrlToImageData,
+  encodeImageDataToDataUrl,
+  IMAGE_DECODE_ERROR,
+  CANVAS_UNAVAILABLE_ERROR,
+} from './lib/imageLoader'
 import { flipImageHorizontal } from './lib/imageTransform'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
 import type { PersistedProject } from './lib/persistence'
-import { serializeProjectFile, parseProjectFile, PROJECT_FILE_EXTENSION } from './lib/projectFile'
+import {
+  serializeProjectFile,
+  parseProjectFile,
+  PROJECT_FILE_EXTENSION,
+  INVALID_JSON_ERROR,
+  INVALID_PROJECT_FILE_ERROR,
+  MISSING_PROJECT_DATA_ERROR,
+} from './lib/projectFile'
 import { decodeSettings, SETTINGS_SHARE_PARAM } from './lib/settingsShare'
 import { confirmDestructiveEdit } from './lib/confirmDestructive'
 import type { SizeUnit } from './lib/physicalSize'
@@ -34,7 +48,16 @@ function clampCellPx(value: number): number {
   return Math.min(MAX_CELL_PX, Math.max(MIN_CELL_PX, value))
 }
 
+const ERROR_CODE_KEYS: Record<string, string> = {
+  [IMAGE_DECODE_ERROR]: 'errors.imageDecodeFailed',
+  [CANVAS_UNAVAILABLE_ERROR]: 'errors.canvasUnavailable',
+  [INVALID_JSON_ERROR]: 'errors.invalidJson',
+  [INVALID_PROJECT_FILE_ERROR]: 'errors.invalidProjectFile',
+  [MISSING_PROJECT_DATA_ERROR]: 'errors.missingProjectData',
+}
+
 function App() {
+  const { t } = useTranslation()
   const [project, dispatch] = useReducer(projectReducer, initialProject)
   const [isUploading, setIsUploading] = useState(false)
   const [isImporting, setIsImporting] = useState(false)
@@ -54,6 +77,16 @@ function App() {
   const [sharedSettingsNotice, setSharedSettingsNotice] = useState(false)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
+
+  // Lib functions throw stable error codes (see ERROR_CODE_KEYS) rather than prose, since they
+  // have no access to `t()` - this maps a caught error back to a translated, user-facing message.
+  const describeError = useCallback(
+    (e: unknown, fallbackKey: string) => {
+      const code = e instanceof Error ? ERROR_CODE_KEYS[e.message] : undefined
+      return t(code ?? fallbackKey)
+    },
+    [t],
+  )
 
   const zoomIn = useCallback(() => setCellPx((z) => clampCellPx(z + ZOOM_STEP)), [])
   const zoomOut = useCallback(() => setCellPx((z) => clampCellPx(z - ZOOM_STEP)), [])
@@ -191,12 +224,12 @@ function App() {
         setSourceFileName(file.name)
         dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid, backgroundColor })
       } catch (e) {
-        setUploadError(e instanceof Error ? e.message : 'Error while loading the image')
+        setUploadError(describeError(e, 'errors.imageLoadGeneric'))
       } finally {
         setIsUploading(false)
       }
     },
-    [project.imageData, project.history.past.length],
+    [project.imageData, project.history.past.length, describeError],
   )
 
   const handleFlipHorizontal = useCallback(() => {
@@ -257,12 +290,12 @@ function App() {
           cellAssignment: persisted.cellAssignment,
         })
       } catch (e) {
-        setUploadError(e instanceof Error ? e.message : 'Error while importing the project file')
+        setUploadError(describeError(e, 'errors.importGeneric'))
       } finally {
         setIsImporting(false)
       }
     },
-    [project.ownedThreadCodes],
+    [project.ownedThreadCodes, describeError],
   )
 
   // The browser's "Save as PDF" dialog suggests `document.title` as the
@@ -431,13 +464,13 @@ function App() {
             )}
             {sharedSettingsNotice && (
               <div className="flex items-center justify-center gap-3 bg-indigo-950 px-4 py-2 text-center text-sm text-indigo-300">
-                Settings imported from a shared link (owned threads, size unit).
+                {t('app.sharedSettingsNotice')}
                 <button
                   type="button"
                   onClick={() => setSharedSettingsNotice(false)}
                   className="text-indigo-400 underline hover:text-indigo-200"
                 >
-                  Dismiss
+                  {t('common.dismiss')}
                 </button>
               </div>
             )}

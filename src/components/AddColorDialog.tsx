@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import type { MouseEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { DmcColor } from '../lib/types'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 
@@ -14,6 +15,7 @@ type FilterMode = 'all' | 'owned'
 
 /** Modal for adding a brand-new DMC thread to the palette - with no cells assigned yet, ready to be picked from the single-cell recolor popover. */
 export function AddColorDialog({ existingCodes, ownedCodes, onAdd, onClose }: Props) {
+  const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
 
@@ -36,19 +38,16 @@ export function AddColorDialog({ existingCodes, ownedCodes, onAdd, onClose }: Pr
         onClick={stop}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-base font-semibold text-neutral-100">Add a color</h3>
+          <h3 className="text-base font-semibold text-neutral-100">{t('addColorDialog.title')}</h3>
           <button
             type="button"
             onClick={onClose}
             className="ml-auto rounded-md px-2 py-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
           >
-            Close
+            {t('common.close')}
           </button>
         </div>
-        <p className="-mt-2 text-xs text-neutral-500">
-          Adds the thread to the palette with nothing stitched yet - click a pixel on the canvas afterward to assign
-          it.
-        </p>
+        <p className="-mt-2 text-xs text-neutral-500">{t('addColorDialog.helper')}</p>
 
         <div className="flex gap-2">
           {(['all', 'owned'] as const).map((mode) => (
@@ -62,14 +61,14 @@ export function AddColorDialog({ existingCodes, ownedCodes, onAdd, onClose }: Pr
                   : 'rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800'
               }
             >
-              {mode === 'all' ? 'All threads' : 'Owned only'}
+              {mode === 'all' ? t('common.allThreads') : t('common.ownedOnly')}
             </button>
           ))}
         </div>
 
         <input
           type="text"
-          placeholder="Search by code or name..."
+          placeholder={t('common.searchPlaceholder')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="rounded-md border border-neutral-600 bg-neutral-950 px-2 py-1 text-sm text-neutral-100"
@@ -83,7 +82,7 @@ export function AddColorDialog({ existingCodes, ownedCodes, onAdd, onClose }: Pr
                 <button
                   type="button"
                   onClick={() => onAdd(d)}
-                  title={owned ? 'You own this thread' : undefined}
+                  title={owned ? t('common.ownedTitle') : undefined}
                   className={`flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm text-neutral-200 hover:bg-neutral-800 ${
                     owned ? 'bg-green-950/30' : ''
                   }`}
@@ -95,7 +94,7 @@ export function AddColorDialog({ existingCodes, ownedCodes, onAdd, onClose }: Pr
                   <span className="truncate">
                     {d.code} - {d.name}
                   </span>
-                  {owned && <span className="shrink-0 text-green-400">✓ owned</span>}
+                  {owned && <span className="shrink-0 text-green-400">{t('common.ownedBadge')}</span>}
                   {d.finish && (
                     <span className="ml-auto shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
                       {d.finish}
@@ -106,7 +105,7 @@ export function AddColorDialog({ existingCodes, ownedCodes, onAdd, onClose }: Pr
             )
           })}
           {candidates.length === 0 && (
-            <li className="px-3 py-6 text-center text-sm text-neutral-500">No matches</li>
+            <li className="px-3 py-6 text-center text-sm text-neutral-500">{t('common.noMatches')}</li>
           )}
         </ul>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Pipette } from 'lucide-react'
 import type { PaletteEntry, DmcColor } from '../lib/types'
 import { AddColorDialog } from './AddColorDialog'
@@ -30,19 +31,20 @@ export function DmcColorList({
   onAddColor,
   onOpenEyedropper,
 }: Props) {
+  const { t } = useTranslation()
   const [showAddColor, setShowAddColor] = useState(false)
 
   return (
     <div className="flex h-full flex-col">
       {(onAddColor || onOpenEyedropper) && (
         <div className="flex shrink-0 items-center justify-between border-b border-neutral-800 px-3 py-2">
-          <h2 className="text-sm font-semibold text-neutral-100">Colors</h2>
+          <h2 className="text-sm font-semibold text-neutral-100">{t('common.colors')}</h2>
           <div className="flex gap-1.5">
             {onOpenEyedropper && (
               <button
                 type="button"
                 onClick={onOpenEyedropper}
-                title="Pick a color from the original photo"
+                title={t('dmcColorList.pickColorTitle')}
                 className="flex items-center justify-center rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-700"
               >
                 <Pipette className="h-3.5 w-3.5" />
@@ -54,7 +56,7 @@ export function DmcColorList({
                 onClick={() => setShowAddColor(true)}
                 className="rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-700"
               >
-                + Add color
+                {t('dmcColorList.addColor')}
               </button>
             )}
           </div>
@@ -85,14 +87,14 @@ export function DmcColorList({
               {entry.dmc.code} - {entry.dmc.name}
             </span>
             {onEdit && (
-              <span className="shrink-0 text-xs text-neutral-500 opacity-0 group-hover:opacity-100">Edit</span>
+              <span className="shrink-0 text-xs text-neutral-500 opacity-0 group-hover:opacity-100">{t('common.edit')}</span>
             )}
             {showOwned && entry.owned && (
               <span
                 className="ml-auto shrink-0 rounded bg-green-950 px-1.5 py-0.5 text-xs text-green-400"
-                title="In your thread inventory"
+                title={t('dmcColorList.ownedTitle')}
               >
-                owned
+                {t('common.ownedLabel')}
               </span>
             )}
           </li>

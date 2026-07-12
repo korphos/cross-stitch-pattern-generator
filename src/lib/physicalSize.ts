@@ -1,5 +1,6 @@
 export interface FabricCount {
-  label: string
+  /** key into the `fabricCounts` translation namespace, e.g. t(`fabricCounts.${labelKey}`) */
+  labelKey: string
   stitchesPerInch: number
   /** typical number of strands used for full cross stitch at this count */
   defaultStrands: number
@@ -7,11 +8,11 @@ export interface FabricCount {
 
 /** Standard Aida fabric counts (stitches per inch). */
 export const FABRIC_COUNTS: FabricCount[] = [
-  { label: 'Aida 11 count', stitchesPerInch: 11, defaultStrands: 3 },
-  { label: 'Aida 14 count', stitchesPerInch: 14, defaultStrands: 2 },
-  { label: 'Aida 16 count', stitchesPerInch: 16, defaultStrands: 2 },
-  { label: 'Aida 18 count', stitchesPerInch: 18, defaultStrands: 1 },
-  { label: 'Aida 22 count', stitchesPerInch: 22, defaultStrands: 1 },
+  { labelKey: 'aida11', stitchesPerInch: 11, defaultStrands: 3 },
+  { labelKey: 'aida14', stitchesPerInch: 14, defaultStrands: 2 },
+  { labelKey: 'aida16', stitchesPerInch: 16, defaultStrands: 2 },
+  { labelKey: 'aida18', stitchesPerInch: 18, defaultStrands: 1 },
+  { labelKey: 'aida22', stitchesPerInch: 22, defaultStrands: 1 },
 ]
 
 const CM_PER_INCH = 2.54

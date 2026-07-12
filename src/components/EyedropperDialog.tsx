@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
 import type { MouseEvent, PointerEvent as ReactPointerEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { DmcColor, PixelBuffer, RGB } from '../lib/types'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 import { sortedBySimilarity } from '../lib/colorMatch'
@@ -35,6 +36,7 @@ function readPixel(img: PixelBuffer, x: number, y: number): RGB {
  * or any of the visually similar threads shown below it, same as "+ Add color".
  */
 export function EyedropperDialog({ imageData, imageDataUrl, existingCodes, ownedCodes, onAdd, onClose }: Props) {
+  const { t } = useTranslation()
   const [zoom, setZoom] = useState(() => Math.min(1, MAX_DISPLAY_WIDTH / imageData.width))
   const [picked, setPicked] = useState<RGB | null>(null)
   const [isPanning, setIsPanning] = useState(false)
@@ -126,19 +128,16 @@ export function EyedropperDialog({ imageData, imageDataUrl, existingCodes, owned
         onClick={stop}
       >
         <div className="flex items-center gap-3">
-          <h3 className="text-base font-semibold text-neutral-100">Pick a color from the photo</h3>
+          <h3 className="text-base font-semibold text-neutral-100">{t('eyedropperDialog.title')}</h3>
           <button
             type="button"
             onClick={onClose}
             className="ml-auto rounded-md px-2 py-1 text-sm text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200"
           >
-            Close
+            {t('common.close')}
           </button>
         </div>
-        <p className="-mt-2 text-xs text-neutral-500">
-          Zoom in (buttons, or Ctrl/Cmd+scroll), middle-click drag to pan around, then click a pixel on the original
-          photo to find its closest DMC match, or pick any visually similar thread instead.
-        </p>
+        <p className="-mt-2 text-xs text-neutral-500">{t('eyedropperDialog.helper')}</p>
 
         <div className="flex items-center gap-2">
           <button
@@ -167,7 +166,7 @@ export function EyedropperDialog({ imageData, imageDataUrl, existingCodes, owned
         >
           <img
             src={imageDataUrl}
-            alt="Original photo"
+            alt={t('eyedropperDialog.imageAlt')}
             onClick={handlePick}
             draggable={false}
             className="block max-w-none cursor-crosshair select-none"
@@ -182,7 +181,7 @@ export function EyedropperDialog({ imageData, imageDataUrl, existingCodes, owned
                 className="h-6 w-6 shrink-0 rounded-sm border border-black/20"
                 style={{ backgroundColor: `rgb(${picked.r}, ${picked.g}, ${picked.b})` }}
               />
-              Picked color - choose the closest match or any similar thread below:
+              {t('eyedropperDialog.pickedLabel')}
             </div>
             <ul className="flex-1 divide-y divide-neutral-800 overflow-y-auto rounded-md border border-neutral-800">
               {matches.map((d) => {
@@ -192,7 +191,7 @@ export function EyedropperDialog({ imageData, imageDataUrl, existingCodes, owned
                     <button
                       type="button"
                       onClick={() => onAdd(d)}
-                      title={owned ? 'You own this thread' : undefined}
+                      title={owned ? t('common.ownedTitle') : undefined}
                       className={`flex w-full items-center gap-2 px-2 py-1.5 text-left text-sm text-neutral-200 hover:bg-neutral-800 ${
                         owned ? 'bg-green-950/30' : ''
                       }`}
@@ -204,19 +203,19 @@ export function EyedropperDialog({ imageData, imageDataUrl, existingCodes, owned
                       <span className="truncate">
                         {d.code} - {d.name}
                       </span>
-                      {owned && <span className="shrink-0 text-green-400">✓ owned</span>}
+                      {owned && <span className="shrink-0 text-green-400">{t('common.ownedBadge')}</span>}
                       {d.finish && (
                         <span className="shrink-0 rounded bg-neutral-800 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-neutral-400">
                           {d.finish}
                         </span>
                       )}
-                      <span className="ml-auto shrink-0 text-xs text-neutral-500">ΔE {d.deltaE.toFixed(1)}</span>
+                      <span className="ml-auto shrink-0 text-xs text-neutral-500">{t('common.deltaE', { value: d.deltaE.toFixed(1) })}</span>
                     </button>
                   </li>
                 )
               })}
               {matches.length === 0 && (
-                <li className="px-3 py-6 text-center text-sm text-neutral-500">No matches</li>
+                <li className="px-3 py-6 text-center text-sm text-neutral-500">{t('common.noMatches')}</li>
               )}
             </ul>
           </div>

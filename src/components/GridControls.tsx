@@ -1,4 +1,5 @@
 import type { Dispatch } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Info } from 'lucide-react'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function GridControls({ project, dispatch, onFlipHorizontal }: Props) {
+  const { t } = useTranslation()
   const grid = project.confirmedGrid!
   const imageData = project.imageData!
   // A fixed 0.1 step took forever to reach a meaningful offset on a large cell (needing the
@@ -67,55 +69,49 @@ export function GridControls({ project, dispatch, onFlipHorizontal }: Props) {
 
   return (
     <div className="flex h-full flex-col gap-3 overflow-y-auto p-4">
-      <h2 className="text-sm font-semibold text-neutral-100">Grid</h2>
-      <p className="text-xs text-neutral-400">
-        Adjust the offset and cell size if needed: drag a corner handle to resize (stitches stay square), drag
-        anywhere else on the image to move the whole grid, or use the fields below.
-      </p>
+      <h2 className="text-sm font-semibold text-neutral-100">{t('gridControls.title')}</h2>
+      <p className="text-xs text-neutral-400">{t('gridControls.helper')}</p>
 
-      <NumberField label="Offset X (px)" value={grid.bbox.x} onChange={(v) => setField({ offsetX: v })} />
-      <NumberField label="Offset Y (px)" value={grid.bbox.y} onChange={(v) => setField({ offsetY: v })} />
+      <NumberField label={t('gridControls.offsetX')} value={grid.bbox.x} onChange={(v) => setField({ offsetX: v })} />
+      <NumberField label={t('gridControls.offsetY')} value={grid.bbox.y} onChange={(v) => setField({ offsetY: v })} />
       <NumberField
-        label="Cell size (px)"
+        label={t('gridControls.cellSize')}
         value={grid.cellSize}
         step={0.1}
         onChange={(v) => setField({ cellSize: v })}
       />
-      <NumberField label="Columns" value={grid.cols} onChange={(v) => setField({ cols: Math.round(v) })} />
-      <NumberField label="Rows" value={grid.rows} onChange={(v) => setField({ rows: Math.round(v) })} />
+      <NumberField label={t('gridControls.columns')} value={grid.cols} onChange={(v) => setField({ cols: Math.round(v) })} />
+      <NumberField label={t('gridControls.rows')} value={grid.rows} onChange={(v) => setField({ rows: Math.round(v) })} />
 
       <div className="border-t border-neutral-800 pt-3">
         <div className="mb-2 flex items-center gap-1.5">
-          <h3 className="text-sm font-semibold text-neutral-100">Sample point offset</h3>
-          <span
-            title="Where each stitch reads its color from within its cell, instead of dead center - e.g. for a bead pattern photo where the ring color reads better than the center highlight. Shown as pink dots on the image. Bounded to half a cell in either direction."
-            className="cursor-help text-neutral-500"
-          >
+          <h3 className="text-sm font-semibold text-neutral-100">{t('gridControls.samplePointOffset')}</h3>
+          <span title={t('gridControls.samplePointInfo')} className="cursor-help text-neutral-500">
             <Info className="h-3.5 w-3.5 shrink-0" />
           </span>
         </div>
         <NumberField
-          label="Sample offset X (px)"
+          label={t('gridControls.sampleOffsetX')}
           value={grid.sampleOffsetX ?? 0}
           step={sampleOffsetStep}
           onChange={(v) => setSampleOffset({ sampleOffsetX: v })}
         />
         <NumberField
-          label="Sample offset Y (px)"
+          label={t('gridControls.sampleOffsetY')}
           value={grid.sampleOffsetY ?? 0}
           step={sampleOffsetStep}
           onChange={(v) => setSampleOffset({ sampleOffsetY: v })}
         />
       </div>
 
-      <p className="text-xs text-neutral-500">Automatic detection confidence: {Math.round(grid.confidence * 100)}%</p>
+      <p className="text-xs text-neutral-500">{t('gridControls.confidence', { percent: Math.round(grid.confidence * 100) })}</p>
 
       <button
         type="button"
         className="mt-2 rounded-md border border-neutral-600 px-3 py-2 text-sm text-neutral-100 hover:bg-neutral-800"
         onClick={() => updateGrid(detectGrid(imageData))}
       >
-        Re-detect automatically
+        {t('gridControls.redetect')}
       </button>
 
       <button
@@ -123,7 +119,7 @@ export function GridControls({ project, dispatch, onFlipHorizontal }: Props) {
         className="rounded-md border border-neutral-600 px-3 py-2 text-sm text-neutral-100 hover:bg-neutral-800"
         onClick={onFlipHorizontal}
       >
-        Flip horizontally
+        {t('gridControls.flipHorizontal')}
       </button>
     </div>
   )

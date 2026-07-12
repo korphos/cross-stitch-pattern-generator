@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
 import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
@@ -13,11 +14,19 @@ interface Props {
 
 type FilterMode = 'all' | 'owned' | 'specialty'
 
+// Each language's own name, in that language - not translated, same convention every app uses so
+// a user can find their language even if the UI is currently showing one they don't read.
+const LANGUAGES = [
+  { code: 'en-US', label: 'English' },
+  { code: 'fr-FR', label: 'Français' },
+] as const
+
 /**
  * A standalone full-page view (not a modal) so it's comfortable to use on a
  * phone - e.g. checking your DMC stash while standing in a craft store.
  */
 export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUnit, onClose }: Props) {
+  const { t, i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
   const [copied, setCopied] = useState(false)
@@ -50,59 +59,69 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
           onClick={onClose}
           className="rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm hover:bg-neutral-700"
         >
-          ← Back
+          {t('settingsPage.back')}
         </button>
-        <h1 className="text-base font-semibold">Settings</h1>
+        <h1 className="text-base font-semibold">{t('settingsPage.title')}</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto">
-        <section className="border-b border-neutral-800 p-4">
-          <h2 className="mb-2 text-sm font-semibold">Size unit</h2>
-          <div className="flex gap-2">
-            {(['cm', 'in'] as const).map((unit) => (
-              <button
-                key={unit}
-                type="button"
-                onClick={() => onSetSizeUnit(unit)}
-                className={
-                  sizeUnit === unit
-                    ? 'rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white'
-                    : 'rounded-md border border-neutral-700 px-4 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800'
-                }
-              >
-                {unit === 'cm' ? 'Centimeters' : 'Inches'}
-              </button>
-            ))}
-          </div>
-        </section>
+        <div className="grid grid-cols-1 gap-px border-b border-neutral-800 bg-neutral-800 sm:grid-cols-2 lg:grid-cols-3">
+          <section className="bg-neutral-950 p-4">
+            <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.language')}</h2>
+            <select
+              value={i18n.resolvedLanguage ?? i18n.language}
+              onChange={(e) => void i18n.changeLanguage(e.target.value)}
+              className="rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100"
+            >
+              {LANGUAGES.map((lang) => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+          </section>
 
-        <section className="border-b border-neutral-800 p-4">
-          <h2 className="mb-2 text-sm font-semibold">Share settings</h2>
-          <p className="mb-3 text-xs text-neutral-500">
-            Copy a link that carries your owned threads and size unit. Opening it on another device (e.g. your phone)
-            replaces its settings with these - no import/export file needed.
-          </p>
-          <button
-            type="button"
-            onClick={handleShare}
-            className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
-          >
-            {copied ? 'Copied!' : 'Copy share link'}
-          </button>
-        </section>
+          <section className="bg-neutral-950 p-4">
+            <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.sizeUnit')}</h2>
+            <div className="flex gap-2">
+              {(['cm', 'in'] as const).map((unit) => (
+                <button
+                  key={unit}
+                  type="button"
+                  onClick={() => onSetSizeUnit(unit)}
+                  className={
+                    sizeUnit === unit
+                      ? 'rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white'
+                      : 'rounded-md border border-neutral-700 px-4 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800'
+                  }
+                >
+                  {unit === 'cm' ? t('settingsPage.centimeters') : t('settingsPage.inches')}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-neutral-950 p-4">
+            <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.shareSettings')}</h2>
+            <p className="mb-3 text-xs text-neutral-500">{t('settingsPage.shareHelp')}</p>
+            <button
+              type="button"
+              onClick={handleShare}
+              className="rounded-md bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-500"
+            >
+              {copied ? t('settingsPage.copied') : t('settingsPage.copyShareLink')}
+            </button>
+          </section>
+        </div>
 
         <section className="p-4">
           <div className="mb-2 flex items-baseline justify-between">
-            <h2 className="text-sm font-semibold">My DMC threads</h2>
+            <h2 className="text-sm font-semibold">{t('settingsPage.myThreads')}</h2>
             <span className="text-xs text-neutral-500">
-              {ownedCodes.size} / {allDmcColors.length} owned
+              {t('settingsPage.ownedCount', { owned: ownedCodes.size, total: allDmcColors.length })}
             </span>
           </div>
-          <p className="mb-3 text-xs text-neutral-500">
-            Mark the threads you already have. The "Only my threads" palette mode will prefer these when generating a
-            pattern. Includes standard floss plus Light Effects metallics and Satin threads, which can be suggested
-            as shiny alternatives to a close standard color.
-          </p>
+          <p className="mb-3 text-xs text-neutral-500">{t('settingsPage.threadsHelp')}</p>
 
           <div className="mb-3 flex flex-wrap gap-2">
             {(['all', 'owned', 'specialty'] as const).map((mode) => (
@@ -116,7 +135,7 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
                     : 'rounded-md border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-800'
                 }
               >
-                {mode === 'all' ? 'All threads' : mode === 'owned' ? 'Owned only' : 'Metallic & Satin'}
+                {mode === 'all' ? t('common.allThreads') : mode === 'owned' ? t('common.ownedOnly') : t('settingsPage.metallicSatin')}
               </button>
             ))}
           </div>
@@ -124,7 +143,7 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
           <input
             type="text"
             inputMode="search"
-            placeholder="Search by code or name..."
+            placeholder={t('common.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="mb-3 w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2.5 text-base text-neutral-100"
@@ -158,7 +177,7 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
               )
             })}
             {filtered.length === 0 && (
-              <li className="col-span-full px-3 py-6 text-center text-sm text-neutral-500">No matches</li>
+              <li className="col-span-full px-3 py-6 text-center text-sm text-neutral-500">{t('common.noMatches')}</li>
             )}
           </ul>
         </section>

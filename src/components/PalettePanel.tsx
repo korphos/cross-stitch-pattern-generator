@@ -1,4 +1,5 @@
 import type { Dispatch } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
+  const { t } = useTranslation()
   const grid = project.confirmedGrid!
   const size = computePhysicalSize(grid.cols, grid.rows, project.fabricCount)
   const threadEstimates = project.palette ? estimateThreadUsage(project.palette, project.fabricCount, project.strands) : []
@@ -23,10 +25,10 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
-      <h2 className="text-sm font-semibold text-neutral-100">Palette</h2>
+      <h2 className="text-sm font-semibold text-neutral-100">{t('palettePanel.title')}</h2>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
-        Merge similar colors
+        {t('palettePanel.mergeSimilar')}
         <input
           type="range"
           min={0}
@@ -54,7 +56,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
           {backgroundIsTransparent ? (
             <span
               className="h-4 w-4 shrink-0 rounded-sm border border-black/20 bg-[repeating-conic-gradient(#3f3f46_0%_25%,#27272a_0%_50%)] bg-size-[6px_6px]"
-              title="Transparent"
+              title={t('common.transparent')}
             />
           ) : (
             <span
@@ -64,12 +66,12 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
               }}
             />
           )}
-          {backgroundIsTransparent ? 'Ignore transparent background' : 'Ignore background color'}
+          {backgroundIsTransparent ? t('palettePanel.ignoreTransparentBackground') : t('palettePanel.ignoreBackgroundColor')}
         </label>
       )}
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
-        Colors to use
+        {t('palettePanel.colorsToUse')}
         <select
           value={project.paletteMode}
           onChange={(e) => {
@@ -78,18 +80,16 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
           }}
           className="rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1 text-neutral-100"
         >
-          <option value="best">Best possible match</option>
-          <option value="ownedOnly">Only my threads</option>
+          <option value="best">{t('palettePanel.bestMatch')}</option>
+          <option value="ownedOnly">{t('palettePanel.ownedOnlyMode')}</option>
         </select>
         {project.paletteMode === 'ownedOnly' && !hasInventory && (
-          <span className="text-xs text-amber-400">
-            No threads marked as owned yet - add some in Settings, otherwise this behaves like "Best possible match".
-          </span>
+          <span className="text-xs text-amber-400">{t('palettePanel.noInventoryWarning')}</span>
         )}
       </label>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
-        Fabric count
+        {t('palettePanel.fabricCount')}
         <select
           value={project.fabricCount}
           onChange={(e) => dispatch({ type: 'SET_FABRIC_COUNT', stitchesPerInch: Number(e.target.value) })}
@@ -97,14 +97,14 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
         >
           {FABRIC_COUNTS.map((fc) => (
             <option key={fc.stitchesPerInch} value={fc.stitchesPerInch}>
-              {fc.label}
+              {t(`fabricCounts.${fc.labelKey}`)}
             </option>
           ))}
         </select>
       </label>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
-        Strands
+        {t('palettePanel.strands')}
         <select
           value={project.strands}
           onChange={(e) => dispatch({ type: 'SET_STRANDS', strands: Number(e.target.value) })}
@@ -112,41 +112,39 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
         >
           {[1, 2, 3, 4, 5, 6].map((n) => (
             <option key={n} value={n}>
-              {n} strand{n > 1 ? 's' : ''}
+              {t('palettePanel.strandCount', { count: n })}
             </option>
           ))}
         </select>
       </label>
 
       <div className="border-t border-neutral-800 pt-4">
-        <h3 className="mb-2 text-sm font-semibold text-neutral-100">Stats</h3>
+        <h3 className="mb-2 text-sm font-semibold text-neutral-100">{t('palettePanel.stats')}</h3>
         <dl className="flex flex-col gap-1.5 text-sm text-neutral-300">
           <div className="flex justify-between gap-2">
-            <dt className="text-neutral-500">Dimensions</dt>
-            <dd>
-              {grid.cols} × {grid.rows} stitches
-            </dd>
+            <dt className="text-neutral-500">{t('palettePanel.dimensions')}</dt>
+            <dd>{t('palettePanel.stitchesDimension', { cols: grid.cols, rows: grid.rows })}</dd>
           </div>
           <div className="flex justify-between gap-2">
-            <dt className="text-neutral-500">Approx. size</dt>
+            <dt className="text-neutral-500">{t('palettePanel.approxSize')}</dt>
             <dd>{formatPhysicalSize(size, sizeUnit)}</dd>
           </div>
           <div className="flex justify-between gap-2">
-            <dt className="text-neutral-500">Colors</dt>
+            <dt className="text-neutral-500">{t('common.colors')}</dt>
             <dd>{threadEstimates.length}</dd>
           </div>
           <div className="flex justify-between gap-2">
-            <dt className="text-neutral-500">Thread needed</dt>
-            <dd>{totalSkeins} skeins</dd>
+            <dt className="text-neutral-500">{t('palettePanel.threadNeeded')}</dt>
+            <dd>{t('palettePanel.skeins', { count: totalSkeins })}</dd>
           </div>
           {hasInventory && (
             <div className="flex justify-between gap-2">
-              <dt className="text-neutral-500">Need to buy</dt>
-              <dd>{notOwnedCount} colors</dd>
+              <dt className="text-neutral-500">{t('palettePanel.needToBuy')}</dt>
+              <dd>{t('common.colorsCount', { count: notOwnedCount })}</dd>
             </div>
           )}
         </dl>
-        <p className="mt-2 text-xs text-neutral-500">Thread estimate is approximate - buy a bit extra of each color.</p>
+        <p className="mt-2 text-xs text-neutral-500">{t('palettePanel.estimateNote')}</p>
       </div>
     </div>
   )

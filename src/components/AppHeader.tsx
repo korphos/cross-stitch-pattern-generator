@@ -1,4 +1,5 @@
 import type { ChangeEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ImageUp, Undo2, Redo2, Printer, Settings, Download, Upload } from 'lucide-react'
 import { PROJECT_FILE_EXTENSION } from '../lib/projectFile'
 
@@ -33,6 +34,7 @@ export function AppHeader({
   onImportFile,
   isImporting,
 }: Props) {
+  const { t } = useTranslation()
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (file) onFile(file)
@@ -50,28 +52,28 @@ export function AppHeader({
       <div className="order-2 flex flex-wrap items-center justify-center gap-2 sm:order-1 sm:justify-self-start">
         <label className="flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700">
           <ImageUp size={16} className="shrink-0" />
-          {isUploading ? 'Loading…' : 'Replace image'}
+          {isUploading ? t('common.loading') : t('header.replaceImage')}
           <input type="file" accept="image/*" className="hidden" onChange={handleChange} disabled={isUploading} />
         </label>
         <button
           type="button"
           disabled={!canUndo}
           onClick={onUndo}
-          title="Undo (Ctrl+Z)"
+          title={t('header.undoTitle')}
           className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Undo2 size={16} className="shrink-0" />
-          Undo
+          {t('header.undo')}
         </button>
         <button
           type="button"
           disabled={!canRedo}
           onClick={onRedo}
-          title="Redo (Ctrl+Y)"
+          title={t('header.redoTitle')}
           className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Redo2 size={16} className="shrink-0" />
-          Redo
+          {t('header.redo')}
         </button>
       </div>
       <button
@@ -81,12 +83,12 @@ export function AppHeader({
         className="order-1 flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-8 py-1.5 text-base font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-neutral-800 disabled:text-neutral-500 sm:order-2 sm:w-auto sm:justify-self-center"
       >
         <Printer size={18} className="shrink-0" />
-        Print
+        {t('header.print')}
       </button>
       <div className="order-3 flex flex-wrap items-center justify-center gap-2 sm:justify-self-end">
         <label className="flex w-fit cursor-pointer items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700">
           <Upload size={16} className="shrink-0" />
-          {isImporting ? 'Loading…' : 'Import'}
+          {isImporting ? t('common.loading') : t('header.import')}
           <input
             type="file"
             accept={`${PROJECT_FILE_EXTENSION},application/json`}
@@ -99,11 +101,11 @@ export function AppHeader({
           type="button"
           disabled={!canExport}
           onClick={onExport}
-          title="Export the current project as a file"
+          title={t('header.exportTitle')}
           className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Download size={16} className="shrink-0" />
-          Export
+          {t('header.export')}
         </button>
         <button
           type="button"
@@ -111,7 +113,7 @@ export function AppHeader({
           className="flex items-center gap-1.5 rounded-md border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-700"
         >
           <Settings size={16} className="shrink-0" />
-          Settings
+          {t('header.settings')}
         </button>
       </div>
     </header>

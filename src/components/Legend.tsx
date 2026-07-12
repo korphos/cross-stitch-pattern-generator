@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import type { PaletteEntry } from '../lib/types'
 
 interface Props {
@@ -10,10 +11,11 @@ interface Props {
 }
 
 export function Legend({ palette, cols, rows, className, dark = false }: Props) {
+  const { t } = useTranslation()
   return (
     <div className={className}>
       <h3 className={`mb-2 text-sm font-semibold ${dark ? 'text-neutral-100' : 'text-gray-900'}`}>
-        DMC Palette — {palette.length} colors | {cols}×{rows} stitches
+        {t('legend.title', { count: palette.length, cols, rows })}
       </h3>
       <ul className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm sm:grid-cols-3">
         {palette.map((entry) => (
@@ -30,7 +32,7 @@ export function Legend({ palette, cols, rows, className, dark = false }: Props) 
             <span className={dark ? 'text-neutral-300' : 'text-gray-800'}>
               {entry.dmc.code} - {entry.dmc.name}
               {entry.dmc.finish === 'metallic' && (
-                <span className={dark ? 'text-neutral-500' : 'text-gray-500'}> (Metallic)</span>
+                <span className={dark ? 'text-neutral-500' : 'text-gray-500'}> {t('legend.metallic')}</span>
               )}
             </span>
           </li>
