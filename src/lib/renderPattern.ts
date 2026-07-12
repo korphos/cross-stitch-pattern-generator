@@ -30,6 +30,10 @@ export interface RenderOptions {
   /** size of one stitch cell in output (CSS) pixels */
   cellPx: number
   showRulers?: boolean
+  /** hide the symbol/letter glyphs, e.g. for a clean preview of just the stitched colors */
+  showSymbols?: boolean
+  /** hide the cell gridlines, e.g. for a clean preview of just the stitched colors */
+  showGridLines?: boolean
   fontFamily?: string
 }
 
@@ -71,6 +75,8 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
   const { cols, rows, cellAssignment, palette, highlightCode } = grid
   const { cellPx, fontFamily = 'ui-monospace, Menlo, Consolas, monospace' } = options
   const showRulers = options.showRulers ?? true
+  const showSymbols = options.showSymbols ?? true
+  const showGridLines = options.showGridLines ?? true
   const { rulerMargin, width, height } = computeCanvasSize(cols, rows, cellPx, showRulers)
   const originX = rulerMargin
   const originY = rulerMargin
@@ -90,62 +96,66 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
   }
 
   // 2. glyphs
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-  ctx.font = `${Math.round(cellPx * 0.62)}px ${fontFamily}`
-  for (let row = 0; row < rows; row++) {
-    for (let col = 0; col < cols; col++) {
-      const entry = paletteByCode.get(cellAssignment[row * cols + col])
-      if (!entry) continue
-      ctx.fillStyle = entry.textColor
-      ctx.fillText(entry.symbol, originX + col * cellPx + cellPx / 2, originY + row * cellPx + cellPx / 2 + cellPx * 0.03)
+  if (showSymbols) {
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.font = `${Math.round(cellPx * 0.62)}px ${fontFamily}`
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const entry = paletteByCode.get(cellAssignment[row * cols + col])
+        if (!entry) continue
+        ctx.fillStyle = entry.textColor
+        ctx.fillText(entry.symbol, originX + col * cellPx + cellPx / 2, originY + row * cellPx + cellPx / 2 + cellPx * 0.03)
+      }
     }
   }
 
   // 3. gridlines (fine -> medium every 5 -> thick every 10, later passes on top)
-  const gridRight = originX + cols * cellPx
-  const gridBottom = originY + rows * cellPx
+  if (showGridLines) {
+    const gridRight = originX + cols * cellPx
+    const gridBottom = originY + rows * cellPx
 
-  const drawVLine = (col: number, lineWidth: number, color: string) => {
-    const x = originX + col * cellPx
-    ctx.strokeStyle = color
-    ctx.lineWidth = lineWidth
-    ctx.beginPath()
-    ctx.moveTo(x, originY)
-    ctx.lineTo(x, gridBottom)
-    ctx.stroke()
-  }
-  const drawHLine = (row: number, lineWidth: number, color: string) => {
-    const y = originY + row * cellPx
-    ctx.strokeStyle = color
-    ctx.lineWidth = lineWidth
-    ctx.beginPath()
-    ctx.moveTo(originX, y)
-    ctx.lineTo(gridRight, y)
-    ctx.stroke()
-  }
+    const drawVLine = (col: number, lineWidth: number, color: string) => {
+      const x = originX + col * cellPx
+      ctx.strokeStyle = color
+      ctx.lineWidth = lineWidth
+      ctx.beginPath()
+      ctx.moveTo(x, originY)
+      ctx.lineTo(x, gridBottom)
+      ctx.stroke()
+    }
+    const drawHLine = (row: number, lineWidth: number, color: string) => {
+      const y = originY + row * cellPx
+      ctx.strokeStyle = color
+      ctx.lineWidth = lineWidth
+      ctx.beginPath()
+      ctx.moveTo(originX, y)
+      ctx.lineTo(gridRight, y)
+      ctx.stroke()
+    }
 
-  for (let col = 0; col <= cols; col++) {
-    if (col % THICK_EVERY === 0 || col % RULER_EVERY === 0) continue
-    drawVLine(col, 0.5, 'rgba(0,0,0,0.35)')
-  }
-  for (let row = 0; row <= rows; row++) {
-    if (row % THICK_EVERY === 0 || row % RULER_EVERY === 0) continue
-    drawHLine(row, 0.5, 'rgba(0,0,0,0.35)')
-  }
-  for (let col = 0; col <= cols; col++) {
-    if (col % THICK_EVERY === 0) continue
-    if (col % RULER_EVERY === 0) drawVLine(col, 1.1, 'rgba(0,0,0,0.7)')
-  }
-  for (let row = 0; row <= rows; row++) {
-    if (row % THICK_EVERY === 0) continue
-    if (row % RULER_EVERY === 0) drawHLine(row, 1.1, 'rgba(0,0,0,0.7)')
-  }
-  for (let col = 0; col <= cols; col++) {
-    if (col % THICK_EVERY === 0) drawVLine(col, 2.2, '#000')
-  }
-  for (let row = 0; row <= rows; row++) {
-    if (row % THICK_EVERY === 0) drawHLine(row, 2.2, '#000')
+    for (let col = 0; col <= cols; col++) {
+      if (col % THICK_EVERY === 0 || col % RULER_EVERY === 0) continue
+      drawVLine(col, 0.5, 'rgba(0,0,0,0.35)')
+    }
+    for (let row = 0; row <= rows; row++) {
+      if (row % THICK_EVERY === 0 || row % RULER_EVERY === 0) continue
+      drawHLine(row, 0.5, 'rgba(0,0,0,0.35)')
+    }
+    for (let col = 0; col <= cols; col++) {
+      if (col % THICK_EVERY === 0) continue
+      if (col % RULER_EVERY === 0) drawVLine(col, 1.1, 'rgba(0,0,0,0.7)')
+    }
+    for (let row = 0; row <= rows; row++) {
+      if (row % THICK_EVERY === 0) continue
+      if (row % RULER_EVERY === 0) drawHLine(row, 1.1, 'rgba(0,0,0,0.7)')
+    }
+    for (let col = 0; col <= cols; col++) {
+      if (col % THICK_EVERY === 0) drawVLine(col, 2.2, '#000')
+    }
+    for (let row = 0; row <= rows; row++) {
+      if (row % THICK_EVERY === 0) drawHLine(row, 2.2, '#000')
+    }
   }
 
   // 4. highlight - dim every cell that isn't the hovered color, so it pops

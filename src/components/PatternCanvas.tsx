@@ -14,6 +14,8 @@ interface Props {
   selectedCellIndices?: ReadonlySet<number>
   /** DMC code to dim every other cell against, e.g. while hovering it in the sidebar */
   highlightCode?: string | null
+  /** hides gridlines, symbols, and rulers for a clean look at just the stitched colors */
+  previewMode?: boolean
   /** `additive` is true when the click was Ctrl/Cmd+click, meaning "add to (or remove from) the selection" rather than "replace it" */
   onCellClick?: (cellIndex: number, additive: boolean) => void
   /** reports the DMC code under the pointer (or null off-grid/blank), e.g. to highlight it in the sidebar */
@@ -28,18 +30,24 @@ export function PatternCanvas({
   cellPx = 24,
   selectedCellIndices,
   highlightCode = null,
+  previewMode = false,
   onCellClick,
   onCellHover,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lastHoverCodeRef = useRef<string | null>(null)
+  const showRulers = !previewMode
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const { width, height, rulerMargin } = computeCanvasSize(cols, rows, cellPx)
+    const { width, height, rulerMargin } = computeCanvasSize(cols, rows, cellPx, showRulers)
     const ctx = setupCanvasForDpr(canvas, width, height)
-    renderPattern(ctx, { cols, rows, cellAssignment, palette, highlightCode }, { cellPx })
+    renderPattern(
+      ctx,
+      { cols, rows, cellAssignment, palette, highlightCode },
+      { cellPx, showRulers, showSymbols: !previewMode, showGridLines: !previewMode },
+    )
 
     if (selectedCellIndices) {
       ctx.strokeStyle = '#6366f1'
@@ -50,12 +58,12 @@ export function PatternCanvas({
         ctx.strokeRect(rulerMargin + col * cellPx + 1.5, rulerMargin + row * cellPx + 1.5, cellPx - 3, cellPx - 3)
       }
     }
-  }, [cols, rows, cellAssignment, palette, cellPx, selectedCellIndices, highlightCode])
+  }, [cols, rows, cellAssignment, palette, cellPx, selectedCellIndices, highlightCode, showRulers, previewMode])
 
   function handleClick(e: MouseEvent<HTMLCanvasElement>) {
     if (!onCellClick) return
     const rect = e.currentTarget.getBoundingClientRect()
-    const cellIndex = cellIndexFromPoint(e.clientX - rect.left, e.clientY - rect.top, cols, rows, cellPx)
+    const cellIndex = cellIndexFromPoint(e.clientX - rect.left, e.clientY - rect.top, cols, rows, cellPx, showRulers)
     if (cellIndex !== null) onCellClick(cellIndex, e.ctrlKey || e.metaKey)
   }
 
@@ -68,7 +76,7 @@ export function PatternCanvas({
   function handleMouseMove(e: MouseEvent<HTMLCanvasElement>) {
     if (!onCellHover) return
     const rect = e.currentTarget.getBoundingClientRect()
-    const cellIndex = cellIndexFromPoint(e.clientX - rect.left, e.clientY - rect.top, cols, rows, cellPx)
+    const cellIndex = cellIndexFromPoint(e.clientX - rect.left, e.clientY - rect.top, cols, rows, cellPx, showRulers)
     const code = cellIndex !== null ? cellAssignment[cellIndex] : null
     reportHover(code && code !== EMPTY_CELL ? code : null)
   }

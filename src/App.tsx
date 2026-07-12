@@ -45,6 +45,7 @@ function App() {
   const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
   const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
+  const [previewMode, setPreviewMode] = useState(false)
   const [view, setView] = useState<'workspace' | 'settings'>('workspace')
   const [sharedSettingsNotice, setSharedSettingsNotice] = useState(false)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
@@ -458,15 +459,18 @@ function App() {
                       cellPx={cellPx}
                       selectedCellIndices={new Set(selectedCellIndices)}
                       highlightCode={hoveredCode}
+                      previewMode={previewMode}
                       onCellClick={handleCellClick}
                       onCellHover={setHoveredCode}
                     />
                     <ZoomControls
                       cellPx={cellPx}
                       defaultCellPx={DEFAULT_CELL_PX}
+                      previewMode={previewMode}
                       onZoomIn={zoomIn}
                       onZoomOut={zoomOut}
                       onReset={zoomReset}
+                      onTogglePreview={() => setPreviewMode((p) => !p)}
                     />
                   </div>
                 )}
