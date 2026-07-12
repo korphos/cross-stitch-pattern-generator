@@ -21,13 +21,19 @@ describe('sampleCell', () => {
 
   it('does not read undefined/NaN pixels when the cell size is non-integer', () => {
     // Regression test: 428 / 31 is not a whole number, and sampling cell (row, col)
-    // used row*cellHeight/col*cellWidth as a raw (non-rounded) pixel-loop bound - any
+    // used row*cellSize/col*cellSize as a raw (non-rounded) pixel-loop bound - any
     // fractional index reads `undefined` out of the pixel buffer, poisoning the color
     // to NaN, which then always mismatches in nearestDmc and silently defaults to
     // whatever DMC color happens to be first in the table.
-    const cellHeight = 428 / 31
+    const cellSize = 428 / 31
     const img = solidImage(378, 434, 10, 20, 30)
-    const grid: DetectedGrid = { bbox: { x: 0, y: 0, width: 378, height: 428 }, cellWidth: 14, cellHeight, cols: 27, rows: 31, confidence: 1 }
+    const grid: DetectedGrid = {
+      bbox: { x: 0, y: 0, width: 27 * cellSize, height: 428 },
+      cellSize,
+      cols: 27,
+      rows: 31,
+      confidence: 1,
+    }
     const colors = sampleGridColors(img, grid)
     for (const c of colors) {
       expect(Number.isNaN(c.r)).toBe(false)

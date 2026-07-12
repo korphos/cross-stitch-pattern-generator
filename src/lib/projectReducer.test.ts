@@ -104,7 +104,7 @@ describe('projectReducer FLIP_IMAGE_HORIZONTAL', () => {
   function makeFlippableProject(): PatternProject {
     return makeProject({
       imageData: { data: new Uint8ClampedArray(40 * 20 * 4), width: 40, height: 20 },
-      confirmedGrid: { bbox: { x: 5, y: 0, width: 20, height: 20 }, cellWidth: 10, cellHeight: 10, cols: 2, rows: 2, confidence: 1 },
+      confirmedGrid: { bbox: { x: 5, y: 0, width: 20, height: 20 }, cellSize: 10, cols: 2, rows: 2, confidence: 1 },
       cellColors: [
         { r: 1, g: 0, b: 0 },
         { r: 2, g: 0, b: 0 },
@@ -142,7 +142,7 @@ describe('projectReducer FLIP_IMAGE_HORIZONTAL', () => {
     })
     // imageWidth(40) - bbox.x(5) - bbox.width(20) = 15
     expect(next.confirmedGrid?.bbox).toEqual({ x: 15, y: 0, width: 20, height: 20 })
-    expect(next.confirmedGrid?.cellWidth).toBe(10)
+    expect(next.confirmedGrid?.cellSize).toBe(10)
     expect(next.confirmedGrid?.cols).toBe(2)
   })
 
@@ -174,7 +174,7 @@ describe('projectReducer RESTORE', () => {
   const restoreArgs = {
     imageData: { data: new Uint8ClampedArray(4), width: 1, height: 1 },
     imageDataUrl: 'data:image/png;base64,x',
-    grid: { bbox: { x: 0, y: 0, width: 1, height: 1 }, cellWidth: 1, cellHeight: 1, cols: 1, rows: 1, confidence: 1 },
+    grid: { bbox: { x: 0, y: 0, width: 1, height: 1 }, cellSize: 1, cols: 1, rows: 1, confidence: 1 },
     clusterThreshold: 2.3,
     fabricCount: 14,
     strands: 2,

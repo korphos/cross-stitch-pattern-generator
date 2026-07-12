@@ -1,5 +1,6 @@
 import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, RGB } from './types'
 import type { SizeUnit } from './physicalSize'
+import { migrateLegacyGrid } from './gridDetection'
 
 /**
  * Everything needed to fully reconstruct the app on reload. The raw pixel
@@ -74,7 +75,12 @@ export async function loadPersistedProject(): Promise<PersistedProject | null> {
     return await new Promise<PersistedProject | null>((resolve, reject) => {
       const tx = db.transaction(PROJECT_STORE_NAME, 'readonly')
       const request = tx.objectStore(PROJECT_STORE_NAME).get(PROJECT_RECORD_KEY)
-      request.onsuccess = () => resolve(request.result ?? null)
+      request.onsuccess = () => {
+        const result = request.result as (PersistedProject & { grid: Record<string, unknown> }) | undefined
+        // A project autosaved before stitches were forced square has a grid with separate
+        // cellWidth/cellHeight instead of one cellSize - migrate it rather than crash.
+        resolve(result ? { ...result, grid: migrateLegacyGrid(result.grid) } : null)
+      }
       request.onerror = () => reject(request.error)
     })
   } finally {

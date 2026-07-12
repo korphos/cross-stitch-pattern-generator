@@ -25,7 +25,7 @@ export function sampleCell(
   // never produce a negative or out-of-range index, which would read
   // `undefined` out of the pixel buffer and poison the DMC match downstream.
   // Also round to integers: cellX/cellY/cellW/cellH are frequently non-integer
-  // (e.g. cellHeight = 428/31), and a fractional pixel index reads `undefined`
+  // (e.g. cellSize = 428/31), and a fractional pixel index reads `undefined`
   // out of the buffer just the same as an out-of-range one.
   const x0 = Math.round(Math.max(0, Math.min(img.width - 1, cellX + insetX)))
   const x1 = Math.max(x0, Math.round(Math.min(img.width - 1, cellX + cellW - insetX - 1)))
@@ -69,9 +69,9 @@ export function sampleGridColors(img: PixelBuffer, grid: DetectedGrid): RGB[] {
   const colors: RGB[] = []
   for (let row = 0; row < grid.rows; row++) {
     for (let col = 0; col < grid.cols; col++) {
-      const cellX = grid.bbox.x + col * grid.cellWidth
-      const cellY = grid.bbox.y + row * grid.cellHeight
-      colors.push(sampleCell(img, cellX, cellY, grid.cellWidth, grid.cellHeight))
+      const cellX = grid.bbox.x + col * grid.cellSize
+      const cellY = grid.bbox.y + row * grid.cellSize
+      colors.push(sampleCell(img, cellX, cellY, grid.cellSize, grid.cellSize))
     }
   }
   return colors

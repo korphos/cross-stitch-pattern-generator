@@ -19,7 +19,7 @@ function makeProject(): PersistedProject {
   return {
     imageDataUrl: 'data:image/png;base64,abc123',
     fileName: 'cat.png',
-    grid: { bbox: { x: 0, y: 0, width: 10, height: 10 }, cellWidth: 1, cellHeight: 1, cols: 10, rows: 10, confidence: 1 },
+    grid: { bbox: { x: 0, y: 0, width: 10, height: 10 }, cellSize: 1, cols: 10, rows: 10, confidence: 1 },
     clusterThreshold: 2.3,
     fabricCount: 14,
     strands: 2,
@@ -62,5 +62,14 @@ describe('projectFile', () => {
     const parsed = parseProjectFile(JSON.stringify({ version: 1, ...legacyProject }))
     expect(parsed.backgroundColor).toBeNull()
     expect(parsed.ignoreBackground).toBe(false)
+  })
+
+  it('migrates a file exported before stitches were forced square (separate cellWidth/cellHeight)', () => {
+    const legacyProject = {
+      ...makeProject(),
+      grid: { bbox: { x: 0, y: 0, width: 10, height: 12 }, cellWidth: 1, cellHeight: 1.4, cols: 10, rows: 10, confidence: 1 },
+    }
+    const parsed = parseProjectFile(JSON.stringify({ version: 1, ...legacyProject }))
+    expect(parsed.grid).toEqual({ bbox: { x: 0, y: 0, width: 10, height: 12 }, cellSize: 1.2, cols: 10, rows: 10, confidence: 1 })
   })
 })

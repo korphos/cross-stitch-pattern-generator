@@ -1,4 +1,5 @@
 import type { PersistedProject } from './persistence'
+import { migrateLegacyGrid } from './gridDetection'
 
 /** Extension used for exported project files. */
 export const PROJECT_FILE_EXTENSION = '.xstitch'
@@ -65,7 +66,8 @@ export function parseProjectFile(text: string): PersistedProject {
   return {
     imageDataUrl,
     fileName: typeof fileName === 'string' ? fileName : null,
-    grid: grid as PersistedProject['grid'],
+    // Older exported files may predate square-only stitches (separate cellWidth/cellHeight) - migrate.
+    grid: migrateLegacyGrid(grid),
     clusterThreshold,
     fabricCount,
     strands,

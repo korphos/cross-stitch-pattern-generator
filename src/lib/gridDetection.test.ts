@@ -60,8 +60,7 @@ describe('detectGrid', () => {
   it('recovers exact cell size and dimensions for a clean grid, no padding', () => {
     const img = makeGridImage(6, 5, 20, PALETTE)
     const grid = detectGrid(img)
-    expect(grid.cellWidth).toBe(20)
-    expect(grid.cellHeight).toBe(20)
+    expect(grid.cellSize).toBeCloseTo(20)
     expect(grid.cols).toBe(6)
     expect(grid.rows).toBe(5)
   })
@@ -69,8 +68,7 @@ describe('detectGrid', () => {
   it('recovers a different cell size (odd, larger)', () => {
     const img = makeGridImage(8, 7, 23, PALETTE)
     const grid = detectGrid(img)
-    expect(grid.cellWidth).toBe(23)
-    expect(grid.cellHeight).toBe(23)
+    expect(grid.cellSize).toBeCloseTo(23)
     expect(grid.cols).toBe(8)
     expect(grid.rows).toBe(7)
   })
@@ -87,8 +85,8 @@ describe('detectGrid', () => {
   it('is robust to mild per-pixel noise', () => {
     const img = makeGridImage(10, 8, 18, PALETTE, { padding: 6, noise: 6 })
     const grid = detectGrid(img)
-    expect(grid.cellWidth).toBeGreaterThanOrEqual(17)
-    expect(grid.cellWidth).toBeLessThanOrEqual(19)
+    expect(grid.cellSize).toBeGreaterThanOrEqual(17)
+    expect(grid.cellSize).toBeLessThanOrEqual(19)
     expect(grid.cols).toBe(10)
     expect(grid.rows).toBe(8)
   })

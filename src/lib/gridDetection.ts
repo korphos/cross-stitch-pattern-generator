@@ -146,20 +146,22 @@ function modalSpacing(positions: number[]): { spacing: number; confidence: numbe
   return { spacing: bestGap, confidence: bestCount / gaps.length }
 }
 
-export function detectCellSize(
-  img: PixelBuffer,
-  bbox: BBox,
-): { cellWidth: number; cellHeight: number; confidence: number } {
+/** Stitches are always square: the column/row spacings are detected independently, then
+ * blended into one size, weighted by each axis's own confidence (a noisy axis shouldn't
+ * pull the estimate as much as a clean one). */
+export function detectCellSize(img: PixelBuffer, bbox: BBox): { cellSize: number; confidence: number } {
   const { colSignal, rowSignal } = computeChangeSignal(img, bbox)
   const colBoundaries = [0, ...findPeaks(colSignal), bbox.width - 1]
   const rowBoundaries = [0, ...findPeaks(rowSignal), bbox.height - 1]
 
   const col = modalSpacing(colBoundaries)
   const row = modalSpacing(rowBoundaries)
+  const colSize = col.spacing || bbox.width
+  const rowSize = row.spacing || bbox.height
+  const totalConfidence = col.confidence + row.confidence
 
   return {
-    cellWidth: col.spacing || bbox.width,
-    cellHeight: row.spacing || bbox.height,
+    cellSize: totalConfidence > 0 ? (colSize * col.confidence + rowSize * row.confidence) / totalConfidence : (colSize + rowSize) / 2,
     confidence: Math.min(col.confidence, row.confidence),
   }
 }
@@ -172,10 +174,30 @@ export interface DetectGridOptions {
 export function detectGrid(img: PixelBuffer, options: DetectGridOptions = {}): DetectedGrid {
   const bg = detectBackgroundColor(img)
   const bbox = detectBoundingBox(img, bg, options.backgroundTolerance ?? 24)
-  const { cellWidth, cellHeight, confidence } = detectCellSize(img, bbox)
+  const { cellSize, confidence } = detectCellSize(img, bbox)
 
-  const cols = Math.max(1, Math.round(bbox.width / cellWidth))
-  const rows = Math.max(1, Math.round(bbox.height / cellHeight))
+  const cols = Math.max(1, Math.round(bbox.width / cellSize))
+  const rows = Math.max(1, Math.round(bbox.height / cellSize))
 
-  return { bbox, cellWidth, cellHeight, cols, rows, confidence }
+  return { bbox, cellSize, cols, rows, confidence }
+}
+
+/**
+ * Accepts either the current DetectedGrid shape or the pre-square-cells shape (separate
+ * cellWidth/cellHeight, from a project saved/exported before stitches were forced square) -
+ * averages the two into one cellSize so old localStorage/.xstitch data still loads instead
+ * of producing NaN geometry.
+ */
+export function migrateLegacyGrid(raw: Record<string, unknown>): DetectedGrid {
+  const cellSize =
+    typeof raw.cellSize === 'number'
+      ? raw.cellSize
+      : ((raw.cellWidth as number) + (raw.cellHeight as number)) / 2
+  return {
+    bbox: raw.bbox as BBox,
+    cellSize,
+    cols: raw.cols as number,
+    rows: raw.rows as number,
+    confidence: raw.confidence as number,
+  }
 }

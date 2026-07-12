@@ -28,8 +28,8 @@ export interface BBox {
 
 export interface DetectedGrid {
   bbox: BBox
-  cellWidth: number
-  cellHeight: number
+  /** stitches are always square - one size for both axes */
+  cellSize: number
   cols: number
   rows: number
   /** 0-1, fraction of boundary gaps that matched the modal spacing */
