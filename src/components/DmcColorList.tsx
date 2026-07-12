@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Pipette } from 'lucide-react'
 import type { PaletteEntry, DmcColor } from '../lib/types'
 import { AddColorDialog } from './AddColorDialog'
 
@@ -15,6 +16,8 @@ interface Props {
   ownedCodes?: ReadonlySet<string>
   /** adds a brand-new color to the palette with nothing stitched yet - omit to hide the "Add color" button */
   onAddColor?: (dmc: DmcColor) => void
+  /** opens the eyedropper dialog (picks a color straight from the original photo) - omit to hide its button */
+  onOpenEyedropper?: () => void
 }
 
 export function DmcColorList({
@@ -25,21 +28,36 @@ export function DmcColorList({
   highlightCode = null,
   ownedCodes = new Set(),
   onAddColor,
+  onOpenEyedropper,
 }: Props) {
   const [showAddColor, setShowAddColor] = useState(false)
 
   return (
     <div className="flex h-full flex-col">
-      {onAddColor && (
+      {(onAddColor || onOpenEyedropper) && (
         <div className="flex shrink-0 items-center justify-between border-b border-neutral-800 px-3 py-2">
           <h2 className="text-sm font-semibold text-neutral-100">Colors</h2>
-          <button
-            type="button"
-            onClick={() => setShowAddColor(true)}
-            className="rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-700"
-          >
-            + Add color
-          </button>
+          <div className="flex gap-1.5">
+            {onOpenEyedropper && (
+              <button
+                type="button"
+                onClick={onOpenEyedropper}
+                title="Pick a color from the original photo"
+                className="flex items-center justify-center rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-700"
+              >
+                <Pipette className="h-3.5 w-3.5" />
+              </button>
+            )}
+            {onAddColor && (
+              <button
+                type="button"
+                onClick={() => setShowAddColor(true)}
+                className="rounded-md border border-neutral-700 bg-neutral-800 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-700"
+              >
+                + Add color
+              </button>
+            )}
+          </div>
         </div>
       )}
 

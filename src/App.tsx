@@ -20,6 +20,7 @@ import { PalettePanel } from './components/PalettePanel'
 import { DmcColorList } from './components/DmcColorList'
 import { CellEditPopover } from './components/CellEditPopover'
 import { ColorEditDialog } from './components/ColorEditDialog'
+import { EyedropperDialog } from './components/EyedropperDialog'
 import { ZoomControls } from './components/ZoomControls'
 import { SettingsPage } from './components/SettingsPage'
 import { PrintablePage } from './components/PrintablePage'
@@ -44,6 +45,7 @@ function App() {
   const [selectedCellIndices, setSelectedCellIndices] = useState<number[]>([])
   const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
+  const [showEyedropper, setShowEyedropper] = useState(false)
   const [cellPx, setCellPx] = useState(DEFAULT_CELL_PX)
   const [previewMode, setPreviewMode] = useState(false)
   const [view, setView] = useState<'workspace' | 'settings'>('workspace')
@@ -486,6 +488,7 @@ function App() {
                     highlightCode={hoveredCode}
                     ownedCodes={new Set(settings.ownedThreadCodes)}
                     onAddColor={(dmc) => dispatch({ type: 'ADD_COLOR', dmc })}
+                    onOpenEyedropper={() => setShowEyedropper(true)}
                   />
                 )}
               </div>
@@ -522,6 +525,20 @@ function App() {
           }}
           onClose={() => setEditingCode(null)}
           ownedCodes={new Set(settings.ownedThreadCodes)}
+        />
+      )}
+
+      {showEyedropper && project.imageData && project.imageDataUrl && project.palette && (
+        <EyedropperDialog
+          imageData={project.imageData}
+          imageDataUrl={project.imageDataUrl}
+          existingCodes={new Set(project.palette.map((p) => p.dmc.code))}
+          ownedCodes={new Set(settings.ownedThreadCodes)}
+          onAdd={(dmc) => {
+            dispatch({ type: 'ADD_COLOR', dmc })
+            setShowEyedropper(false)
+          }}
+          onClose={() => setShowEyedropper(false)}
         />
       )}
 
