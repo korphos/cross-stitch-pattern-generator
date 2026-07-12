@@ -34,6 +34,15 @@ export interface DetectedGrid {
   rows: number
   /** 0-1, fraction of boundary gaps that matched the modal spacing */
   confidence: number
+  /**
+   * Shifts the point every cell samples its color from, away from the cell's center - e.g. to
+   * read a bead pattern photo's ring color instead of a center highlight/reflection. Applies
+   * uniformly to every cell, clamped to +/- half the cell size so it can't cross into a
+   * neighboring cell. Optional/defaults to 0 (dead center) - undefined on grids detected or
+   * saved before this existed.
+   */
+  sampleOffsetX?: number
+  sampleOffsetY?: number
 }
 
 export interface DmcColor {

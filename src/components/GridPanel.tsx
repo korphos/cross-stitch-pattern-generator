@@ -141,6 +141,7 @@ export function GridPanel({ project, dispatch }: Props) {
           draggable={false}
         />
         <GridOverlay grid={displayGrid} scale={scale} />
+        <SamplePointsOverlay grid={displayGrid} scale={scale} />
         <Handle
           style={{ left: displayGrid.bbox.x * scale, top: displayGrid.bbox.y * scale }}
           onPointerDown={startDrag('tl')}
@@ -186,6 +187,43 @@ function GridOverlay({ grid, scale }: { grid: DetectedGrid; scale: number }) {
     )
   }
   return <>{lines}</>
+}
+
+/**
+ * One small crosshair per cell showing exactly where its color is actually sampled from (see
+ * DetectedGrid.sampleOffsetX/Y) - a filled dot reads as a fuzzy blob with no clear "this exact
+ * point", whereas two thin lines crossing have an unambiguous center. A single tiled SVG
+ * background instead of one DOM node per cell, so it stays cheap even on a large grid.
+ */
+function SamplePointsOverlay({ grid, scale }: { grid: DetectedGrid; scale: number }) {
+  const cellPx = grid.cellSize * scale
+  const offsetXPx = (grid.sampleOffsetX ?? 0) * scale
+  const offsetYPx = (grid.sampleOffsetY ?? 0) * scale
+  const half = cellPx / 2
+  const arm = Math.min(cellPx * 0.28, 5)
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${cellPx}" height="${cellPx}">` +
+    `<line x1="${half - arm}" y1="${half}" x2="${half + arm}" y2="${half}" stroke="#ec4899" stroke-width="1" />` +
+    `<line x1="${half}" y1="${half - arm}" x2="${half}" y2="${half + arm}" stroke="#ec4899" stroke-width="1" />` +
+    `</svg>`
+  return (
+    <div
+      className="pointer-events-none absolute"
+      style={{
+        left: grid.bbox.x * scale,
+        top: grid.bbox.y * scale,
+        width: grid.bbox.width * scale,
+        height: grid.bbox.height * scale,
+        backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+        backgroundSize: `${cellPx}px ${cellPx}px`,
+        // The SVG tile already draws its crosshair at its own center, so the tile grid lands
+        // each mark at its cell's center with no offset - only the extra sampleOffsetX/Y shift
+        // needs to be added here (not another +cellPx/2, which would shift the whole tile grid
+        // by half a cell and misalign every mark from its square).
+        backgroundPosition: `${offsetXPx}px ${offsetYPx}px`,
+      }}
+    />
+  )
 }
 
 function Handle({ style, onPointerDown }: { style: CSSProperties; onPointerDown: (e: ReactPointerEvent) => void }) {

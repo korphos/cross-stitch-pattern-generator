@@ -50,3 +50,37 @@ describe('sampleCell', () => {
     expect(Number.isNaN(result.r)).toBe(false)
   })
 })
+
+describe('sampleGridColors sample offset', () => {
+  it('shifts every cell sampling window by sampleOffsetX/Y instead of always reading dead-center', () => {
+    const cellSize = 20
+    // Solid ring color (10,10,10) everywhere, except an 8x8 "highlight" square that exactly
+    // matches the default (offset 0) inset sampling window - see sampleCell's insetRatio=0.3
+    // (insetX/Y = round(20*0.3) = 6, so the default window is x/y in [6,13]).
+    const data = new Uint8ClampedArray(cellSize * cellSize * 4)
+    for (let y = 0; y < cellSize; y++) {
+      for (let x = 0; x < cellSize; x++) {
+        const isHighlight = x >= 6 && x <= 13 && y >= 6 && y <= 13
+        const i = (y * cellSize + x) * 4
+        const [r, g, b] = isHighlight ? [255, 255, 255] : [10, 10, 10]
+        data[i] = r
+        data[i + 1] = g
+        data[i + 2] = b
+        data[i + 3] = 255
+      }
+    }
+    const img: PixelBuffer = { data, width: cellSize, height: cellSize }
+    const baseGrid: DetectedGrid = {
+      bbox: { x: 0, y: 0, width: cellSize, height: cellSize },
+      cellSize,
+      cols: 1,
+      rows: 1,
+      confidence: 1,
+    }
+
+    expect(sampleGridColors(img, baseGrid)[0]).toEqual({ r: 255, g: 255, b: 255 })
+
+    const shifted = sampleGridColors(img, { ...baseGrid, sampleOffsetX: 10, sampleOffsetY: 10 })
+    expect(shifted[0]).toEqual({ r: 10, g: 10, b: 10 })
+  })
+})

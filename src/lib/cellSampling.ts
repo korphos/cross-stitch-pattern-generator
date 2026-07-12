@@ -67,10 +67,14 @@ export function sampleCell(
 /** Samples one representative color per logical cell, row-major. */
 export function sampleGridColors(img: PixelBuffer, grid: DetectedGrid): RGB[] {
   const colors: RGB[] = []
+  // Shifts every cell's sampling window off-center by the same amount - e.g. to read a bead
+  // pattern's ring color instead of its center highlight. See DetectedGrid.sampleOffsetX/Y.
+  const offsetX = grid.sampleOffsetX ?? 0
+  const offsetY = grid.sampleOffsetY ?? 0
   for (let row = 0; row < grid.rows; row++) {
     for (let col = 0; col < grid.cols; col++) {
-      const cellX = grid.bbox.x + col * grid.cellSize
-      const cellY = grid.bbox.y + row * grid.cellSize
+      const cellX = grid.bbox.x + col * grid.cellSize + offsetX
+      const cellY = grid.bbox.y + row * grid.cellSize + offsetY
       colors.push(sampleCell(img, cellX, cellY, grid.cellSize, grid.cellSize))
     }
   }

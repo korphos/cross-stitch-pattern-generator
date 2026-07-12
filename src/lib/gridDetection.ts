@@ -179,7 +179,7 @@ export function detectGrid(img: PixelBuffer, options: DetectGridOptions = {}): D
   const cols = Math.max(1, Math.round(bbox.width / cellSize))
   const rows = Math.max(1, Math.round(bbox.height / cellSize))
 
-  return { bbox, cellSize, cols, rows, confidence }
+  return { bbox, cellSize, cols, rows, confidence, sampleOffsetX: 0, sampleOffsetY: 0 }
 }
 
 /**
@@ -199,5 +199,7 @@ export function migrateLegacyGrid(raw: Record<string, unknown>): DetectedGrid {
     cols: raw.cols as number,
     rows: raw.rows as number,
     confidence: raw.confidence as number,
+    sampleOffsetX: typeof raw.sampleOffsetX === 'number' ? raw.sampleOffsetX : 0,
+    sampleOffsetY: typeof raw.sampleOffsetY === 'number' ? raw.sampleOffsetY : 0,
   }
 }
