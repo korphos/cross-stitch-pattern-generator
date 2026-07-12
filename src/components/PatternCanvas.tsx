@@ -16,8 +16,12 @@ interface Props {
   highlightCode?: string | null
   /** hides gridlines, symbols, and rulers for a clean look at just the stitched colors */
   previewMode?: boolean
-  /** `additive` is true when the click was Ctrl/Cmd+click, meaning "add to (or remove from) the selection" rather than "replace it" */
-  onCellClick?: (cellIndex: number, additive: boolean) => void
+  /**
+   * `additive` is true for Ctrl/Cmd+click: add to (or remove from) the selection instead of
+   * replacing it. `range` is true for Shift+click: select every cell in the rectangle between
+   * the last plain-clicked cell and this one (a single row/column when they line up).
+   */
+  onCellClick?: (cellIndex: number, additive: boolean, range: boolean) => void
   /** reports the DMC code under the pointer (or null off-grid/blank), e.g. to highlight it in the sidebar */
   onCellHover?: (code: string | null) => void
 }
@@ -64,7 +68,7 @@ export function PatternCanvas({
     if (!onCellClick) return
     const rect = e.currentTarget.getBoundingClientRect()
     const cellIndex = cellIndexFromPoint(e.clientX - rect.left, e.clientY - rect.top, cols, rows, cellPx, showRulers)
-    if (cellIndex !== null) onCellClick(cellIndex, e.ctrlKey || e.metaKey)
+    if (cellIndex !== null) onCellClick(cellIndex, e.ctrlKey || e.metaKey, e.shiftKey)
   }
 
   function reportHover(code: string | null) {

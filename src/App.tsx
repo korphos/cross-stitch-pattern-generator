@@ -43,6 +43,8 @@ function App() {
   const [sourceFileName, setSourceFileName] = useState<string | null>(null)
   const [isRestoring, setIsRestoring] = useState(true)
   const [selectedCellIndices, setSelectedCellIndices] = useState<number[]>([])
+  // The last plain-clicked cell, i.e. one corner of a pending Shift+click range selection.
+  const [rangeAnchor, setRangeAnchor] = useState<number | null>(null)
   const [hoveredCode, setHoveredCode] = useState<string | null>(null)
   const [editingCode, setEditingCode] = useState<string | null>(null)
   const [showEyedropper, setShowEyedropper] = useState(false)
@@ -354,13 +356,34 @@ function App() {
   const hasImage = project.imageData !== null
   const editingEntry = editingCode ? (project.palette?.find((p) => p.dmc.code === editingCode) ?? null) : null
 
-  // A plain click selects only that cell; Ctrl/Cmd+click toggles it into
-  // (or out of) whatever's already selected, for a multi-cell recolor.
-  function handleCellClick(cellIndex: number, additive: boolean) {
-    setSelectedCellIndices((prev) => {
-      if (!additive) return [cellIndex]
-      return prev.includes(cellIndex) ? prev.filter((i) => i !== cellIndex) : [...prev, cellIndex]
-    })
+  // A plain click selects only that cell (and becomes the range anchor); Ctrl/Cmd+click toggles
+  // it into (or out of) whatever's already selected, for a multi-cell recolor; Shift+click
+  // selects every cell in the rectangle between the anchor and this cell - a single row or
+  // column when the two happen to line up, since that's just a 1-row/1-col rectangle.
+  function handleCellClick(cellIndex: number, additive: boolean, range: boolean) {
+    if (range && rangeAnchor !== null && project.confirmedGrid) {
+      const { cols } = project.confirmedGrid
+      const anchorRow = Math.floor(rangeAnchor / cols)
+      const anchorCol = rangeAnchor % cols
+      const row = Math.floor(cellIndex / cols)
+      const col = cellIndex % cols
+      const minRow = Math.min(anchorRow, row)
+      const maxRow = Math.max(anchorRow, row)
+      const minCol = Math.min(anchorCol, col)
+      const maxCol = Math.max(anchorCol, col)
+      const indices: number[] = []
+      for (let r = minRow; r <= maxRow; r++) {
+        for (let c = minCol; c <= maxCol; c++) indices.push(r * cols + c)
+      }
+      setSelectedCellIndices(indices)
+      return
+    }
+    if (!additive) {
+      setRangeAnchor(cellIndex)
+      setSelectedCellIndices([cellIndex])
+      return
+    }
+    setSelectedCellIndices((prev) => (prev.includes(cellIndex) ? prev.filter((i) => i !== cellIndex) : [...prev, cellIndex]))
   }
 
   const selectedCurrentCode = (() => {
@@ -450,7 +473,10 @@ function App() {
                         onPick={(dmcCode) =>
                           dispatch({ type: 'RECOLOR_CELLS', cellIndices: selectedCellIndices, dmcCode })
                         }
-                        onClose={() => setSelectedCellIndices([])}
+                        onClose={() => {
+                          setSelectedCellIndices([])
+                          setRangeAnchor(null)
+                        }}
                       />
                     )}
                     <PatternCanvas
@@ -499,6 +525,7 @@ function App() {
                 activeTab={project.activeTab}
                 onSelect={(tab) => {
                   setSelectedCellIndices([])
+                  setRangeAnchor(null)
                   dispatch({ type: 'SET_ACTIVE_TAB', tab })
                 }}
               />
