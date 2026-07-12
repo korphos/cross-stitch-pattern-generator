@@ -169,3 +169,44 @@ describe('projectReducer FLIP_IMAGE_HORIZONTAL', () => {
     expect(next.history.future).toHaveLength(0)
   })
 })
+
+describe('projectReducer RESTORE', () => {
+  const restoreArgs = {
+    imageData: { data: new Uint8ClampedArray(4), width: 1, height: 1 },
+    imageDataUrl: 'data:image/png;base64,x',
+    grid: { bbox: { x: 0, y: 0, width: 1, height: 1 }, cellWidth: 1, cellHeight: 1, cols: 1, rows: 1, confidence: 1 },
+    clusterThreshold: 2.3,
+    fabricCount: 14,
+    strands: 2,
+    paletteMode: 'best' as const,
+    backgroundColor: null,
+    ignoreBackground: false,
+    activeTab: 'palette' as const,
+    cellAssignment: ['310'],
+  }
+
+  it('re-derives owned from the currently effective ownedThreadCodes, not whatever was baked into the saved/imported palette', () => {
+    // Simulates importing a .xstitch file (or restoring a stale autosave) where the
+    // palette entry's own `owned` flag disagrees with this device's current inventory -
+    // e.g. exported from another session before 310 was marked owned locally.
+    const staleEntry = { ...makeEntry('310', 1), owned: false }
+    const next = projectReducer(initialProject, {
+      type: 'RESTORE',
+      ...restoreArgs,
+      ownedThreadCodes: ['310'],
+      palette: [staleEntry],
+    })
+    expect(next.palette?.[0].owned).toBe(true)
+  })
+
+  it('marks entries not in ownedThreadCodes as not owned, even if the saved palette said otherwise', () => {
+    const staleEntry = { ...makeEntry('310', 1), owned: true }
+    const next = projectReducer(initialProject, {
+      type: 'RESTORE',
+      ...restoreArgs,
+      ownedThreadCodes: [],
+      palette: [staleEntry],
+    })
+    expect(next.palette?.[0].owned).toBe(false)
+  })
+})

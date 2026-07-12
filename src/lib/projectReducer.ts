@@ -374,9 +374,15 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       }
     }
 
-    case 'RESTORE':
+    case 'RESTORE': {
       // Unlike IMAGE_LOADED, this uses the palette/cellAssignment as saved
       // (not a fresh buildPalette from cellColors) so manual edits survive.
+      // The `owned` flag baked into each saved/imported entry can be stale
+      // though (e.g. a .xstitch file imported from another device/session,
+      // or ownership changed after the last autosave) - always re-derive it
+      // from the ownedThreadCodes that are actually in effect now.
+      const ownedSet = new Set(action.ownedThreadCodes)
+      const palette = action.palette.map((entry) => ({ ...entry, owned: ownedSet.has(entry.dmc.code) }))
       return {
         ...initialProject,
         imageData: action.imageData,
@@ -392,9 +398,10 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         backgroundColor: action.backgroundColor,
         ignoreBackground: action.ignoreBackground,
         activeTab: action.activeTab,
-        palette: action.palette,
+        palette,
         cellAssignment: action.cellAssignment,
       }
+    }
 
     case 'RESET':
       return initialProject
