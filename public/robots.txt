@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://korphos.github.io/cross-stitch-pattern-generator/sitemap.xml

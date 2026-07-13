@@ -1,0 +1,192 @@
+import type enUS from './en-US'
+
+const ptBR: typeof enUS = {
+  seo: {
+    title: 'Gerador de gráfico de ponto cruz — transforme qualquer foto em um padrão DMC',
+    description:
+      'Criador de gráfico de ponto cruz gratuito e online: transforme qualquer foto em um gráfico imprimível com correspondência automática de linhas DMC, edição da paleta e exportação em PDF. Sem cadastro, tudo roda no seu navegador.',
+  },
+  common: {
+    close: 'Fechar',
+    done: 'Concluído',
+    edit: 'Editar',
+    searchPlaceholder: 'Buscar por código ou nome...',
+    noMatches: 'Nenhum resultado',
+    allThreads: 'Todas as linhas',
+    ownedOnly: 'Apenas as que tenho',
+    ownedTitle: 'Você já tem esta linha',
+    ownedBadge: '✓ tenho',
+    ownedLabel: 'tenho',
+    dismiss: 'Dispensar',
+    transparent: 'Transparente',
+    deltaE: 'ΔE {{value}}',
+    colors: 'Cores',
+    colorsCount_one: '{{count}} cor',
+    colorsCount_other: '{{count}} cores',
+    loading: 'Carregando…',
+  },
+  errors: {
+    imageLoadGeneric: 'Erro ao carregar a imagem',
+    importGeneric: 'Erro ao importar o arquivo de projeto',
+    imageDecodeFailed: 'Não foi possível carregar a imagem',
+    canvasUnavailable: 'Seu navegador não tem os recursos necessários para processar imagens (canvas 2D indisponível)',
+    invalidJson: 'Este arquivo não é um arquivo de projeto válido (JSON inválido).',
+    invalidProjectFile: 'Este arquivo não é um arquivo de projeto válido.',
+    missingProjectData: 'Faltam dados esperados de um arquivo de projeto de ponto cruz neste arquivo.',
+  },
+  app: {
+    sharedSettingsNotice: 'Configurações importadas de um link compartilhado (linhas que você tem, unidade de tamanho).',
+  },
+  confirmDestructive: {
+    message_one:
+      'Você tem {{count}} edição de cor manual não salva que será descartada se continuar. Continuar?',
+    message_other:
+      'Você tem {{count}} edições de cor manuais não salvas que serão descartadas se continuar. Continuar?',
+  },
+  header: {
+    replaceImage: 'Substituir imagem',
+    undo: 'Desfazer',
+    undoTitle: 'Desfazer (Ctrl+Z)',
+    redo: 'Refazer',
+    redoTitle: 'Refazer (Ctrl+Y)',
+    print: 'Imprimir',
+    import: 'Importar',
+    export: 'Exportar',
+    exportTitle: 'Exportar o projeto atual como arquivo',
+    settings: 'Configurações',
+  },
+  tabBar: {
+    palette: 'Paleta',
+    grid: 'Grade',
+  },
+  uploadDropzone: {
+    dragDrop: 'Arraste e solte aqui uma imagem já pixelada, ou',
+    chooseFile: 'Escolher um arquivo',
+    analyzing: 'Analisando a imagem...',
+  },
+  gridControls: {
+    title: 'Grade',
+    helper:
+      'Ajuste o deslocamento e o tamanho da célula se precisar: arraste uma alça no canto para redimensionar (os pontos continuam quadrados), arraste em qualquer outro lugar da imagem para mover a grade inteira, ou use os campos abaixo.',
+    offsetX: 'Deslocamento X (px)',
+    offsetY: 'Deslocamento Y (px)',
+    cellSize: 'Tamanho da célula (px)',
+    columns: 'Colunas',
+    rows: 'Linhas',
+    samplePointOffset: 'Deslocamento do ponto de amostragem',
+    samplePointInfo:
+      'De onde dentro da célula a cor de cada ponto é lida, em vez do centro exato - por exemplo, para uma foto de padrão de miçangas em que a cor do anel é mais fiel do que o brilho central. Mostrado como pontos rosa na imagem. Limitado a meia célula em cada direção.',
+    sampleOffsetX: 'Deslocamento de amostragem X (px)',
+    sampleOffsetY: 'Deslocamento de amostragem Y (px)',
+    confidence: 'Confiança da detecção automática: {{percent}}%',
+    redetect: 'Detectar novamente automaticamente',
+    flipHorizontal: 'Espelhar horizontalmente',
+  },
+  gridPanel: {
+    imageAlt: 'Imagem de origem',
+  },
+  palettePanel: {
+    title: 'Paleta',
+    mergeSimilar: 'Mesclar cores parecidas',
+    ignoreTransparentBackground: 'Ignorar o fundo transparente',
+    ignoreBackgroundColor: 'Ignorar a cor de fundo',
+    colorsToUse: 'Cores a usar',
+    bestMatch: 'Melhor correspondência possível',
+    ownedOnlyMode: 'Somente minhas linhas',
+    noInventoryWarning:
+      'Nenhuma linha marcada como sua ainda - adicione algumas em Configurações, caso contrário este modo se comporta como "Melhor correspondência possível".',
+    fabricCount: 'Contagem do tecido',
+    strands: 'Fios',
+    strandCount_one: '{{count}} fio',
+    strandCount_other: '{{count}} fios',
+    stats: 'Estatísticas',
+    dimensions: 'Dimensões',
+    stitchesDimension: '{{cols}} × {{rows}} pontos',
+    approxSize: 'Tamanho aproximado',
+    threadNeeded: 'Linha necessária',
+    skeins_one: '{{count}} novelo',
+    skeins_other: '{{count}} novelos',
+    needToBuy: 'Falta comprar',
+    estimateNote: 'A estimativa de linha é aproximada - compre um pouco a mais de cada cor.',
+  },
+  fabricCounts: {
+    aida11: 'Aida contagem 11',
+    aida14: 'Aida contagem 14',
+    aida16: 'Aida contagem 16',
+    aida18: 'Aida contagem 18',
+    aida22: 'Aida contagem 22',
+  },
+  dmcColorList: {
+    pickColorTitle: 'Escolher uma cor da foto original',
+    addColor: '+ Adicionar cor',
+    ownedTitle: 'No seu estoque de linhas',
+  },
+  addColorDialog: {
+    title: 'Adicionar uma cor',
+    helper:
+      'Adiciona a linha à paleta sem nenhum ponto atribuído ainda - clique depois em um pixel da imagem para atribuí-la.',
+  },
+  colorEditDialog: {
+    removeColor: 'Remover cor',
+    removeHelper:
+      '"Remover cor" deixa cada ponto "{{symbol}}" em branco (sem preenchimento nem símbolo) - útil para um fundo que você não quer bordar.',
+    standardAlternative: 'Alternativa padrão disponível: ',
+    shinyAlternative: 'Alternativa brilhante disponível: ',
+    switch: 'Trocar',
+    replaceTitle: 'Substituir por outra cor já presente neste padrão',
+    replaceHelper: 'Cada ponto "{{symbol}}" passa a ser esta cor, e "{{symbol}}" desaparece da paleta.',
+    changeTitle: 'Trocar para outra linha DMC',
+  },
+  eyedropperDialog: {
+    title: 'Escolher uma cor da foto',
+    helper:
+      'Dê zoom (pelos botões, ou Ctrl/Cmd+scroll), arraste com o clique do meio para navegar, depois clique em um pixel da foto original para encontrar a linha DMC mais próxima, ou escolha qualquer linha visualmente parecida.',
+    imageAlt: 'Foto original',
+    pickedLabel: 'Cor escolhida - selecione a correspondência mais próxima ou uma linha parecida abaixo:',
+  },
+  cellEditPopover: {
+    cellLabel: 'Célula (col {{col}}, linha {{row}}):',
+    cellsSelected_one: '{{count}} célula selecionada:',
+    cellsSelected_other: '{{count}} células selecionadas:',
+    noStitchTitle: 'Sem ponto (vazio)',
+  },
+  legend: {
+    title_one: 'Paleta DMC — {{count}} cor | {{cols}}×{{rows}} pontos',
+    title_other: 'Paleta DMC — {{count}} cores | {{cols}}×{{rows}} pontos',
+    metallic: '(Metálico)',
+  },
+  printablePage: {
+    dimensionsFabric: '{{cols}}×{{rows}} pontos — {{size}} em {{fabric}}',
+    skeinsTotal_one: '~{{count}} novelo no total',
+    skeinsTotal_other: '~{{count}} novelos no total',
+    strandsParen_one: '({{count}} fio)',
+    strandsParen_other: '({{count}} fios)',
+  },
+  settingsPage: {
+    back: '← Voltar',
+    title: 'Configurações',
+    language: 'Idioma',
+    sizeUnit: 'Unidade de tamanho',
+    centimeters: 'Centímetros',
+    inches: 'Polegadas',
+    shareSettings: 'Compartilhar configurações',
+    shareHelp:
+      'Copie um link que carrega suas linhas e sua unidade de tamanho. Abri-lo em outro aparelho (por exemplo seu celular) substitui as configurações dele por estas - sem precisar de arquivo de importação/exportação.',
+    copyShareLink: 'Copiar link para compartilhar',
+    copied: 'Copiado!',
+    myThreads: 'Minhas linhas DMC',
+    ownedCount: '{{owned}} / {{total}} que tenho',
+    threadsHelp:
+      'Marque as linhas que você já tem. O modo de paleta "Somente minhas linhas" vai priorizá-las ao gerar um padrão. Inclui a linha mouliné padrão além dos metálicos Light Effects e das linhas Satin, que podem ser sugeridas como alternativas brilhantes a uma cor padrão próxima.',
+    metallicSatin: 'Metálico e Satin',
+  },
+  zoomControls: {
+    showGridSymbols: 'Mostrar grade e símbolos',
+    hideGridSymbols: 'Ocultar grade e símbolos (pré-visualização)',
+    zoomOut: 'Diminuir zoom',
+    resetZoom: 'Redefinir zoom',
+    zoomIn: 'Aumentar zoom',
+  },
+}
+
+export default ptBR

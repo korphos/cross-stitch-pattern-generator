@@ -1,0 +1,192 @@
+import type enUS from './en-US'
+
+const nlNL: typeof enUS = {
+  seo: {
+    title: 'Borduurpatroon generator — maak van elke foto een DMC-borduurpatroon',
+    description:
+      'Gratis online tool voor borduurpatronen: maak van elke foto een afdrukbaar telpatroon met automatische DMC-garenherkenning, palet bewerken en PDF-export. Geen account nodig, werkt volledig in je browser.',
+  },
+  common: {
+    close: 'Sluiten',
+    done: 'Klaar',
+    edit: 'Bewerken',
+    searchPlaceholder: 'Zoek op code of naam...',
+    noMatches: 'Geen resultaten',
+    allThreads: 'Alle garens',
+    ownedOnly: 'Alleen eigen garens',
+    ownedTitle: 'Je hebt dit garen al',
+    ownedBadge: '✓ in bezit',
+    ownedLabel: 'in bezit',
+    dismiss: 'Sluiten',
+    transparent: 'Transparant',
+    deltaE: 'ΔE {{value}}',
+    colors: 'Kleuren',
+    colorsCount_one: '{{count}} kleur',
+    colorsCount_other: '{{count}} kleuren',
+    loading: 'Bezig met laden…',
+  },
+  errors: {
+    imageLoadGeneric: 'Fout bij het laden van de afbeelding',
+    importGeneric: 'Fout bij het importeren van het projectbestand',
+    imageDecodeFailed: 'De afbeelding kon niet worden geladen',
+    canvasUnavailable: 'Je browser ondersteunt de functies die nodig zijn om afbeeldingen te verwerken niet (2D-canvas niet beschikbaar)',
+    invalidJson: 'Dit bestand is geen geldig projectbestand (ongeldige JSON).',
+    invalidProjectFile: 'Dit bestand is geen geldig projectbestand.',
+    missingProjectData: 'Dit bestand mist gegevens die in een borduurpatroon-projectbestand worden verwacht.',
+  },
+  app: {
+    sharedSettingsNotice: 'Instellingen geïmporteerd via een gedeelde link (eigen garens, maateenheid).',
+  },
+  confirmDestructive: {
+    message_one:
+      'Je hebt {{count}} niet-opgeslagen handmatige kleurwijziging die verloren gaat als je doorgaat. Doorgaan?',
+    message_other:
+      'Je hebt {{count}} niet-opgeslagen handmatige kleurwijzigingen die verloren gaan als je doorgaat. Doorgaan?',
+  },
+  header: {
+    replaceImage: 'Afbeelding vervangen',
+    undo: 'Ongedaan maken',
+    undoTitle: 'Ongedaan maken (Ctrl+Z)',
+    redo: 'Opnieuw',
+    redoTitle: 'Opnieuw (Ctrl+Y)',
+    print: 'Afdrukken',
+    import: 'Importeren',
+    export: 'Exporteren',
+    exportTitle: 'Huidig project als bestand exporteren',
+    settings: 'Instellingen',
+  },
+  tabBar: {
+    palette: 'Palet',
+    grid: 'Raster',
+  },
+  uploadDropzone: {
+    dragDrop: 'Sleep hier een al gepixelde afbeelding naartoe, of',
+    chooseFile: 'Kies een bestand',
+    analyzing: 'Afbeelding wordt geanalyseerd...',
+  },
+  gridControls: {
+    title: 'Raster',
+    helper:
+      'Pas indien nodig de verschuiving en celgrootte aan: sleep aan een hoekgreep om het formaat te wijzigen (steken blijven vierkant), sleep ergens anders op de afbeelding om het hele raster te verplaatsen, of gebruik de velden hieronder.',
+    offsetX: 'Verschuiving X (px)',
+    offsetY: 'Verschuiving Y (px)',
+    cellSize: 'Celgrootte (px)',
+    columns: 'Kolommen',
+    rows: 'Rijen',
+    samplePointOffset: 'Verschuiving van het meetpunt',
+    samplePointInfo:
+      'Van waar binnen de cel de kleur van elke steek wordt gelezen, in plaats van precies het midden - bijvoorbeeld bij een kralenpatroon-foto waar de kleur van de rand beter overkomt dan de glans in het midden. Weergegeven als roze puntjes op de afbeelding. Beperkt tot een halve cel in elke richting.',
+    sampleOffsetX: 'Meetpunt-verschuiving X (px)',
+    sampleOffsetY: 'Meetpunt-verschuiving Y (px)',
+    confidence: 'Betrouwbaarheid van automatische detectie: {{percent}}%',
+    redetect: 'Automatisch opnieuw detecteren',
+    flipHorizontal: 'Horizontaal spiegelen',
+  },
+  gridPanel: {
+    imageAlt: 'Bronafbeelding',
+  },
+  palettePanel: {
+    title: 'Palet',
+    mergeSimilar: 'Vergelijkbare kleuren samenvoegen',
+    ignoreTransparentBackground: 'Transparante achtergrond negeren',
+    ignoreBackgroundColor: 'Achtergrondkleur negeren',
+    colorsToUse: 'Te gebruiken kleuren',
+    bestMatch: 'Best mogelijke match',
+    ownedOnlyMode: 'Alleen mijn garens',
+    noInventoryWarning:
+      'Nog geen garens als eigen gemarkeerd - voeg er een paar toe bij Instellingen, anders gedraagt deze modus zich als "Best mogelijke match".',
+    fabricCount: 'Telling van de stof',
+    strands: 'Draden',
+    strandCount_one: '{{count}} draad',
+    strandCount_other: '{{count}} draden',
+    stats: 'Statistieken',
+    dimensions: 'Afmetingen',
+    stitchesDimension: '{{cols}} × {{rows}} steken',
+    approxSize: 'Geschatte grootte',
+    threadNeeded: 'Benodigd garen',
+    skeins_one: '{{count}} streng',
+    skeins_other: '{{count}} strengen',
+    needToBuy: 'Nog te kopen',
+    estimateNote: 'De garenschatting is bij benadering - koop van elke kleur wat extra.',
+  },
+  fabricCounts: {
+    aida11: 'Aida telling 11',
+    aida14: 'Aida telling 14',
+    aida16: 'Aida telling 16',
+    aida18: 'Aida telling 18',
+    aida22: 'Aida telling 22',
+  },
+  dmcColorList: {
+    pickColorTitle: 'Kies een kleur uit de originele foto',
+    addColor: '+ Kleur toevoegen',
+    ownedTitle: 'In je garenvoorraad',
+  },
+  addColorDialog: {
+    title: 'Kleur toevoegen',
+    helper:
+      'Voegt het garen toe aan het palet zonder dat er al een steek is toegewezen - klik daarna op een pixel op het canvas om het toe te wijzen.',
+  },
+  colorEditDialog: {
+    removeColor: 'Kleur verwijderen',
+    removeHelper:
+      '"Kleur verwijderen" laat elke "{{symbol}}"-steek leeg (geen vulling, geen symbool) - handig voor een achtergrond die je niet wilt borduren.',
+    standardAlternative: 'Standaard alternatief beschikbaar: ',
+    shinyAlternative: 'Glanzend alternatief beschikbaar: ',
+    switch: 'Wisselen',
+    replaceTitle: 'Vervangen door een andere kleur die al in dit patroon voorkomt',
+    replaceHelper: 'Elke "{{symbol}}"-steek wordt deze kleur, en "{{symbol}}" verdwijnt uit het palet.',
+    changeTitle: 'Wisselen naar een ander DMC-garen',
+  },
+  eyedropperDialog: {
+    title: 'Kies een kleur uit de foto',
+    helper:
+      'Zoom in (met de knoppen, of Ctrl/Cmd+scrollen), sleep met de middelste muisknop om te navigeren, en klik dan op een pixel van de originele foto om de dichtstbijzijnde DMC-match te vinden, of kies een visueel vergelijkbaar garen.',
+    imageAlt: 'Originele foto',
+    pickedLabel: 'Gekozen kleur - kies hieronder de dichtstbijzijnde match of een vergelijkbaar garen:',
+  },
+  cellEditPopover: {
+    cellLabel: 'Cel (kol {{col}}, rij {{row}}):',
+    cellsSelected_one: '{{count}} cel geselecteerd:',
+    cellsSelected_other: '{{count}} cellen geselecteerd:',
+    noStitchTitle: 'Geen steek (leeg)',
+  },
+  legend: {
+    title_one: 'DMC-palet — {{count}} kleur | {{cols}}×{{rows}} steken',
+    title_other: 'DMC-palet — {{count}} kleuren | {{cols}}×{{rows}} steken',
+    metallic: '(Metallic)',
+  },
+  printablePage: {
+    dimensionsFabric: '{{cols}}×{{rows}} steken — {{size}} op {{fabric}}',
+    skeinsTotal_one: '~{{count}} streng totaal',
+    skeinsTotal_other: '~{{count}} strengen totaal',
+    strandsParen_one: '({{count}} draad)',
+    strandsParen_other: '({{count}} draden)',
+  },
+  settingsPage: {
+    back: '← Terug',
+    title: 'Instellingen',
+    language: 'Taal',
+    sizeUnit: 'Maateenheid',
+    centimeters: 'Centimeters',
+    inches: 'Inch',
+    shareSettings: 'Instellingen delen',
+    shareHelp:
+      'Kopieer een link die je eigen garens en maateenheid meeneemt. Als je die op een ander apparaat opent (bijvoorbeeld je telefoon), vervangt dit de instellingen daar door deze - geen import-/exportbestand nodig.',
+    copyShareLink: 'Deel-link kopiëren',
+    copied: 'Gekopieerd!',
+    myThreads: 'Mijn DMC-garens',
+    ownedCount: '{{owned}} / {{total}} in bezit',
+    threadsHelp:
+      'Markeer de garens die je al hebt. De paletmodus "Alleen mijn garens" geeft hier voorrang aan bij het genereren van een patroon. Bevat standaard borduurgaren plus Light Effects-metallics en Satin-garens, die als glanzend alternatief voor een vergelijkbare standaardkleur kunnen worden voorgesteld.',
+    metallicSatin: 'Metallic & Satin',
+  },
+  zoomControls: {
+    showGridSymbols: 'Raster en symbolen tonen',
+    hideGridSymbols: 'Raster en symbolen verbergen (voorvertoning)',
+    zoomOut: 'Uitzoomen',
+    resetZoom: 'Zoom herstellen',
+    zoomIn: 'Inzoomen',
+  },
+}
+
+export default nlNL

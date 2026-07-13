@@ -1,0 +1,192 @@
+import type enUS from './en-US'
+
+const plPL: typeof enUS = {
+  seo: {
+    title: 'Generator haftu krzyżykowego — zamień dowolne zdjęcie we wzór DMC',
+    description:
+      'Darmowe narzędzie online do haftu krzyżykowego: zamienia dowolne zdjęcie w wydrukowalny wzór z automatycznym doborem mulin DMC, edycją palety i eksportem do PDF. Bez rejestracji, działa całkowicie w przeglądarce.',
+  },
+  common: {
+    close: 'Zamknij',
+    done: 'Gotowe',
+    edit: 'Edytuj',
+    searchPlaceholder: 'Szukaj po kodzie lub nazwie...',
+    noMatches: 'Brak wyników',
+    allThreads: 'Wszystkie mulliny',
+    ownedOnly: 'Tylko posiadane',
+    ownedTitle: 'Masz już tę mulinę',
+    ownedBadge: '✓ posiadana',
+    ownedLabel: 'posiadana',
+    dismiss: 'Zamknij',
+    transparent: 'Przezroczyste',
+    deltaE: 'ΔE {{value}}',
+    colors: 'Kolory',
+    colorsCount_one: '{{count}} kolor',
+    colorsCount_other: '{{count}} kolorów',
+    loading: 'Wczytywanie…',
+  },
+  errors: {
+    imageLoadGeneric: 'Błąd podczas wczytywania obrazu',
+    importGeneric: 'Błąd podczas importowania pliku projektu',
+    imageDecodeFailed: 'Nie udało się wczytać obrazu',
+    canvasUnavailable: 'Twoja przeglądarka nie obsługuje funkcji potrzebnych do przetwarzania obrazów (canvas 2D niedostępny)',
+    invalidJson: 'Ten plik nie jest prawidłowym plikiem projektu (nieprawidłowy JSON).',
+    invalidProjectFile: 'Ten plik nie jest prawidłowym plikiem projektu.',
+    missingProjectData: 'W tym pliku brakuje danych oczekiwanych w pliku projektu haftu krzyżykowego.',
+  },
+  app: {
+    sharedSettingsNotice: 'Ustawienia zaimportowane z udostępnionego linku (posiadane mulliny, jednostka rozmiaru).',
+  },
+  confirmDestructive: {
+    message_one:
+      'Masz {{count}} niezapisaną ręczną zmianę koloru, która zostanie utracona, jeśli będziesz kontynuować. Kontynuować?',
+    message_other:
+      'Masz {{count}} niezapisanych ręcznych zmian koloru, które zostaną utracone, jeśli będziesz kontynuować. Kontynuować?',
+  },
+  header: {
+    replaceImage: 'Zamień obraz',
+    undo: 'Cofnij',
+    undoTitle: 'Cofnij (Ctrl+Z)',
+    redo: 'Ponów',
+    redoTitle: 'Ponów (Ctrl+Y)',
+    print: 'Drukuj',
+    import: 'Importuj',
+    export: 'Eksportuj',
+    exportTitle: 'Eksportuj bieżący projekt jako plik',
+    settings: 'Ustawienia',
+  },
+  tabBar: {
+    palette: 'Paleta',
+    grid: 'Siatka',
+  },
+  uploadDropzone: {
+    dragDrop: 'Przeciągnij i upuść tutaj już spikselowany obraz, albo',
+    chooseFile: 'Wybierz plik',
+    analyzing: 'Analizowanie obrazu...',
+  },
+  gridControls: {
+    title: 'Siatka',
+    helper:
+      'W razie potrzeby dostosuj przesunięcie i rozmiar komórki: przeciągnij uchwyt w rogu, aby zmienić rozmiar (ściegi pozostają kwadratowe), przeciągnij w innym miejscu obrazu, aby przesunąć całą siatkę, albo skorzystaj z pól poniżej.',
+    offsetX: 'Przesunięcie X (px)',
+    offsetY: 'Przesunięcie Y (px)',
+    cellSize: 'Rozmiar komórki (px)',
+    columns: 'Kolumny',
+    rows: 'Wiersze',
+    samplePointOffset: 'Przesunięcie punktu próbkowania',
+    samplePointInfo:
+      'Miejsce w komórce, z którego odczytywany jest kolor każdego ściegu, zamiast dokładnego środka - na przykład dla zdjęcia wzoru z koralikami, gdzie kolor obwódki lepiej oddaje wygląd niż odblask na środku. Pokazane jako różowe kropki na obrazie. Ograniczone do połowy komórki w każdym kierunku.',
+    sampleOffsetX: 'Przesunięcie próbkowania X (px)',
+    sampleOffsetY: 'Przesunięcie próbkowania Y (px)',
+    confidence: 'Pewność automatycznego wykrywania: {{percent}}%',
+    redetect: 'Wykryj ponownie automatycznie',
+    flipHorizontal: 'Odbij poziomo',
+  },
+  gridPanel: {
+    imageAlt: 'Obraz źródłowy',
+  },
+  palettePanel: {
+    title: 'Paleta',
+    mergeSimilar: 'Scal podobne kolory',
+    ignoreTransparentBackground: 'Ignoruj przezroczyste tło',
+    ignoreBackgroundColor: 'Ignoruj kolor tła',
+    colorsToUse: 'Kolory do użycia',
+    bestMatch: 'Najlepsze możliwe dopasowanie',
+    ownedOnlyMode: 'Tylko moje mulliny',
+    noInventoryWarning:
+      'Nie oznaczono jeszcze żadnych mullin jako posiadanych - dodaj kilka w Ustawieniach, w przeciwnym razie ten tryb zachowuje się jak "Najlepsze możliwe dopasowanie".',
+    fabricCount: 'Splot tkaniny',
+    strands: 'Nitki',
+    strandCount_one: '{{count}} nitka',
+    strandCount_other: '{{count}} nitek',
+    stats: 'Statystyki',
+    dimensions: 'Wymiary',
+    stitchesDimension: '{{cols}} × {{rows}} ściegów',
+    approxSize: 'Przybliżony rozmiar',
+    threadNeeded: 'Potrzebna mulina',
+    skeins_one: '{{count}} motek',
+    skeins_other: '{{count}} motków',
+    needToBuy: 'Do kupienia',
+    estimateNote: 'Szacowana ilość muliny jest przybliżona - kup nieco więcej każdego koloru.',
+  },
+  fabricCounts: {
+    aida11: 'Aida 11 (splot 11)',
+    aida14: 'Aida 14 (splot 14)',
+    aida16: 'Aida 16 (splot 16)',
+    aida18: 'Aida 18 (splot 18)',
+    aida22: 'Aida 22 (splot 22)',
+  },
+  dmcColorList: {
+    pickColorTitle: 'Wybierz kolor z oryginalnego zdjęcia',
+    addColor: '+ Dodaj kolor',
+    ownedTitle: 'W Twoim zapasie mullin',
+  },
+  addColorDialog: {
+    title: 'Dodaj kolor',
+    helper:
+      'Dodaje mulinę do palety bez przypisanego jeszcze żadnego ściegu - kliknij potem piksel na płótnie, aby go przypisać.',
+  },
+  colorEditDialog: {
+    removeColor: 'Usuń kolor',
+    removeHelper:
+      '"Usuń kolor" pozostawia każdy ścieg "{{symbol}}" pusty (bez wypełnienia i symbolu) - przydatne dla tła, którego nie chcesz haftować.',
+    standardAlternative: 'Dostępna standardowa alternatywa: ',
+    shinyAlternative: 'Dostępna błyszcząca alternatywa: ',
+    switch: 'Zmień',
+    replaceTitle: 'Zastąp innym kolorem już obecnym w tym wzorze',
+    replaceHelper: 'Każdy ścieg "{{symbol}}" zmienia się w ten kolor, a "{{symbol}}" znika z palety.',
+    changeTitle: 'Zmień na inną mulinę DMC',
+  },
+  eyedropperDialog: {
+    title: 'Wybierz kolor ze zdjęcia',
+    helper:
+      'Powiększ (przyciskami albo Ctrl/Cmd+scroll), przeciągaj środkowym przyciskiem myszy, aby się przemieszczać, a następnie kliknij piksel na oryginalnym zdjęciu, aby znaleźć najbliższą mulinę DMC, albo wybierz dowolną wizualnie podobną mulinę.',
+    imageAlt: 'Oryginalne zdjęcie',
+    pickedLabel: 'Wybrany kolor - wybierz poniżej najbliższe dopasowanie albo podobną mulinę:',
+  },
+  cellEditPopover: {
+    cellLabel: 'Komórka (kol. {{col}}, wiersz {{row}}):',
+    cellsSelected_one: '{{count}} komórka zaznaczona:',
+    cellsSelected_other: '{{count}} komórek zaznaczonych:',
+    noStitchTitle: 'Brak ściegu (puste)',
+  },
+  legend: {
+    title_one: 'Paleta DMC — {{count}} kolor | {{cols}}×{{rows}} ściegów',
+    title_other: 'Paleta DMC — {{count}} kolorów | {{cols}}×{{rows}} ściegów',
+    metallic: '(Metaliczna)',
+  },
+  printablePage: {
+    dimensionsFabric: '{{cols}}×{{rows}} ściegów — {{size}} na {{fabric}}',
+    skeinsTotal_one: '~{{count}} motek łącznie',
+    skeinsTotal_other: '~{{count}} motków łącznie',
+    strandsParen_one: '({{count}} nitka)',
+    strandsParen_other: '({{count}} nitek)',
+  },
+  settingsPage: {
+    back: '← Wstecz',
+    title: 'Ustawienia',
+    language: 'Język',
+    sizeUnit: 'Jednostka rozmiaru',
+    centimeters: 'Centymetry',
+    inches: 'Cale',
+    shareSettings: 'Udostępnij ustawienia',
+    shareHelp:
+      'Skopiuj link, który przenosi Twoje posiadane mulliny i jednostkę rozmiaru. Otwarcie go na innym urządzeniu (np. telefonie) zastąpi jego ustawienia tymi - bez potrzeby pliku importu/eksportu.',
+    copyShareLink: 'Kopiuj link do udostępnienia',
+    copied: 'Skopiowano!',
+    myThreads: 'Moje mulliny DMC',
+    ownedCount: '{{owned}} / {{total}} posiadanych',
+    threadsHelp:
+      'Zaznacz mulliny, które już posiadasz. Tryb palety "Tylko moje mulliny" będzie je preferować podczas generowania wzoru. Obejmuje standardową mulinę oraz metaliczne Light Effects i mulliny Satin, które mogą być proponowane jako błyszczące alternatywy dla zbliżonego koloru standardowego.',
+    metallicSatin: 'Metaliczna i Satin',
+  },
+  zoomControls: {
+    showGridSymbols: 'Pokaż siatkę i symbole',
+    hideGridSymbols: 'Ukryj siatkę i symbole (podgląd)',
+    zoomOut: 'Pomniejsz',
+    resetZoom: 'Zresetuj powiększenie',
+    zoomIn: 'Powiększ',
+  },
+}
+
+export default plPL

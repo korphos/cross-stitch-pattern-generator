@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  A single-page app has exactly one real URL - the "?lang=" variants aren't separate pages, just
+  the same page pre-selecting a language (see index.html's hreflang alternates / SettingsPage.tsx).
+  Annotating them here as xhtml:link alternates (Google's standard multi-lingual sitemap pattern)
+  rather than as separate <url> entries reflects that: one page, many language entry points.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://korphos.github.io/cross-stitch-pattern-generator/</loc>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://korphos.github.io/cross-stitch-pattern-generator/" />
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=en-US" />
+    <xhtml:link rel="alternate" hreflang="fr-FR" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=fr-FR" />
+    <xhtml:link rel="alternate" hreflang="es-ES" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=es-ES" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=pt-BR" />
+    <xhtml:link rel="alternate" hreflang="de-DE" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=de-DE" />
+    <xhtml:link rel="alternate" hreflang="it-IT" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=it-IT" />
+    <xhtml:link rel="alternate" hreflang="nl-NL" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=nl-NL" />
+    <xhtml:link rel="alternate" hreflang="pl-PL" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=pl-PL" />
+    <xhtml:link rel="alternate" hreflang="ru-RU" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=ru-RU" />
+    <xhtml:link rel="alternate" hreflang="uk-UA" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=uk-UA" />
+    <xhtml:link rel="alternate" hreflang="tr-TR" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=tr-TR" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://korphos.github.io/cross-stitch-pattern-generator/?lang=zh-CN" />
+    <changefreq>monthly</changefreq>
+  </url>
+</urlset>

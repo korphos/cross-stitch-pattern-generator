@@ -1,6 +1,11 @@
 import type enUS from './en-US'
 
 const frFR: typeof enUS = {
+  seo: {
+    title: 'Générateur de grille de point de croix — transformez une photo en modèle DMC',
+    description:
+      'Créateur de grille de point de croix gratuit et en ligne : transformez une photo en grille imprimable avec correspondance automatique des fils DMC, édition de la palette et export PDF. Sans inscription, tout se passe dans votre navigateur.',
+  },
   common: {
     close: 'Fermer',
     done: 'Terminé',

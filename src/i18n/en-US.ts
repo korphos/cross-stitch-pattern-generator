@@ -1,4 +1,9 @@
 const enUS = {
+  seo: {
+    title: 'Cross-Stitch Pattern Generator — Turn Any Photo into a DMC Pattern',
+    description:
+      'Free online cross-stitch pattern maker: turn any photo into a printable chart with automatic DMC thread matching, palette editing, and PDF export. No signup, runs entirely in your browser.',
+  },
   common: {
     close: 'Close',
     done: 'Done',

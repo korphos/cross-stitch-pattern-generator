@@ -1,0 +1,192 @@
+import type enUS from './en-US'
+
+const itIT: typeof enUS = {
+  seo: {
+    title: 'Generatore di schemi a punto croce — trasforma qualsiasi foto in uno schema DMC',
+    description:
+      'Creatore di schemi a punto croce gratuito e online: trasforma qualsiasi foto in uno schema stampabile con abbinamento automatico dei filati DMC, modifica della tavolozza ed esportazione in PDF. Nessuna registrazione, tutto avviene nel tuo browser.',
+  },
+  common: {
+    close: 'Chiudi',
+    done: 'Fatto',
+    edit: 'Modifica',
+    searchPlaceholder: 'Cerca per codice o nome...',
+    noMatches: 'Nessun risultato',
+    allThreads: 'Tutti i filati',
+    ownedOnly: 'Solo posseduti',
+    ownedTitle: 'Possiedi già questo filato',
+    ownedBadge: '✓ posseduto',
+    ownedLabel: 'posseduto',
+    dismiss: 'Ignora',
+    transparent: 'Trasparente',
+    deltaE: 'ΔE {{value}}',
+    colors: 'Colori',
+    colorsCount_one: '{{count}} colore',
+    colorsCount_other: '{{count}} colori',
+    loading: 'Caricamento…',
+  },
+  errors: {
+    imageLoadGeneric: "Errore durante il caricamento dell'immagine",
+    importGeneric: "Errore durante l'importazione del file di progetto",
+    imageDecodeFailed: "Impossibile caricare l'immagine",
+    canvasUnavailable: 'Il tuo browser non supporta le funzioni necessarie per elaborare le immagini (canvas 2D non disponibile)',
+    invalidJson: 'Questo file non è un file di progetto valido (JSON non valido).',
+    invalidProjectFile: 'Questo file non è un file di progetto valido.',
+    missingProjectData: 'A questo file mancano i dati previsti in un file di progetto a punto croce.',
+  },
+  app: {
+    sharedSettingsNotice: 'Impostazioni importate da un link condiviso (filati posseduti, unità di misura).',
+  },
+  confirmDestructive: {
+    message_one:
+      'Hai {{count}} modifica di colore manuale non salvata che andrà persa se continui. Continuare?',
+    message_other:
+      'Hai {{count}} modifiche di colore manuali non salvate che andranno perse se continui. Continuare?',
+  },
+  header: {
+    replaceImage: 'Sostituisci immagine',
+    undo: 'Annulla',
+    undoTitle: 'Annulla (Ctrl+Z)',
+    redo: 'Ripeti',
+    redoTitle: 'Ripeti (Ctrl+Y)',
+    print: 'Stampa',
+    import: 'Importa',
+    export: 'Esporta',
+    exportTitle: 'Esporta il progetto attuale come file',
+    settings: 'Impostazioni',
+  },
+  tabBar: {
+    palette: 'Tavolozza',
+    grid: 'Griglia',
+  },
+  uploadDropzone: {
+    dragDrop: "Trascina qui un'immagine già pixelata, oppure",
+    chooseFile: 'Scegli un file',
+    analyzing: "Analisi dell'immagine...",
+  },
+  gridControls: {
+    title: 'Griglia',
+    helper:
+      "Regola lo scostamento e la dimensione delle celle se necessario: trascina una maniglia d'angolo per ridimensionare (i punti restano quadrati), trascina altrove sull'immagine per spostare tutta la griglia, oppure usa i campi qui sotto.",
+    offsetX: 'Scostamento X (px)',
+    offsetY: 'Scostamento Y (px)',
+    cellSize: 'Dimensione cella (px)',
+    columns: 'Colonne',
+    rows: 'Righe',
+    samplePointOffset: 'Scostamento del punto di campionamento',
+    samplePointInfo:
+      "Il punto all'interno della cella da cui viene letto il colore di ogni punto, invece del centro esatto - ad esempio per una foto di uno schema con perline in cui il colore dell'anello si legge meglio del riflesso centrale. Mostrato come puntini rosa sull'immagine. Limitato a metà cella in ogni direzione.",
+    sampleOffsetX: 'Scostamento di campionamento X (px)',
+    sampleOffsetY: 'Scostamento di campionamento Y (px)',
+    confidence: 'Affidabilità del rilevamento automatico: {{percent}}%',
+    redetect: 'Rileva di nuovo automaticamente',
+    flipHorizontal: 'Capovolgi orizzontalmente',
+  },
+  gridPanel: {
+    imageAlt: 'Immagine sorgente',
+  },
+  palettePanel: {
+    title: 'Tavolozza',
+    mergeSimilar: 'Unisci colori simili',
+    ignoreTransparentBackground: 'Ignora lo sfondo trasparente',
+    ignoreBackgroundColor: 'Ignora il colore di sfondo',
+    colorsToUse: 'Colori da usare',
+    bestMatch: 'Migliore corrispondenza possibile',
+    ownedOnlyMode: 'Solo i miei filati',
+    noInventoryWarning:
+      'Nessun filato ancora segnato come posseduto - aggiungine alcuni in Impostazioni, altrimenti questa modalità si comporta come "Migliore corrispondenza possibile".',
+    fabricCount: 'Conteggio della tela',
+    strands: 'Fili',
+    strandCount_one: '{{count}} filo',
+    strandCount_other: '{{count}} fili',
+    stats: 'Statistiche',
+    dimensions: 'Dimensioni',
+    stitchesDimension: '{{cols}} × {{rows}} punti',
+    approxSize: 'Dimensione approssimativa',
+    threadNeeded: 'Filato necessario',
+    skeins_one: '{{count}} matassina',
+    skeins_other: '{{count}} matassine',
+    needToBuy: 'Da acquistare',
+    estimateNote: 'La stima del filato è approssimativa - acquista un po in più di ogni colore.',
+  },
+  fabricCounts: {
+    aida11: 'Aida conteggio 11',
+    aida14: 'Aida conteggio 14',
+    aida16: 'Aida conteggio 16',
+    aida18: 'Aida conteggio 18',
+    aida22: 'Aida conteggio 22',
+  },
+  dmcColorList: {
+    pickColorTitle: 'Scegli un colore dalla foto originale',
+    addColor: '+ Aggiungi colore',
+    ownedTitle: 'Nel tuo inventario filati',
+  },
+  addColorDialog: {
+    title: 'Aggiungi un colore',
+    helper:
+      'Aggiunge il filato alla tavolozza senza ancora nessun punto assegnato - clicca poi su un pixel del disegno per assegnarlo.',
+  },
+  colorEditDialog: {
+    removeColor: 'Rimuovi colore',
+    removeHelper:
+      '"Rimuovi colore" lascia vuoto ogni punto "{{symbol}}" (senza riempimento né simbolo) - utile per uno sfondo che non vuoi ricamare.',
+    standardAlternative: 'Alternativa standard disponibile: ',
+    shinyAlternative: 'Alternativa lucida disponibile: ',
+    switch: 'Cambia',
+    replaceTitle: 'Sostituisci con un altro colore già presente in questo schema',
+    replaceHelper: 'Ogni punto "{{symbol}}" diventa questo colore, e "{{symbol}}" scompare dalla tavolozza.',
+    changeTitle: 'Passa a un altro filato DMC',
+  },
+  eyedropperDialog: {
+    title: 'Scegli un colore dalla foto',
+    helper:
+      "Ingrandisci (con i pulsanti, o Ctrl/Cmd+rotellina), trascina con il clic centrale per spostarti, poi clicca su un pixel della foto originale per trovare il filato DMC più vicino, oppure scegli un filato visivamente simile.",
+    imageAlt: 'Foto originale',
+    pickedLabel: 'Colore scelto - seleziona la corrispondenza più vicina o un filato simile qui sotto:',
+  },
+  cellEditPopover: {
+    cellLabel: 'Cella (col {{col}}, riga {{row}}):',
+    cellsSelected_one: '{{count}} cella selezionata:',
+    cellsSelected_other: '{{count}} celle selezionate:',
+    noStitchTitle: 'Nessun punto (vuoto)',
+  },
+  legend: {
+    title_one: 'Tavolozza DMC — {{count}} colore | {{cols}}×{{rows}} punti',
+    title_other: 'Tavolozza DMC — {{count}} colori | {{cols}}×{{rows}} punti',
+    metallic: '(Metallico)',
+  },
+  printablePage: {
+    dimensionsFabric: '{{cols}}×{{rows}} punti — {{size}} su {{fabric}}',
+    skeinsTotal_one: '~{{count}} matassina in totale',
+    skeinsTotal_other: '~{{count}} matassine in totale',
+    strandsParen_one: '({{count}} filo)',
+    strandsParen_other: '({{count}} fili)',
+  },
+  settingsPage: {
+    back: '← Indietro',
+    title: 'Impostazioni',
+    language: 'Lingua',
+    sizeUnit: 'Unità di misura',
+    centimeters: 'Centimetri',
+    inches: 'Pollici',
+    shareSettings: 'Condividi impostazioni',
+    shareHelp:
+      'Copia un link che porta con sé i tuoi filati posseduti e la tua unità di misura. Aprirlo su un altro dispositivo (ad es. il telefono) sostituisce le sue impostazioni con queste - nessun file di importazione/esportazione necessario.',
+    copyShareLink: 'Copia link di condivisione',
+    copied: 'Copiato!',
+    myThreads: 'I miei filati DMC',
+    ownedCount: '{{owned}} / {{total}} posseduti',
+    threadsHelp:
+      'Segna i filati che possiedi già. La modalità tavolozza "Solo i miei filati" li preferirà quando genera uno schema. Include il cotone standard oltre ai metallici Light Effects e ai filati Satin, che possono essere suggeriti come alternative lucide a un colore standard simile.',
+    metallicSatin: 'Metallico e Satin',
+  },
+  zoomControls: {
+    showGridSymbols: 'Mostra griglia e simboli',
+    hideGridSymbols: 'Nascondi griglia e simboli (anteprima)',
+    zoomOut: 'Rimpicciolisci',
+    resetZoom: 'Reimposta zoom',
+    zoomIn: 'Ingrandisci',
+  },
+}
+
+export default itIT

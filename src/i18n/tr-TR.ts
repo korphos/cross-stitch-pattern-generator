@@ -1,0 +1,191 @@
+import type enUS from './en-US'
+
+const trTR: typeof enUS = {
+  seo: {
+    title: 'Kanaviçe Deseni Oluşturucu — Her Fotoğrafı DMC Desenine Dönüştürün',
+    description:
+      'Ücretsiz çevrimiçi kanaviçe deseni oluşturucu: herhangi bir fotoğrafı otomatik DMC iplik eşleştirmeli, palet düzenlemeli ve PDF olarak dışa aktarılabilen basılabilir bir şemaya dönüştürür. Kayıt gerekmez, tamamen tarayıcınızda çalışır.',
+  },
+  common: {
+    close: 'Kapat',
+    done: 'Bitti',
+    edit: 'Düzenle',
+    searchPlaceholder: 'Koda veya isme göre ara...',
+    noMatches: 'Sonuç bulunamadı',
+    allThreads: 'Tüm iplikler',
+    ownedOnly: 'Yalnızca sahip olduklarım',
+    ownedTitle: 'Bu ipliğe zaten sahipsiniz',
+    ownedBadge: '✓ sahip',
+    ownedLabel: 'sahip',
+    dismiss: 'Kapat',
+    transparent: 'Saydam',
+    deltaE: 'ΔE {{value}}',
+    colors: 'Renkler',
+    colorsCount_one: '{{count}} renk',
+    colorsCount_other: '{{count}} renk',
+    loading: 'Yükleniyor…',
+  },
+  errors: {
+    imageLoadGeneric: 'Görsel yüklenirken hata oluştu',
+    importGeneric: 'Proje dosyası içe aktarılırken hata oluştu',
+    imageDecodeFailed: 'Görsel yüklenemedi',
+    canvasUnavailable: 'Tarayıcınız görsel işleme için gereken özellikleri desteklemiyor (2D canvas kullanılamıyor)',
+    invalidJson: 'Bu dosya geçerli bir proje dosyası değil (geçersiz JSON).',
+    invalidProjectFile: 'Bu dosya geçerli bir proje dosyası değil.',
+    missingProjectData: 'Bu dosyada bir kanaviçe proje dosyasında beklenen veriler eksik.',
+  },
+  app: {
+    sharedSettingsNotice: 'Ayarlar paylaşılan bir bağlantıdan içe aktarıldı (sahip olunan iplikler, boyut birimi).',
+  },
+  confirmDestructive: {
+    message_one:
+      'Devam ederseniz kaybolacak {{count}} kaydedilmemiş manuel renk değişikliğiniz var. Devam edilsin mi?',
+    message_other:
+      'Devam ederseniz kaybolacak {{count}} kaydedilmemiş manuel renk değişikliğiniz var. Devam edilsin mi?',
+  },
+  header: {
+    replaceImage: 'Görseli değiştir',
+    undo: 'Geri al',
+    undoTitle: 'Geri al (Ctrl+Z)',
+    redo: 'Yinele',
+    redoTitle: 'Yinele (Ctrl+Y)',
+    print: 'Yazdır',
+    import: 'İçe aktar',
+    export: 'Dışa aktar',
+    exportTitle: 'Geçerli projeyi dosya olarak dışa aktar',
+    settings: 'Ayarlar',
+  },
+  tabBar: {
+    palette: 'Palet',
+    grid: 'Izgara',
+  },
+  uploadDropzone: {
+    dragDrop: 'Zaten pikselli bir görseli buraya sürükleyip bırakın, veya',
+    chooseFile: 'Bir dosya seçin',
+    analyzing: 'Görsel analiz ediliyor...',
+  },
+  gridControls: {
+    title: 'Izgara',
+    helper:
+      'Gerekirse konum ve hücre boyutunu ayarlayın: yeniden boyutlandırmak için bir köşe tutamağını sürükleyin (kareler kare kalır), tüm ızgarayı taşımak için görselin başka bir yerini sürükleyin, veya aşağıdaki alanları kullanın.',
+    offsetX: 'X konumu (px)',
+    offsetY: 'Y konumu (px)',
+    cellSize: 'Hücre boyutu (px)',
+    columns: 'Sütunlar',
+    rows: 'Satırlar',
+    samplePointOffset: 'Örnekleme noktası konumu',
+    samplePointInfo:
+      'Her karenin rengi, hücrenin tam merkezi yerine hücre içindeki hangi noktadan okunacağı - örneğin, halka renginin ortadaki parlamadan daha iyi okunduğu boncuk deseni fotoğrafları için. Görselde pembe noktalar olarak gösterilir. Her yönde yarım hücreyle sınırlıdır.',
+    sampleOffsetX: 'Örnekleme konumu X (px)',
+    sampleOffsetY: 'Örnekleme konumu Y (px)',
+    confidence: 'Otomatik algılama güveni: %{{percent}}',
+    redetect: 'Otomatik olarak yeniden algıla',
+    flipHorizontal: 'Yatay çevir',
+  },
+  gridPanel: {
+    imageAlt: 'Kaynak görsel',
+  },
+  palettePanel: {
+    title: 'Palet',
+    mergeSimilar: 'Benzer renkleri birleştir',
+    ignoreTransparentBackground: 'Saydam arka planı yok say',
+    ignoreBackgroundColor: 'Arka plan rengini yok say',
+    colorsToUse: 'Kullanılacak renkler',
+    bestMatch: 'Mümkün olan en iyi eşleşme',
+    ownedOnlyMode: 'Yalnızca ipliklerim',
+    noInventoryWarning:
+      'Henüz sahip olarak işaretlenmiş iplik yok - Ayarlar\'dan birkaç ekleyin, aksi halde bu mod "Mümkün olan en iyi eşleşme" gibi davranır.',
+    fabricCount: 'Kanaviçe seyreklik oranı',
+    strands: 'Kat sayısı',
+    strandCount_one: '{{count}} kat',
+    strandCount_other: '{{count}} kat',
+    stats: 'İstatistikler',
+    dimensions: 'Boyutlar',
+    stitchesDimension: '{{cols}} × {{rows}} kare',
+    approxSize: 'Yaklaşık boyut',
+    threadNeeded: 'Gereken iplik',
+    skeins_one: '{{count}} kangal',
+    skeins_other: '{{count}} kangal',
+    needToBuy: 'Satın alınması gereken',
+    estimateNote: 'İplik tahmini yaklaşıktır - her renkten biraz fazla alın.',
+  },
+  fabricCounts: {
+    aida11: 'Aida 11 sayı',
+    aida14: 'Aida 14 sayı',
+    aida16: 'Aida 16 sayı',
+    aida18: 'Aida 18 sayı',
+    aida22: 'Aida 22 sayı',
+  },
+  dmcColorList: {
+    pickColorTitle: 'Orijinal fotoğraftan bir renk seçin',
+    addColor: '+ Renk ekle',
+    ownedTitle: 'İplik stoğunuzda',
+  },
+  addColorDialog: {
+    title: 'Renk ekle',
+    helper: 'İpliği palete henüz hiçbir kareye atanmadan ekler - atamak için sonra tuval üzerindeki bir piksele tıklayın.',
+  },
+  colorEditDialog: {
+    removeColor: 'Rengi kaldır',
+    removeHelper:
+      '"Rengi kaldır", her "{{symbol}}" karesini boş bırakır (dolgu veya sembol olmadan) - dikmek istemediğiniz bir arka plan için kullanışlıdır.',
+    standardAlternative: 'Standart alternatif mevcut: ',
+    shinyAlternative: 'Parlak alternatif mevcut: ',
+    switch: 'Değiştir',
+    replaceTitle: 'Bu desende zaten bulunan başka bir renkle değiştir',
+    replaceHelper: 'Her "{{symbol}}" karesi bu renge dönüşür ve "{{symbol}}" paletten kaybolur.',
+    changeTitle: 'Başka bir DMC ipliğine değiştir',
+  },
+  eyedropperDialog: {
+    title: 'Fotoğraftan bir renk seçin',
+    helper:
+      'Yakınlaştırın (düğmelerle veya Ctrl/Cmd+kaydırma), gezinmek için orta tıklamayla sürükleyin, ardından en yakın DMC eşleşmesini bulmak için orijinal fotoğraftaki bir piksele tıklayın veya görsel olarak benzer bir iplik seçin.',
+    imageAlt: 'Orijinal fotoğraf',
+    pickedLabel: 'Seçilen renk - aşağıdan en yakın eşleşmeyi veya benzer bir ipliği seçin:',
+  },
+  cellEditPopover: {
+    cellLabel: 'Kare (sütun {{col}}, satır {{row}}):',
+    cellsSelected_one: '{{count}} kare seçildi:',
+    cellsSelected_other: '{{count}} kare seçildi:',
+    noStitchTitle: 'Dikiş yok (boş)',
+  },
+  legend: {
+    title_one: 'DMC Paleti — {{count}} renk | {{cols}}×{{rows}} kare',
+    title_other: 'DMC Paleti — {{count}} renk | {{cols}}×{{rows}} kare',
+    metallic: '(Metalik)',
+  },
+  printablePage: {
+    dimensionsFabric: '{{cols}}×{{rows}} kare — {{fabric}} üzerinde {{size}}',
+    skeinsTotal_one: '~{{count}} kangal toplam',
+    skeinsTotal_other: '~{{count}} kangal toplam',
+    strandsParen_one: '({{count}} kat)',
+    strandsParen_other: '({{count}} kat)',
+  },
+  settingsPage: {
+    back: '← Geri',
+    title: 'Ayarlar',
+    language: 'Dil',
+    sizeUnit: 'Boyut birimi',
+    centimeters: 'Santimetre',
+    inches: 'İnç',
+    shareSettings: 'Ayarları paylaş',
+    shareHelp:
+      'Sahip olduğunuz iplikleri ve boyut biriminizi taşıyan bir bağlantıyı kopyalayın. Başka bir cihazda (örneğin telefonunuzda) açmak, oradaki ayarları bunlarla değiştirir - içe/dışa aktarma dosyasına gerek yoktur.',
+    copyShareLink: 'Paylaşım bağlantısını kopyala',
+    copied: 'Kopyalandı!',
+    myThreads: 'DMC ipliklerim',
+    ownedCount: '{{owned}} / {{total}} sahip olunan',
+    threadsHelp:
+      'Zaten sahip olduğunuz iplikleri işaretleyin. "Yalnızca ipliklerim" palet modu, desen oluştururken bunları tercih eder. Standart nakış ipliğinin yanı sıra, yakın bir standart renge parlak alternatif olarak önerilebilen Light Effects metalikleri ve Satin ipliklerini de içerir.',
+    metallicSatin: 'Metalik ve Satin',
+  },
+  zoomControls: {
+    showGridSymbols: 'Izgarayı ve sembolleri göster',
+    hideGridSymbols: 'Izgarayı ve sembolleri gizle (önizleme)',
+    zoomOut: 'Uzaklaştır',
+    resetZoom: 'Yakınlaştırmayı sıfırla',
+    zoomIn: 'Yakınlaştır',
+  },
+}
+
+export default trTR

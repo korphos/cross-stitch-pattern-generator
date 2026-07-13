@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
 import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
+import { SUPPORTED_LANGUAGES } from '../i18n'
 
 interface Props {
   ownedCodes: ReadonlySet<string>
@@ -13,13 +14,6 @@ interface Props {
 }
 
 type FilterMode = 'all' | 'owned' | 'specialty'
-
-// Each language's own name, in that language - not translated, same convention every app uses so
-// a user can find their language even if the UI is currently showing one they don't read.
-const LANGUAGES = [
-  { code: 'en-US', label: 'English' },
-  { code: 'fr-FR', label: 'Français' },
-] as const
 
 /**
  * A standalone full-page view (not a modal) so it's comfortable to use on a
@@ -70,10 +64,18 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
             <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.language')}</h2>
             <select
               value={i18n.resolvedLanguage ?? i18n.language}
-              onChange={(e) => void i18n.changeLanguage(e.target.value)}
+              onChange={(e) => {
+                const lang = e.target.value
+                void i18n.changeLanguage(lang)
+                // Reflects the pick in the URL (see the hreflang alternates in index.html) so
+                // the page stays shareable/bookmarkable in that language, not just cached locally.
+                const url = new URL(window.location.href)
+                url.searchParams.set('lang', lang)
+                window.history.replaceState(null, '', url)
+              }}
               className="rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100"
             >
-              {LANGUAGES.map((lang) => (
+              {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
                   {lang.label}
                 </option>
