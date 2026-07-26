@@ -38,6 +38,10 @@ npm run preview   # preview the production build
 
 No environment variables or external services are required — the app is entirely static.
 
+## Support
+
+If you find this useful, consider [sponsoring](https://github.com/sponsors/korphos) or checking out [my other projects](https://korphos.github.io/).
+
 ## License
 
 GPL-3.0 — see [LICENSE](LICENSE).
