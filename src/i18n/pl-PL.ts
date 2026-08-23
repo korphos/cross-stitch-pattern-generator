@@ -69,7 +69,7 @@ const plPL: typeof enUS = {
   gridControls: {
     title: 'Siatka',
     helper:
-      'W razie potrzeby dostosuj przesunięcie i rozmiar komórki: przeciągnij uchwyt w rogu, aby zmienić rozmiar (ściegi pozostają kwadratowe), przeciągnij w innym miejscu obrazu, aby przesunąć całą siatkę, albo skorzystaj z pól poniżej.',
+      'W razie potrzeby dostosuj przesunięcie i rozmiar komórki: przeciągnij uchwyt w rogu, aby zmienić rozmiar (ściegi pozostają kwadratowe), przeciągnij w innym miejscu obrazu, aby przesunąć całą siatkę, albo skorzystaj z pól poniżej. Ctrl/Cmd + kółko myszy powiększa obraz; Shift/Alt + kółko dostosowuje liczbę kolumn/wierszy. Przełącz tryb na pasku narzędzi, aby skalibrować rozmiar komórki, klikając dwa punkty, albo przeciągnąć punkt próbkowania bezpośrednio.',
     offsetX: 'Przesunięcie X (px)',
     offsetY: 'Przesunięcie Y (px)',
     cellSize: 'Rozmiar komórki (px)',
@@ -83,6 +83,12 @@ const plPL: typeof enUS = {
     confidence: 'Pewność automatycznego wykrywania: {{percent}}%',
     redetect: 'Wykryj ponownie automatycznie',
     flipHorizontal: 'Odbij poziomo',
+    modeAdjust: 'Przesuń / zmień rozmiar siatki',
+    modeCalibrate: 'Kalibruj rozmiar komórki',
+    modeSample: 'Przesuń punkt próbkowania',
+    calibrateHintStep1: 'Kliknij jeden punkt',
+    calibrateHintStep2: 'Kliknij odpowiadający punkt następnego ściegu',
+    sampleHint: 'Kliknij i przeciągnij w dowolnym miejscu, aby przesunąć punkt próbkowania',
     pixelGridTitle: 'Siatka piksel w piksel',
     pixelGridHelp:
       'Dla już spikselowanego obrazu, w którym każdy ścieg to znany blok pikseli źródłowych (np. 1 piksel albo blok 4x4 lub 9 pikseli) - całkowicie pomija automatyczne wykrywanie, które na tak małym obrazie nie ma na czym się oprzeć.',

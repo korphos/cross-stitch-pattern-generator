@@ -69,7 +69,7 @@ const deDE: typeof enUS = {
   gridControls: {
     title: 'Gitter',
     helper:
-      'Passe bei Bedarf Versatz und Zellgröße an: Ziehe an einem Eckgriff, um die Größe zu ändern (Stiche bleiben quadratisch), ziehe an einer anderen Stelle im Bild, um das ganze Gitter zu verschieben, oder nutze die Felder unten.',
+      'Passe bei Bedarf Versatz und Zellgröße an: Ziehe an einem Eckgriff, um die Größe zu ändern (Stiche bleiben quadratisch), ziehe an einer anderen Stelle im Bild, um das ganze Gitter zu verschieben, oder nutze die Felder unten. Strg/Cmd+Scrollen zoomt das Bild; Umschalt/Alt+Scrollen passt die Spalten-/Zeilenanzahl an. Wechsle den Modus in der Werkzeugleiste, um die Zellgröße durch Klicken auf zwei Punkte zu kalibrieren oder den Abtastpunkt direkt zu verschieben.',
     offsetX: 'Versatz X (px)',
     offsetY: 'Versatz Y (px)',
     cellSize: 'Zellgröße (px)',
@@ -83,6 +83,12 @@ const deDE: typeof enUS = {
     confidence: 'Sicherheit der automatischen Erkennung: {{percent}}%',
     redetect: 'Automatisch neu erkennen',
     flipHorizontal: 'Horizontal spiegeln',
+    modeAdjust: 'Gitter verschieben / Größe ändern',
+    modeCalibrate: 'Zellgröße kalibrieren',
+    modeSample: 'Abtastpunkt verschieben',
+    calibrateHintStep1: 'Klicke auf einen Punkt',
+    calibrateHintStep2: 'Klicke auf den entsprechenden Punkt des nächsten Stichs',
+    sampleHint: 'Klicke und ziehe an einer beliebigen Stelle, um den Abtastpunkt zu verschieben',
     pixelGridTitle: 'Pixelgenaues Gitter',
     pixelGridHelp:
       'Für ein bereits pixeliges Bild, bei dem jeder Stich ein bekannter Block aus Quellpixeln ist (z. B. 1 Pixel oder ein 4x4- oder 9-Pixel-Block) - umgeht die automatische Erkennung vollständig, die bei einem so kleinen Bild nichts hat, womit sie arbeiten könnte.',

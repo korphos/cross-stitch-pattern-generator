@@ -70,7 +70,7 @@ const frFR: typeof enUS = {
   gridControls: {
     title: 'Grille',
     helper:
-      "Ajustez le décalage et la taille des cellules si besoin : faites glisser une poignée d'angle pour redimensionner (les mailles restent carrées), faites glisser ailleurs sur l'image pour déplacer toute la grille, ou utilisez les champs ci-dessous.",
+      "Ajustez le décalage et la taille des cellules si besoin : faites glisser une poignée d'angle pour redimensionner (les mailles restent carrées), faites glisser ailleurs sur l'image pour déplacer toute la grille, ou utilisez les champs ci-dessous. Molette + Ctrl/Cmd pour zoomer sur l'image ; molette + Maj/Alt pour ajuster le nombre de colonnes/lignes. Changez de mode dans la barre d'outils pour calibrer la taille de cellule en cliquant deux points, ou pour déplacer directement le point d'échantillonnage.",
     offsetX: 'Décalage X (px)',
     offsetY: 'Décalage Y (px)',
     cellSize: 'Taille de cellule (px)',
@@ -84,6 +84,12 @@ const frFR: typeof enUS = {
     confidence: 'Confiance de la détection automatique : {{percent}} %',
     redetect: 'Redétecter automatiquement',
     flipHorizontal: 'Retourner horizontalement',
+    modeAdjust: 'Déplacer / redimensionner la grille',
+    modeCalibrate: 'Calibrer la taille de cellule',
+    modeSample: "Déplacer le point d'échantillonnage",
+    calibrateHintStep1: 'Cliquez sur un point',
+    calibrateHintStep2: 'Cliquez sur le point équivalent de la maille suivante',
+    sampleHint: "Cliquez-glissez n'importe où pour déplacer le point d'échantillonnage",
     pixelGridTitle: 'Grille pixel par pixel',
     pixelGridHelp:
       "Pour une image déjà pixelisée où chaque point est un bloc connu de pixels source (par ex. 1 pixel, ou un bloc de 4x4 ou 9 pixels) - contourne entièrement la détection automatique, qui n'a rien à exploiter sur une image aussi petite.",

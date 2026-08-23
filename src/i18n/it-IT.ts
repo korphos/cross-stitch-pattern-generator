@@ -69,7 +69,7 @@ const itIT: typeof enUS = {
   gridControls: {
     title: 'Griglia',
     helper:
-      "Regola lo scostamento e la dimensione delle celle se necessario: trascina una maniglia d'angolo per ridimensionare (i punti restano quadrati), trascina altrove sull'immagine per spostare tutta la griglia, oppure usa i campi qui sotto.",
+      "Regola lo scostamento e la dimensione delle celle se necessario: trascina una maniglia d'angolo per ridimensionare (i punti restano quadrati), trascina altrove sull'immagine per spostare tutta la griglia, oppure usa i campi qui sotto. Ctrl/Cmd+rotellina per ingrandire l'immagine; Maiusc/Alt+rotellina per regolare il numero di colonne/righe. Cambia modalità nella barra degli strumenti per calibrare la dimensione della cella cliccando due punti, oppure per trascinare direttamente il punto di campionamento.",
     offsetX: 'Scostamento X (px)',
     offsetY: 'Scostamento Y (px)',
     cellSize: 'Dimensione cella (px)',
@@ -83,6 +83,12 @@ const itIT: typeof enUS = {
     confidence: 'Affidabilità del rilevamento automatico: {{percent}}%',
     redetect: 'Rileva di nuovo automaticamente',
     flipHorizontal: 'Capovolgi orizzontalmente',
+    modeAdjust: 'Sposta / ridimensiona griglia',
+    modeCalibrate: 'Calibra dimensione cella',
+    modeSample: 'Sposta punto di campionamento',
+    calibrateHintStep1: 'Clicca su un punto',
+    calibrateHintStep2: 'Clicca sul punto corrispondente del punto successivo',
+    sampleHint: 'Clicca e trascina in un punto qualsiasi per spostare il punto di campionamento',
     pixelGridTitle: 'Griglia pixel per pixel',
     pixelGridHelp:
       'Per un\'immagine già pixelata in cui ogni punto è un blocco noto di pixel sorgente (ad es. 1 pixel, o un blocco di 4x4 o 9 pixel) - aggira completamente il rilevamento automatico, che non ha nulla su cui lavorare in un\'immagine così piccola.',

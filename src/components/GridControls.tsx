@@ -5,6 +5,7 @@ import { Info } from 'lucide-react'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { detectGrid } from '../lib/gridDetection'
+import { applyGridFieldPatch } from '../lib/gridGeometry'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 
 interface Props {
@@ -27,36 +28,8 @@ export function GridControls({ project, dispatch }: Props) {
   }
 
   function setField(patch: Partial<{ offsetX: number; offsetY: number; cellSize: number; cols: number; rows: number }>) {
-    const offsetX = patch.offsetX ?? grid.bbox.x
-    const offsetY = patch.offsetY ?? grid.bbox.y
-    const cellSize = patch.cellSize ?? grid.cellSize
-    const cols = patch.cols ?? grid.cols
-    const rows = patch.rows ?? grid.rows
-    if (![offsetX, offsetY, cellSize, cols, rows].every(Number.isFinite)) return
-    if (cellSize <= 0 || cols <= 0 || rows <= 0) return
-
-    // Keep the grid fully inside the source image - an offset or cell size
-    // that pushes it past the edge would sample garbage for the cells that
-    // fall outside the image (see cellSampling.ts's clamping for the rest
-    // of that defense).
-    const width = cols * cellSize
-    const height = rows * cellSize
-    const x = Math.min(Math.max(0, offsetX), Math.max(0, imageData.width - width))
-    const y = Math.min(Math.max(0, offsetY), Math.max(0, imageData.height - height))
-    // Re-clamp the sample offset too - a shrunk cellSize can put it outside +/- the new half-cell bound.
-    const maxSampleOffset = cellSize / 2
-    const sampleOffsetX = Math.max(-maxSampleOffset, Math.min(maxSampleOffset, grid.sampleOffsetX ?? 0))
-    const sampleOffsetY = Math.max(-maxSampleOffset, Math.min(maxSampleOffset, grid.sampleOffsetY ?? 0))
-
-    updateGrid({
-      bbox: { x, y, width, height },
-      cellSize,
-      cols,
-      rows,
-      confidence: grid.confidence,
-      sampleOffsetX,
-      sampleOffsetY,
-    })
+    const next = applyGridFieldPatch(grid, imageData.width, imageData.height, patch)
+    if (next) updateGrid(next)
   }
 
   function setSampleOffset(patch: Partial<{ sampleOffsetX: number; sampleOffsetY: number }>) {

@@ -69,7 +69,7 @@ const nlNL: typeof enUS = {
   gridControls: {
     title: 'Raster',
     helper:
-      'Pas indien nodig de verschuiving en celgrootte aan: sleep aan een hoekgreep om het formaat te wijzigen (steken blijven vierkant), sleep ergens anders op de afbeelding om het hele raster te verplaatsen, of gebruik de velden hieronder.',
+      'Pas indien nodig de verschuiving en celgrootte aan: sleep aan een hoekgreep om het formaat te wijzigen (steken blijven vierkant), sleep ergens anders op de afbeelding om het hele raster te verplaatsen, of gebruik de velden hieronder. Ctrl/Cmd+scrollen zoomt op de afbeelding; Shift/Alt+scrollen past het aantal kolommen/rijen aan. Wissel van modus in de werkbalk om de celgrootte te kalibreren door twee punten aan te klikken, of om het meetpunt direct te verslepen.',
     offsetX: 'Verschuiving X (px)',
     offsetY: 'Verschuiving Y (px)',
     cellSize: 'Celgrootte (px)',
@@ -83,6 +83,12 @@ const nlNL: typeof enUS = {
     confidence: 'Betrouwbaarheid van automatische detectie: {{percent}}%',
     redetect: 'Automatisch opnieuw detecteren',
     flipHorizontal: 'Horizontaal spiegelen',
+    modeAdjust: 'Raster verplaatsen / vergroten',
+    modeCalibrate: 'Celgrootte kalibreren',
+    modeSample: 'Meetpunt verplaatsen',
+    calibrateHintStep1: 'Klik op een punt',
+    calibrateHintStep2: 'Klik op het overeenkomstige punt van de volgende steek',
+    sampleHint: 'Klik en sleep ergens om het meetpunt te verplaatsen',
     pixelGridTitle: 'Pixelperfect raster',
     pixelGridHelp:
       'Voor een al gepixelde afbeelding waarbij elke steek een bekend blok bronpixels is (bijvoorbeeld 1 pixel, of een blok van 4x4 of 9 pixels) - omzeilt automatische detectie volledig, die bij zo\'n kleine afbeelding niets heeft om mee te werken.',

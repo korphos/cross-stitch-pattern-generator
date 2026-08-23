@@ -137,6 +137,8 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
 
   const startDrag = useCallback(
     (mode: DragMode) => (e: ReactPointerEvent) => {
+      // Left button only - the middle button pans the viewport instead (see startMiddleClickPan).
+      if (e.button !== 0) return
       e.preventDefault()
       e.stopPropagation()
       const container = containerRef.current
@@ -150,13 +152,37 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
     [selection, handlePointerMove, handlePointerUp],
   )
 
+  // Middle-click drag pans the scrollable viewport, same as most image/map editors - handy once
+  // zoomed in past what fits. Native listeners so the drag keeps tracking even if the cursor
+  // leaves the scroll container mid-drag; preventDefault suppresses the browser's own middle-click
+  // autoscroll/paste behavior from also kicking in.
+  function startMiddleClickPan(e: ReactPointerEvent<HTMLDivElement>) {
+    if (e.button !== 1) return
+    e.preventDefault()
+    const scrollEl = e.currentTarget
+    const startX = e.clientX
+    const startY = e.clientY
+    const startScrollLeft = scrollEl.scrollLeft
+    const startScrollTop = scrollEl.scrollTop
+    function onMove(ev: PointerEvent) {
+      scrollEl.scrollLeft = startScrollLeft - (ev.clientX - startX)
+      scrollEl.scrollTop = startScrollTop - (ev.clientY - startY)
+    }
+    function onUp() {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }
+
   const selLeft = selection.x * scale
   const selTop = selection.y * scale
   const selWidth = selection.width * scale
   const selHeight = selection.height * scale
 
   return (
-    <div className="flex h-full overflow-auto p-8" ref={attachWheelZoom}>
+    <div className="flex h-full overflow-auto p-8" ref={attachWheelZoom} onPointerDown={startMiddleClickPan}>
       <div
         ref={containerRef}
         className="relative m-auto shrink-0 border border-neutral-700 shadow-lg"

@@ -22,6 +22,11 @@ npm run build   # tsc -b && vite build
 
 CI (`.github/workflows/ci.yml`) runs lint, test, and build on every push/PR to `main`.
 
+If `npm run dev` is already running when you need it (e.g. to check something in-browser), reuse
+that existing server — never kill it, since that kicks the user out of their hot-reload session. If
+no dev server is running and you start one yourself, you're responsible for killing it and cleaning
+up when you're done with it.
+
 ## Architecture
 
 - **`src/lib/`** — pure, framework-free algorithm/domain layer. Every file here operates on plain

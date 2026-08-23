@@ -65,7 +65,7 @@ const enUS = {
   gridControls: {
     title: 'Grid',
     helper:
-      'Adjust the offset and cell size if needed: drag a corner handle to resize (stitches stay square), drag anywhere else on the image to move the whole grid, or use the fields below.',
+      'Adjust the offset and cell size if needed: drag a corner handle to resize (stitches stay square), drag anywhere else on the image to move the whole grid, or use the fields below. Ctrl/Cmd+scroll zooms the image; Shift/Alt+scroll nudges the column/row count. Switch modes in the toolbar to calibrate the cell size by clicking two points, or to drag the sample point directly.',
     offsetX: 'Offset X (px)',
     offsetY: 'Offset Y (px)',
     cellSize: 'Cell size (px)',
@@ -79,6 +79,12 @@ const enUS = {
     confidence: 'Automatic detection confidence: {{percent}}%',
     redetect: 'Re-detect automatically',
     flipHorizontal: 'Flip horizontally',
+    modeAdjust: 'Move / resize grid',
+    modeCalibrate: 'Calibrate cell size',
+    modeSample: 'Move sample point',
+    calibrateHintStep1: 'Click one point',
+    calibrateHintStep2: 'Click the matching point on the next stitch',
+    sampleHint: 'Click and drag anywhere to move the sample point',
     pixelGridTitle: 'Pixel-perfect grid',
     pixelGridHelp:
       "For an already-pixelated image where every stitch is a known block of source pixels (e.g. 1 pixel, or a 4x4 or 9-pixel block) - bypasses automatic detection entirely, which has nothing to work with on an image this small.",

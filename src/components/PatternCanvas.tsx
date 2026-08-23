@@ -89,8 +89,32 @@ export function PatternCanvas({
     reportHover(null)
   }
 
+  // Middle-click drag pans the scrollable viewport, same as most image/map editors - handy once
+  // zoomed in past what fits. Native listeners so the drag keeps tracking even if the cursor
+  // leaves the scroll container mid-drag; preventDefault suppresses the browser's own middle-click
+  // autoscroll/paste behavior from also kicking in.
+  function startMiddleClickPan(e: MouseEvent<HTMLDivElement>) {
+    if (e.button !== 1) return
+    e.preventDefault()
+    const scrollEl = e.currentTarget
+    const startX = e.clientX
+    const startY = e.clientY
+    const startScrollLeft = scrollEl.scrollLeft
+    const startScrollTop = scrollEl.scrollTop
+    function onMove(ev: globalThis.MouseEvent) {
+      scrollEl.scrollLeft = startScrollLeft - (ev.clientX - startX)
+      scrollEl.scrollTop = startScrollTop - (ev.clientY - startY)
+    }
+    function onUp() {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+  }
+
   return (
-    <div className="flex h-full overflow-auto p-8">
+    <div className="flex h-full overflow-auto p-8" onMouseDown={startMiddleClickPan}>
       <canvas
         ref={canvasRef}
         className={`m-auto shadow-lg ${onCellClick ? 'cursor-pointer' : ''}`}

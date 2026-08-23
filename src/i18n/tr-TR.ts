@@ -69,7 +69,7 @@ const trTR: typeof enUS = {
   gridControls: {
     title: 'Izgara',
     helper:
-      'Gerekirse konum ve hücre boyutunu ayarlayın: yeniden boyutlandırmak için bir köşe tutamağını sürükleyin (kareler kare kalır), tüm ızgarayı taşımak için görselin başka bir yerini sürükleyin, veya aşağıdaki alanları kullanın.',
+      'Gerekirse konum ve hücre boyutunu ayarlayın: yeniden boyutlandırmak için bir köşe tutamağını sürükleyin (kareler kare kalır), tüm ızgarayı taşımak için görselin başka bir yerini sürükleyin, veya aşağıdaki alanları kullanın. Görseli yakınlaştırmak için Ctrl/Cmd+kaydırma; sütun/satır sayısını ayarlamak için Shift/Alt+kaydırma kullanın. Hücre boyutunu iki noktaya tıklayarak kalibre etmek veya örnekleme noktasını doğrudan sürüklemek için araç çubuğundan modu değiştirin.',
     offsetX: 'X konumu (px)',
     offsetY: 'Y konumu (px)',
     cellSize: 'Hücre boyutu (px)',
@@ -83,6 +83,12 @@ const trTR: typeof enUS = {
     confidence: 'Otomatik algılama güveni: %{{percent}}',
     redetect: 'Otomatik olarak yeniden algıla',
     flipHorizontal: 'Yatay çevir',
+    modeAdjust: 'Izgarayı taşı / yeniden boyutlandır',
+    modeCalibrate: 'Hücre boyutunu kalibre et',
+    modeSample: 'Örnekleme noktasını taşı',
+    calibrateHintStep1: 'Bir noktaya tıklayın',
+    calibrateHintStep2: 'Sonraki karenin eşleşen noktasına tıklayın',
+    sampleHint: 'Örnekleme noktasını taşımak için herhangi bir yere tıklayıp sürükleyin',
     pixelGridTitle: 'Piksel kusursuz ızgara',
     pixelGridHelp:
       'Her karenin bilinen bir kaynak piksel bloğu olduğu, zaten pikselli bir görsel için (örneğin 1 piksel, veya 4x4 ya da 9 piksellik bir blok) - böyle küçük bir görselde işleyecek hiçbir şeyi olmayan otomatik algılamayı tamamen atlar.',

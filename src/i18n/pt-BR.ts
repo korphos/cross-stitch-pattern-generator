@@ -69,7 +69,7 @@ const ptBR: typeof enUS = {
   gridControls: {
     title: 'Grade',
     helper:
-      'Ajuste o deslocamento e o tamanho da célula se precisar: arraste uma alça no canto para redimensionar (os pontos continuam quadrados), arraste em qualquer outro lugar da imagem para mover a grade inteira, ou use os campos abaixo.',
+      'Ajuste o deslocamento e o tamanho da célula se precisar: arraste uma alça no canto para redimensionar (os pontos continuam quadrados), arraste em qualquer outro lugar da imagem para mover a grade inteira, ou use os campos abaixo. Ctrl/Cmd + roda do mouse para dar zoom na imagem; Shift/Alt + roda para ajustar o número de colunas/linhas. Alterne o modo na barra de ferramentas para calibrar o tamanho da célula clicando em dois pontos, ou para arrastar o ponto de amostragem diretamente.',
     offsetX: 'Deslocamento X (px)',
     offsetY: 'Deslocamento Y (px)',
     cellSize: 'Tamanho da célula (px)',
@@ -83,6 +83,12 @@ const ptBR: typeof enUS = {
     confidence: 'Confiança da detecção automática: {{percent}}%',
     redetect: 'Detectar novamente automaticamente',
     flipHorizontal: 'Espelhar horizontalmente',
+    modeAdjust: 'Mover / redimensionar grade',
+    modeCalibrate: 'Calibrar tamanho da célula',
+    modeSample: 'Mover ponto de amostragem',
+    calibrateHintStep1: 'Clique em um ponto',
+    calibrateHintStep2: 'Clique no ponto equivalente do próximo ponto',
+    sampleHint: 'Clique e arraste em qualquer lugar para mover o ponto de amostragem',
     pixelGridTitle: 'Grade pixel a pixel',
     pixelGridHelp:
       'Para uma imagem já pixelada em que cada ponto é um bloco conhecido de pixels de origem (por exemplo 1 pixel, ou um bloco de 4x4 ou 9 pixels) - ignora completamente a detecção automática, que não tem com o que trabalhar em uma imagem tão pequena.',

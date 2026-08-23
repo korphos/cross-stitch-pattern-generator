@@ -69,7 +69,7 @@ const esES: typeof enUS = {
   gridControls: {
     title: 'Cuadrícula',
     helper:
-      'Ajusta el desplazamiento y el tamaño de celda si hace falta: arrastra una esquina para redimensionar (las puntadas siguen siendo cuadradas), arrastra en cualquier otro punto de la imagen para mover toda la cuadrícula, o usa los campos de abajo.',
+      'Ajusta el desplazamiento y el tamaño de celda si hace falta: arrastra una esquina para redimensionar (las puntadas siguen siendo cuadradas), arrastra en cualquier otro punto de la imagen para mover toda la cuadrícula, o usa los campos de abajo. Ctrl/Cmd + rueda del ratón para hacer zoom en la imagen; Mayús/Alt + rueda para ajustar el número de columnas/filas. Cambia de modo en la barra de herramientas para calibrar el tamaño de celda haciendo clic en dos puntos, o para arrastrar directamente el punto de muestreo.',
     offsetX: 'Desplazamiento X (px)',
     offsetY: 'Desplazamiento Y (px)',
     cellSize: 'Tamaño de celda (px)',
@@ -83,6 +83,12 @@ const esES: typeof enUS = {
     confidence: 'Confianza de la detección automática: {{percent}}%',
     redetect: 'Detectar de nuevo automáticamente',
     flipHorizontal: 'Voltear horizontalmente',
+    modeAdjust: 'Mover / redimensionar cuadrícula',
+    modeCalibrate: 'Calibrar tamaño de celda',
+    modeSample: 'Mover punto de muestreo',
+    calibrateHintStep1: 'Haz clic en un punto',
+    calibrateHintStep2: 'Haz clic en el punto equivalente de la siguiente puntada',
+    sampleHint: 'Haz clic y arrastra en cualquier parte para mover el punto de muestreo',
     pixelGridTitle: 'Cuadrícula píxel a píxel',
     pixelGridHelp:
       'Para una imagen ya pixelada donde cada punto es un bloque conocido de píxeles de origen (por ejemplo 1 píxel, o un bloque de 4x4 o 9 píxeles) - evita por completo la detección automática, que no tiene nada con qué trabajar en una imagen tan pequeña.',

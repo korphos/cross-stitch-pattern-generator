@@ -66,7 +66,8 @@ const zhCN: typeof enUS = {
   },
   gridControls: {
     title: '网格',
-    helper: '如有需要可调整偏移量和格子大小:拖动角上的手柄可调整大小(格子始终保持正方形),拖动图片其他位置可移动整个网格,也可以使用下方的输入框。',
+    helper:
+      '如有需要可调整偏移量和格子大小:拖动角上的手柄可调整大小(格子始终保持正方形),拖动图片其他位置可移动整个网格,也可以使用下方的输入框。Ctrl/Cmd + 滚轮可缩放图片;Shift/Alt + 滚轮可调整列数/行数。在工具栏切换模式,可通过点击两个点来校准格子大小,或直接拖动取色点。',
     offsetX: 'X 偏移(px)',
     offsetY: 'Y 偏移(px)',
     cellSize: '格子大小(px)',
@@ -80,6 +81,12 @@ const zhCN: typeof enUS = {
     confidence: '自动识别置信度:{{percent}}%',
     redetect: '重新自动识别',
     flipHorizontal: '水平翻转',
+    modeAdjust: '移动/缩放网格',
+    modeCalibrate: '校准格子大小',
+    modeSample: '移动取色点',
+    calibrateHintStep1: '点击第一个点',
+    calibrateHintStep2: '点击下一针对应的点',
+    sampleHint: '点击并拖动图片任意位置即可移动取色点',
     pixelGridTitle: '像素级精确网格',
     pixelGridHelp: '适用于已经像素化的图片,每一针都是已知的原始像素块(例如 1 像素,或 4x4、9 像素的色块)—— 完全跳过自动识别,因为这么小的图片本来就没有可供识别的边缘。',
     pixelsPerStitch: '每针像素数',
