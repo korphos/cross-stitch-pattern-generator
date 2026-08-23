@@ -182,6 +182,9 @@ const nlNL: typeof enUS = {
     skeinsTotal_other: '~{{count}} strengen totaal',
     strandsParen_one: '({{count}} draad)',
     strandsParen_other: '({{count}} draden)',
+    pageOfTotal: 'Pagina {{page}} van {{total}}',
+    multiPageNote_one: 'Dit patroon is verdeeld over {{count}} vel - de rij-/kolomnummers op elk vel komen overeen met de kaart hieronder.',
+    multiPageNote_other: 'Dit patroon is verdeeld over {{count}} vellen - de rij-/kolomnummers op elk vel komen overeen met de kaart hieronder.',
   },
   settingsPage: {
     back: '← Terug',
@@ -190,6 +193,11 @@ const nlNL: typeof enUS = {
     sizeUnit: 'Maateenheid',
     centimeters: 'Centimeters',
     inches: 'Inch',
+    printMode: 'Afdrukken',
+    printModeHelp: 'Een groot patroon kan over meerdere vellen worden verdeeld in plaats van verkleind om op één pagina te passen.',
+    printModeAuto: 'Automatisch (alleen splitsen indien nodig)',
+    printModeSingle: 'Altijd één pagina (kan verkleind worden)',
+    printModeMulti: "Altijd over meerdere pagina's verdelen",
     shareSettings: 'Instellingen delen',
     shareHelp:
       'Kopieer een link die je eigen garens en maateenheid meeneemt. Als je die op een ander apparaat opent (bijvoorbeeld je telefoon), vervangt dit de instellingen daar door deze - geen import-/exportbestand nodig.',

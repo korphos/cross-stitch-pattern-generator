@@ -182,6 +182,9 @@ const esES: typeof enUS = {
     skeinsTotal_other: '~{{count}} madejas en total',
     strandsParen_one: '({{count}} hebra)',
     strandsParen_other: '({{count}} hebras)',
+    pageOfTotal: 'Página {{page}} de {{total}}',
+    multiPageNote_one: 'Este patrón está dividido en {{count}} hoja - los números de fila/columna de cada hoja coinciden con el mapa de abajo.',
+    multiPageNote_other: 'Este patrón está dividido en {{count}} hojas - los números de fila/columna de cada hoja coinciden con el mapa de abajo.',
   },
   settingsPage: {
     back: '← Volver',
@@ -190,6 +193,11 @@ const esES: typeof enUS = {
     sizeUnit: 'Unidad de tamaño',
     centimeters: 'Centímetros',
     inches: 'Pulgadas',
+    printMode: 'Impresión',
+    printModeHelp: 'Un patrón grande puede dividirse en varias hojas en lugar de reducirse para caber en una.',
+    printModeAuto: 'Automático (divide solo si es necesario)',
+    printModeSingle: 'Siempre una página (puede reducirse para caber)',
+    printModeMulti: 'Dividir siempre en varias páginas',
     shareSettings: 'Compartir ajustes',
     shareHelp:
       'Copia un enlace que lleva tus hilos y tu unidad de tamaño. Al abrirlo en otro dispositivo (por ejemplo tu teléfono) reemplaza sus ajustes por estos - no hace falta ningún archivo de importación/exportación.',

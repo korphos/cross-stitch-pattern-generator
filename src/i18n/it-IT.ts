@@ -182,6 +182,9 @@ const itIT: typeof enUS = {
     skeinsTotal_other: '~{{count}} matassine in totale',
     strandsParen_one: '({{count}} filo)',
     strandsParen_other: '({{count}} fili)',
+    pageOfTotal: 'Pagina {{page}} di {{total}}',
+    multiPageNote_one: 'Questo schema è suddiviso su {{count}} foglio - i numeri di riga/colonna di ogni foglio corrispondono alla mappa qui sotto.',
+    multiPageNote_other: 'Questo schema è suddiviso su {{count}} fogli - i numeri di riga/colonna di ogni foglio corrispondono alla mappa qui sotto.',
   },
   settingsPage: {
     back: '← Indietro',
@@ -190,6 +193,11 @@ const itIT: typeof enUS = {
     sizeUnit: 'Unità di misura',
     centimeters: 'Centimetri',
     inches: 'Pollici',
+    printMode: 'Stampa',
+    printModeHelp: 'Uno schema grande può essere suddiviso su più fogli invece di essere ridotto per stare su una sola pagina.',
+    printModeAuto: 'Automatico (suddivide solo se necessario)',
+    printModeSingle: 'Sempre una pagina (può essere ridotta)',
+    printModeMulti: 'Suddividi sempre su più pagine',
     shareSettings: 'Condividi impostazioni',
     shareHelp:
       'Copia un link che porta con sé i tuoi filati posseduti e la tua unità di misura. Aprirlo su un altro dispositivo (ad es. il telefono) sostituisce le sue impostazioni con queste - nessun file di importazione/esportazione necessario.',

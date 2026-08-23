@@ -182,6 +182,9 @@ const ptBR: typeof enUS = {
     skeinsTotal_other: '~{{count}} novelos no total',
     strandsParen_one: '({{count}} fio)',
     strandsParen_other: '({{count}} fios)',
+    pageOfTotal: 'Página {{page}} de {{total}}',
+    multiPageNote_one: 'Este padrão está dividido em {{count}} folha - os números de linha/coluna de cada folha correspondem ao mapa abaixo.',
+    multiPageNote_other: 'Este padrão está dividido em {{count}} folhas - os números de linha/coluna de cada folha correspondem ao mapa abaixo.',
   },
   settingsPage: {
     back: '← Voltar',
@@ -190,6 +193,11 @@ const ptBR: typeof enUS = {
     sizeUnit: 'Unidade de tamanho',
     centimeters: 'Centímetros',
     inches: 'Polegadas',
+    printMode: 'Impressão',
+    printModeHelp: 'Um padrão grande pode ser dividido em várias folhas em vez de ser reduzido para caber em uma.',
+    printModeAuto: 'Automático (divide somente se necessário)',
+    printModeSingle: 'Sempre uma página (pode reduzir para caber)',
+    printModeMulti: 'Sempre dividir em várias páginas',
     shareSettings: 'Compartilhar configurações',
     shareHelp:
       'Copie um link que carrega suas linhas e sua unidade de tamanho. Abri-lo em outro aparelho (por exemplo seu celular) substitui as configurações dele por estas - sem precisar de arquivo de importação/exportação.',

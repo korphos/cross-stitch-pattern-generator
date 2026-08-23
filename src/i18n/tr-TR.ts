@@ -181,6 +181,9 @@ const trTR: typeof enUS = {
     skeinsTotal_other: '~{{count}} kangal toplam',
     strandsParen_one: '({{count}} kat)',
     strandsParen_other: '({{count}} kat)',
+    pageOfTotal: 'Sayfa {{page}} / {{total}}',
+    multiPageNote_one: 'Bu desen {{count}} sayfaya bölündü - her sayfadaki satır/sütun numaraları aşağıdaki haritayla eşleşir.',
+    multiPageNote_other: 'Bu desen {{count}} sayfaya bölündü - her sayfadaki satır/sütun numaraları aşağıdaki haritayla eşleşir.',
   },
   settingsPage: {
     back: '← Geri',
@@ -189,6 +192,11 @@ const trTR: typeof enUS = {
     sizeUnit: 'Boyut birimi',
     centimeters: 'Santimetre',
     inches: 'İnç',
+    printMode: 'Yazdırma',
+    printModeHelp: 'Büyük bir desen, bir sayfaya sığdırmak için küçültülmek yerine birden çok sayfaya bölünebilir.',
+    printModeAuto: 'Otomatik (yalnızca gerekirse böl)',
+    printModeSingle: 'Her zaman tek sayfa (sığdırmak için küçülebilir)',
+    printModeMulti: 'Her zaman birden çok sayfaya böl',
     shareSettings: 'Ayarları paylaş',
     shareHelp:
       'Sahip olduğunuz iplikleri ve boyut biriminizi taşıyan bir bağlantıyı kopyalayın. Başka bir cihazda (örneğin telefonunuzda) açmak, oradaki ayarları bunlarla değiştirir - içe/dışa aktarma dosyasına gerek yoktur.',

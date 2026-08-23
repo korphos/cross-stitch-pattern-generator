@@ -183,6 +183,9 @@ const frFR: typeof enUS = {
     skeinsTotal_other: '~{{count}} écheveaux au total',
     strandsParen_one: '({{count}} brin)',
     strandsParen_other: '({{count}} brins)',
+    pageOfTotal: 'Page {{page}} sur {{total}}',
+    multiPageNote_one: 'Ce patron est réparti sur {{count}} feuillet - les numéros de ligne/colonne de chaque feuillet correspondent au plan ci-dessous.',
+    multiPageNote_other: 'Ce patron est réparti sur {{count}} feuillets - les numéros de ligne/colonne de chaque feuillet correspondent au plan ci-dessous.',
   },
   settingsPage: {
     back: '← Retour',
@@ -191,6 +194,11 @@ const frFR: typeof enUS = {
     sizeUnit: 'Unité de taille',
     centimeters: 'Centimètres',
     inches: 'Pouces',
+    printMode: 'Impression',
+    printModeHelp: "Un grand patron peut être réparti sur plusieurs feuillets au lieu d'être réduit pour tenir sur une seule page.",
+    printModeAuto: 'Auto (répartit seulement si nécessaire)',
+    printModeSingle: 'Toujours une seule page (peut être réduite)',
+    printModeMulti: 'Toujours répartir sur plusieurs pages',
     shareSettings: 'Partager les paramètres',
     shareHelp:
       "Copiez un lien qui transporte vos fils possédés et votre unité de taille. L'ouvrir sur un autre appareil (par ex. votre téléphone) remplace ses paramètres par ceux-ci - aucun fichier d'import/export nécessaire.",

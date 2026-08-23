@@ -182,6 +182,9 @@ const plPL: typeof enUS = {
     skeinsTotal_other: '~{{count}} motków łącznie',
     strandsParen_one: '({{count}} nitka)',
     strandsParen_other: '({{count}} nitek)',
+    pageOfTotal: 'Strona {{page}} z {{total}}',
+    multiPageNote_one: 'Ten wzór jest podzielony na {{count}} arkusz - numery wierszy/kolumn na każdym arkuszu odpowiadają mapie poniżej.',
+    multiPageNote_other: 'Ten wzór jest podzielony na {{count}} arkuszy - numery wierszy/kolumn na każdym arkuszu odpowiadają mapie poniżej.',
   },
   settingsPage: {
     back: '← Wstecz',
@@ -190,6 +193,11 @@ const plPL: typeof enUS = {
     sizeUnit: 'Jednostka rozmiaru',
     centimeters: 'Centymetry',
     inches: 'Cale',
+    printMode: 'Drukowanie',
+    printModeHelp: 'Duży wzór można podzielić na kilka arkuszy zamiast zmniejszać go, aby zmieścić się na jednej stronie.',
+    printModeAuto: 'Automatycznie (dziel tylko w razie potrzeby)',
+    printModeSingle: 'Zawsze jedna strona (może zostać zmniejszona)',
+    printModeMulti: 'Zawsze dziel na kilka stron',
     shareSettings: 'Udostępnij ustawienia',
     shareHelp:
       'Skopiuj link, który przenosi Twoje posiadane mulliny i jednostkę rozmiaru. Otwarcie go na innym urządzeniu (np. telefonie) zastąpi jego ustawienia tymi - bez potrzeby pliku importu/eksportu.',

@@ -182,6 +182,9 @@ const deDE: typeof enUS = {
     skeinsTotal_other: '~{{count}} Stränge insgesamt',
     strandsParen_one: '({{count}} Faden)',
     strandsParen_other: '({{count}} Fäden)',
+    pageOfTotal: 'Seite {{page}} von {{total}}',
+    multiPageNote_one: 'Dieses Muster ist auf {{count}} Blatt aufgeteilt - die Zeilen-/Spaltennummern auf jedem Blatt stimmen mit der Übersicht unten überein.',
+    multiPageNote_other: 'Dieses Muster ist auf {{count}} Blätter aufgeteilt - die Zeilen-/Spaltennummern auf jedem Blatt stimmen mit der Übersicht unten überein.',
   },
   settingsPage: {
     back: '← Zurück',
@@ -190,6 +193,11 @@ const deDE: typeof enUS = {
     sizeUnit: 'Größeneinheit',
     centimeters: 'Zentimeter',
     inches: 'Zoll',
+    printMode: 'Drucken',
+    printModeHelp: 'Ein großes Muster kann auf mehrere Blätter aufgeteilt werden, anstatt auf eine Seite verkleinert zu werden.',
+    printModeAuto: 'Automatisch (nur bei Bedarf aufteilen)',
+    printModeSingle: 'Immer eine Seite (wird ggf. verkleinert)',
+    printModeMulti: 'Immer auf mehrere Seiten aufteilen',
     shareSettings: 'Einstellungen teilen',
     shareHelp:
       'Kopiere einen Link, der deine eigenen Garne und deine Größeneinheit enthält. Öffnest du ihn auf einem anderen Gerät (z. B. deinem Handy), ersetzt er dessen Einstellungen durch diese - keine Import-/Exportdatei nötig.',

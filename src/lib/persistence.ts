@@ -1,5 +1,6 @@
 import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, CropShape, RGBA } from './types'
 import type { SizeUnit } from './physicalSize'
+import type { PrintMode } from './printLayout'
 import { migrateLegacyGrid } from './gridDetection'
 
 /**
@@ -32,9 +33,12 @@ export interface AppSettings {
   /** DMC codes the user has told us they already own a skein of. */
   ownedThreadCodes: string[]
   sizeUnit: SizeUnit
+  /** 'auto' splits a large pattern across multiple printed sheets once one page would shrink
+   * stitches below legibility; 'single'/'multi' force one or the other - see printLayout.ts. */
+  printMode: PrintMode
 }
 
-export const DEFAULT_SETTINGS: AppSettings = { ownedThreadCodes: [], sizeUnit: 'cm' }
+export const DEFAULT_SETTINGS: AppSettings = { ownedThreadCodes: [], sizeUnit: 'cm', printMode: 'auto' }
 
 const DB_NAME = 'cross-stitch-pattern-generator'
 const DB_VERSION = 2

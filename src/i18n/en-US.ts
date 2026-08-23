@@ -178,6 +178,9 @@ const enUS = {
     skeinsTotal_other: '~{{count}} skeins total',
     strandsParen_one: '({{count}} strand)',
     strandsParen_other: '({{count}} strands)',
+    pageOfTotal: 'Page {{page}} of {{total}}',
+    multiPageNote_one: 'This pattern is split across {{count}} sheet - the row/col numbers on each sheet line up with the map below.',
+    multiPageNote_other: 'This pattern is split across {{count}} sheets - the row/col numbers on each sheet line up with the map below.',
   },
   settingsPage: {
     back: '← Back',
@@ -186,6 +189,11 @@ const enUS = {
     sizeUnit: 'Size unit',
     centimeters: 'Centimeters',
     inches: 'Inches',
+    printMode: 'Printing',
+    printModeHelp: 'A large pattern can be split across several sheets instead of shrinking to fit one.',
+    printModeAuto: 'Auto (split only if needed)',
+    printModeSingle: 'Always one page (may shrink to fit)',
+    printModeMulti: 'Always split into multiple pages',
     shareSettings: 'Share settings',
     shareHelp:
       'Copy a link that carries your owned threads and size unit. Opening it on another device (e.g. your phone) replaces its settings with these - no import/export file needed.',

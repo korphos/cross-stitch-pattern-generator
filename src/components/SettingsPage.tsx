@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
+import type { PrintMode } from '../lib/printLayout'
 import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
 import { SUPPORTED_LANGUAGES } from '../i18n'
 
@@ -10,6 +11,8 @@ interface Props {
   onToggleOwned: (code: string) => void
   sizeUnit: SizeUnit
   onSetSizeUnit: (unit: SizeUnit) => void
+  printMode: PrintMode
+  onSetPrintMode: (mode: PrintMode) => void
   onClose: () => void
 }
 
@@ -19,7 +22,7 @@ type FilterMode = 'all' | 'owned' | 'specialty'
  * A standalone full-page view (not a modal) so it's comfortable to use on a
  * phone - e.g. checking your DMC stash while standing in a craft store.
  */
-export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUnit, onClose }: Props) {
+export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUnit, printMode, onSetPrintMode, onClose }: Props) {
   const { t, i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
@@ -29,7 +32,7 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
     const url = new URL(window.location.href)
     url.search = ''
     url.hash = ''
-    url.searchParams.set(SETTINGS_SHARE_PARAM, encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit }))
+    url.searchParams.set(SETTINGS_SHARE_PARAM, encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit, printMode }))
     void navigator.clipboard.writeText(url.toString()).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
@@ -101,6 +104,20 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
                 </button>
               ))}
             </div>
+          </section>
+
+          <section className="bg-neutral-950 p-4">
+            <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.printMode')}</h2>
+            <p className="mb-2 text-xs text-neutral-500">{t('settingsPage.printModeHelp')}</p>
+            <select
+              value={printMode}
+              onChange={(e) => onSetPrintMode(e.target.value as PrintMode)}
+              className="w-full rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1.5 text-sm text-neutral-100"
+            >
+              <option value="auto">{t('settingsPage.printModeAuto')}</option>
+              <option value="single">{t('settingsPage.printModeSingle')}</option>
+              <option value="multi">{t('settingsPage.printModeMulti')}</option>
+            </select>
           </section>
 
           <section className="bg-neutral-950 p-4">
