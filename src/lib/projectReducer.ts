@@ -7,6 +7,7 @@ import type {
   DmcColor,
   EditSnapshot,
   PaletteMode,
+  CropShape,
   RGB,
   RGBA,
 } from './types'
@@ -30,6 +31,15 @@ export type ProjectAction =
   | { type: 'SET_OWNED_THREADS'; codes: string[] }
   | { type: 'SET_IGNORE_BACKGROUND'; ignore: boolean }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
+  | {
+      type: 'APPLY_CROP'
+      imageData: PixelBuffer
+      imageDataUrl: string
+      detectedGrid: DetectedGrid
+      backgroundColor: RGBA
+      cropShape: CropShape
+    }
+  | { type: 'UNDO_CROP' }
   | { type: 'RECOLOR_CELLS'; cellIndices: number[]; dmcCode: string }
   | { type: 'MERGE_COLOR_INTO'; fromCode: string; toCode: string }
   | { type: 'RECOLOR_PALETTE_ENTRY'; code: string; newDmc: DmcColor }
@@ -52,6 +62,7 @@ export type ProjectAction =
       activeTab: ActiveTab
       palette: PaletteEntry[]
       cellAssignment: string[]
+      cropShape: CropShape
     }
   | { type: 'RESET' }
 
@@ -82,14 +93,37 @@ export const initialProject: PatternProject = {
   ownedThreadCodes: [],
   backgroundColor: null,
   ignoreBackground: true,
+  cropShape: null,
+  preCropSnapshot: null,
   history: emptyHistory(),
 }
 
 /**
- * Indices of `cellColors` to leave blank, respecting the ignore-background
- * toggle - resolved via a flood fill from the grid's border (see
- * `findBackgroundCells`) so an interior highlight that merely shares the
- * background's color isn't swept away with it.
+ * Cells outside the ellipse inscribed in the grid's bbox - what a 'circle' crop leaves outside
+ * the round selection. Worked out geometrically from cols/rows rather than reusing the
+ * transparent-corner pixels the crop itself painted in, so it keeps masking those same corners
+ * on every future resample (grid tweaks, threshold changes, etc.) regardless of the
+ * ignore-background toggle, which the user is free to turn off independently.
+ */
+function circleMaskCellIndices(grid: DetectedGrid): Set<number> {
+  const { cols, rows } = grid
+  const indices = new Set<number>()
+  for (let row = 0; row < rows; row++) {
+    const ny = (row + 0.5 - rows / 2) / (rows / 2)
+    for (let col = 0; col < cols; col++) {
+      const nx = (col + 0.5 - cols / 2) / (cols / 2)
+      if (nx * nx + ny * ny > 1) indices.add(row * cols + col)
+    }
+  }
+  return indices
+}
+
+/**
+ * Indices of `cellColors` to leave blank: the union of whatever the
+ * ignore-background toggle excludes (a flood fill from the grid's border,
+ * see `findBackgroundCells`, so an interior highlight that merely shares
+ * the background's color isn't swept away with it) and, for a 'circle'
+ * crop, the cells outside the round selection.
  */
 function backgroundCellIndicesFor(
   cellColors: RGB[],
@@ -97,9 +131,16 @@ function backgroundCellIndicesFor(
   grid: DetectedGrid,
   backgroundColor: RGBA | null,
   ignoreBackground: boolean,
+  cropShape: CropShape,
 ): Set<number> | undefined {
-  if (!ignoreBackground || !backgroundColor) return undefined
-  return findBackgroundCells(cellColors, grid.cols, grid.rows, backgroundColor, cellAlpha ?? undefined)
+  const background =
+    ignoreBackground && backgroundColor
+      ? findBackgroundCells(cellColors, grid.cols, grid.rows, backgroundColor, cellAlpha ?? undefined)
+      : undefined
+  const cropMask = cropShape === 'circle' ? circleMaskCellIndices(grid) : undefined
+  if (!background) return cropMask
+  if (!cropMask) return background
+  return new Set([...background, ...cropMask])
 }
 
 /**
@@ -121,6 +162,7 @@ function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
       grid,
       project.backgroundColor,
       project.ignoreBackground,
+      project.cropShape,
     ),
   })
   return { ...project, confirmedGrid: grid, cellColors, cellAlpha, palette, cellAssignment, history: emptyHistory() }
@@ -204,6 +246,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           project.confirmedGrid!,
           project.backgroundColor,
           project.ignoreBackground,
+          project.cropShape,
         ),
       })
       return { ...project, clusterThreshold: action.threshold, palette, cellAssignment, history: emptyHistory() }
@@ -228,6 +271,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           project.confirmedGrid!,
           project.backgroundColor,
           project.ignoreBackground,
+          project.cropShape,
         ),
       })
       return { ...project, paletteMode: action.mode, palette, cellAssignment, history: emptyHistory() }
@@ -248,6 +292,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
             project.confirmedGrid!,
             project.backgroundColor,
             project.ignoreBackground,
+            project.cropShape,
           ),
         })
         return { ...project, ownedThreadCodes, palette, cellAssignment, history: emptyHistory() }
@@ -271,6 +316,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           project.confirmedGrid!,
           project.backgroundColor,
           action.ignore,
+          project.cropShape,
         ),
       })
       return { ...project, ignoreBackground: action.ignore, palette, cellAssignment, history: emptyHistory() }
@@ -278,6 +324,32 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'SET_ACTIVE_TAB':
       return { ...project, activeTab: action.tab }
+
+    case 'APPLY_CROP': {
+      // Same shape as IMAGE_LOADED (a full re-sample discards manual edits, caller is
+      // responsible for confirming that via confirmDestructiveEdit first) but keeps every
+      // user-level preference as-is, and lands back on the palette view to show the result.
+      // Snapshots the full pre-crop state first (see PatternProject.preCropSnapshot) so a
+      // single UNDO_CROP can put it all back - dropping any snapshot the current project was
+      // itself carrying, so this stays a one-level undo instead of an unbounded chain.
+      const { preCropSnapshot: _discardedPrevSnapshot, ...preCropSnapshot } = project
+      return resample(
+        {
+          ...project,
+          imageData: action.imageData,
+          imageDataUrl: action.imageDataUrl,
+          detectedGrid: action.detectedGrid,
+          backgroundColor: action.backgroundColor,
+          cropShape: action.cropShape,
+          activeTab: 'palette',
+          preCropSnapshot,
+        },
+        action.detectedGrid,
+      )
+    }
+
+    case 'UNDO_CROP':
+      return project.preCropSnapshot ? { ...project.preCropSnapshot, preCropSnapshot: null } : project
 
     case 'RECOLOR_CELLS': {
       if (!project.cellAssignment || !project.palette || action.cellIndices.length === 0) return project
@@ -413,6 +485,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         ownedThreadCodes: action.ownedThreadCodes,
         backgroundColor: action.backgroundColor,
         ignoreBackground: action.ignoreBackground,
+        cropShape: action.cropShape,
         activeTab: action.activeTab,
         palette,
         cellAssignment: action.cellAssignment,

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import type { DragEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { initialProject, projectReducer } from './lib/projectReducer'
@@ -10,7 +10,7 @@ import {
   IMAGE_DECODE_ERROR,
   CANVAS_UNAVAILABLE_ERROR,
 } from './lib/imageLoader'
-import { flipImageHorizontal } from './lib/imageTransform'
+import { flipImageHorizontal, cropImageToSquare, maskOutsideCircle } from './lib/imageTransform'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
 import type { PersistedProject } from './lib/persistence'
 import {
@@ -29,6 +29,9 @@ import { TabBar } from './components/TabBar'
 import { UploadDropzone } from './components/UploadDropzone'
 import { GridPanel } from './components/GridPanel'
 import { GridControls } from './components/GridControls'
+import { CropPanel } from './components/CropPanel'
+import type { CropSelection } from './components/CropPanel'
+import { CropControls } from './components/CropControls'
 import { PatternCanvas } from './components/PatternCanvas'
 import { PalettePanel } from './components/PalettePanel'
 import { DmcColorList } from './components/DmcColorList'
@@ -77,6 +80,20 @@ function App() {
   const [sharedSettingsNotice, setSharedSettingsNotice] = useState(false)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
+  const [cropShapeChoice, setCropShapeChoice] = useState<'square' | 'circle'>('square')
+  // Drag adjustments override the centered default below; cleared whenever the underlying image
+  // itself changes (new upload, or a crop just applied), so the default re-centers on it.
+  const [cropOverride, setCropOverride] = useState<CropSelection | null>(null)
+  useEffect(() => setCropOverride(null), [project.imageData])
+  const cropDefaultSelection = useMemo<CropSelection | null>(() => {
+    if (!project.imageData) return null
+    const { width, height } = project.imageData
+    const size = Math.round(Math.min(width, height) * 0.96)
+    return { x: Math.round((width - size) / 2), y: Math.round((height - size) / 2), size }
+  }, [project.imageData])
+  const cropSelection = cropOverride ?? cropDefaultSelection
+  const [cropBannerDismissed, setCropBannerDismissed] = useState(false)
+  useEffect(() => setCropBannerDismissed(false), [project.preCropSnapshot])
 
   // Lib functions throw stable error codes (see ERROR_CODE_KEYS) rather than prose, since they
   // have no access to `t()` - this maps a caught error back to a translated, user-facing message.
@@ -152,6 +169,7 @@ function App() {
             ownedThreadCodes: effectiveSettings.ownedThreadCodes,
             backgroundColor: savedProject.backgroundColor ?? null,
             ignoreBackground: savedProject.ignoreBackground ?? false,
+            cropShape: savedProject.cropShape ?? null,
             activeTab: savedProject.activeTab,
             palette: savedProject.palette,
             cellAssignment: savedProject.cellAssignment,
@@ -189,6 +207,7 @@ function App() {
         paletteMode: project.paletteMode,
         backgroundColor: project.backgroundColor,
         ignoreBackground: project.ignoreBackground,
+        cropShape: project.cropShape,
         activeTab: project.activeTab,
         palette,
         cellAssignment,
@@ -197,6 +216,7 @@ function App() {
     return () => clearTimeout(handle)
   }, [
     project.imageDataUrl,
+    project.cropShape,
     project.confirmedGrid,
     project.clusterThreshold,
     project.fabricCount,
@@ -239,6 +259,29 @@ function App() {
     dispatch({ type: 'FLIP_IMAGE_HORIZONTAL', imageData: flipped, imageDataUrl: encodeImageDataToDataUrl(flipped) })
   }, [project.imageData, project.history.past.length])
 
+  const handleApplyCrop = useCallback(() => {
+    if (!project.imageData || !cropSelection) return
+    if (!confirmDestructiveEdit(project.history.past.length)) return
+    const { width, height } = project.imageData
+    const size = Math.max(1, Math.round(cropSelection.size))
+    const x = Math.min(Math.max(0, Math.round(cropSelection.x)), Math.max(0, width - size))
+    const y = Math.min(Math.max(0, Math.round(cropSelection.y)), Math.max(0, height - size))
+    let cropped = cropImageToSquare(project.imageData, x, y, size)
+    if (cropShapeChoice === 'circle') cropped = maskOutsideCircle(cropped)
+    const detectedGrid = detectGrid(cropped)
+    const backgroundColor = detectBackgroundColor(cropped)
+    dispatch({
+      type: 'APPLY_CROP',
+      imageData: cropped,
+      imageDataUrl: encodeImageDataToDataUrl(cropped),
+      detectedGrid,
+      backgroundColor,
+      cropShape: cropShapeChoice,
+    })
+  }, [project.imageData, project.history.past.length, cropSelection, cropShapeChoice])
+
+  const handleUndoCrop = useCallback(() => dispatch({ type: 'UNDO_CROP' }), [])
+
   const handleExport = useCallback(() => {
     if (!project.imageDataUrl || !project.confirmedGrid || !project.palette || !project.cellAssignment) return
     const persisted: PersistedProject = {
@@ -251,6 +294,7 @@ function App() {
       paletteMode: project.paletteMode,
       backgroundColor: project.backgroundColor,
       ignoreBackground: project.ignoreBackground,
+      cropShape: project.cropShape,
       activeTab: project.activeTab,
       palette: project.palette,
       cellAssignment: project.cellAssignment,
@@ -285,6 +329,7 @@ function App() {
           ownedThreadCodes: project.ownedThreadCodes,
           backgroundColor: persisted.backgroundColor,
           ignoreBackground: persisted.ignoreBackground,
+          cropShape: persisted.cropShape,
           activeTab: persisted.activeTab,
           palette: persisted.palette,
           cellAssignment: persisted.cellAssignment,
@@ -474,6 +519,21 @@ function App() {
                 </button>
               </div>
             )}
+            {project.preCropSnapshot !== null && !cropBannerDismissed && (
+              <div className="flex items-center justify-center gap-3 bg-indigo-950 px-4 py-2 text-center text-sm text-indigo-300">
+                {t('app.cropAppliedBanner')}
+                <button type="button" onClick={handleUndoCrop} className="text-indigo-400 underline hover:text-indigo-200">
+                  {t('cropControls.undo')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCropBannerDismissed(true)}
+                  className="text-indigo-400 underline hover:text-indigo-200"
+                >
+                  {t('common.dismiss')}
+                </button>
+              </div>
+            )}
 
             <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
               <div className="order-2 w-full shrink-0 border-b border-neutral-800 bg-neutral-900 lg:order-1 lg:h-full lg:w-64 lg:overflow-y-auto lg:border-b-0 lg:border-r">
@@ -482,6 +542,15 @@ function App() {
                 )}
                 {hasImage && project.activeTab === 'palette' && (
                   <PalettePanel project={project} dispatch={dispatch} sizeUnit={settings.sizeUnit} />
+                )}
+                {hasImage && project.activeTab === 'crop' && (
+                  <CropControls
+                    shape={cropShapeChoice}
+                    onShapeChange={setCropShapeChoice}
+                    onApply={handleApplyCrop}
+                    canUndo={project.preCropSnapshot !== null}
+                    onUndo={handleUndoCrop}
+                  />
                 )}
               </div>
 
@@ -496,6 +565,15 @@ function App() {
                 )}
                 {hasImage && project.activeTab === 'grid' && (
                   <GridPanel project={project} dispatch={dispatch} onFlipHorizontal={handleFlipHorizontal} />
+                )}
+                {hasImage && project.activeTab === 'crop' && project.imageData && cropSelection && (
+                  <CropPanel
+                    imageData={project.imageData}
+                    imageDataUrl={project.imageDataUrl!}
+                    selection={cropSelection}
+                    onSelectionChange={setCropOverride}
+                    shape={cropShapeChoice}
+                  />
                 )}
                 {hasImage && project.activeTab === 'palette' && project.palette && (
                   <div className="h-full" ref={attachWheelZoom}>

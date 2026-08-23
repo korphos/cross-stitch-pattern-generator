@@ -82,7 +82,12 @@ export interface PaletteEntry {
   finishAlternative?: { dmc: DmcColor; deltaE: number }
 }
 
-export type ActiveTab = 'grid' | 'palette'
+export type ActiveTab = 'grid' | 'palette' | 'crop'
+
+/** Shape the image was last cropped to - 'circle' keeps masking the corners (outside the
+ * inscribed ellipse) as no-stitch on every resample, since cropping itself only trims the
+ * image down to the selection's square bounding box. Null before any crop is applied. */
+export type CropShape = 'square' | 'circle' | null
 
 /**
  * 'best' matches every color to the closest DMC thread regardless of what
@@ -136,6 +141,16 @@ export interface PatternProject {
   backgroundColor: RGBA | null
   /** when true, cells close to `backgroundColor` are left blank (no stitch) instead of matched to a DMC thread */
   ignoreBackground: boolean
+  /** see `CropShape` - set by the Crop tab's Apply action, cleared on a fresh image upload */
+  cropShape: CropShape
+  /**
+   * Full project state right before the most recently applied crop, so a single UNDO_CROP can
+   * restore it - a crop is a full re-sample (like a grid/threshold change), which normally isn't
+   * reversible the way palette edits are via `history`. Session-only: never persisted (autosave,
+   * export) and cleared by the next crop or a fresh image upload, so it's a one-level "undo my
+   * last crop", not a real stack.
+   */
+  preCropSnapshot: Omit<PatternProject, 'preCropSnapshot'> | null
   /** undo/redo stacks for manual color edits; reset whenever the grid/threshold regenerates the palette from scratch */
   history: { past: EditSnapshot[]; future: EditSnapshot[] }
 }

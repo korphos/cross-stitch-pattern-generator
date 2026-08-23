@@ -36,6 +36,7 @@ const zhCN: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: '已从共享链接导入设置(拥有的绣线、尺寸单位)。',
+    cropAppliedBanner: '图片已裁剪。',
   },
   confirmDestructive: {
     message_one: '你有 {{count}} 处未保存的手动改色,继续操作将会丢失。是否继续?',
@@ -56,6 +57,7 @@ const zhCN: typeof enUS = {
   tabBar: {
     palette: '调色板',
     grid: '网格',
+    crop: '裁剪',
   },
   uploadDropzone: {
     dragDrop: '将已经像素化的图片拖放到这里,或者',
@@ -85,6 +87,19 @@ const zhCN: typeof enUS = {
   },
   gridPanel: {
     imageAlt: '原始图片',
+  },
+  cropControls: {
+    title: '裁剪',
+    helper: '拖动选区可移动，拖动角上的手柄可调整大小。应用后将重新检测网格，并仅在选区内重新采样颜色——圆形会裁掉圆圈以外的所有内容。',
+    shape: '形状',
+    shapeSquare: '正方形',
+    shapeCircle: '圆形',
+    apply: '应用裁剪',
+    appliedNote: '图片已经裁剪过一次——再次应用会在当前图片基础上进一步裁剪。',
+    undo: '撤销裁剪',
+  },
+  cropPanel: {
+    imageAlt: '待裁剪图片',
   },
   palettePanel: {
     title: '调色板',

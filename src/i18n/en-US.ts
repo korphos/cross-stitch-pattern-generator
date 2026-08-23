@@ -34,6 +34,7 @@ const enUS = {
   },
   app: {
     sharedSettingsNotice: 'Settings imported from a shared link (owned threads, size unit).',
+    cropAppliedBanner: 'Image cropped.',
   },
   confirmDestructive: {
     message_one: 'You have {{count}} unsaved manual color edit that will be discarded if you continue. Continue?',
@@ -54,6 +55,7 @@ const enUS = {
   tabBar: {
     palette: 'Palette',
     grid: 'Grid',
+    crop: 'Crop',
   },
   uploadDropzone: {
     dragDrop: 'Drag and drop an already-pixelated image here, or',
@@ -85,6 +87,20 @@ const enUS = {
   },
   gridPanel: {
     imageAlt: 'Source pattern',
+  },
+  cropControls: {
+    title: 'Crop',
+    helper:
+      'Drag the selection to move it, or drag its corner handle to resize. Applying re-detects the grid and re-samples colors from the selection only - a round shape crops out everything outside the circle.',
+    shape: 'Shape',
+    shapeSquare: 'Square',
+    shapeCircle: 'Circle',
+    apply: 'Apply crop',
+    appliedNote: 'The image has already been cropped once - applying again crops further into the current image.',
+    undo: 'Undo crop',
+  },
+  cropPanel: {
+    imageAlt: 'Image to crop',
   },
   palettePanel: {
     title: 'Palette',

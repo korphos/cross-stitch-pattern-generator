@@ -1,4 +1,5 @@
 import type { PersistedProject } from './persistence'
+import type { ActiveTab } from './types'
 import { migrateLegacyGrid } from './gridDetection'
 
 /** Extension used for exported project files. */
@@ -57,6 +58,7 @@ export function parseProjectFile(text: string): PersistedProject {
     fileName,
     backgroundColor,
     ignoreBackground,
+    cropShape,
   } = raw as Partial<ProjectFile>
 
   if (
@@ -84,7 +86,9 @@ export function parseProjectFile(text: string): PersistedProject {
     // rather than silently blanking cells the exporter never intended to.
     backgroundColor: isRecord(backgroundColor) ? (backgroundColor as PersistedProject['backgroundColor']) : null,
     ignoreBackground: ignoreBackground === true,
-    activeTab: activeTab === 'grid' ? 'grid' : 'palette',
+    // Older exported files predate cropping entirely - default to no mask.
+    cropShape: cropShape === 'circle' || cropShape === 'square' ? cropShape : null,
+    activeTab: (['grid', 'crop'] as ActiveTab[]).includes(activeTab as ActiveTab) ? (activeTab as ActiveTab) : 'palette',
     palette: palette as PersistedProject['palette'],
     cellAssignment: cellAssignment as PersistedProject['cellAssignment'],
   }

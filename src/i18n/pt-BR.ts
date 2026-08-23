@@ -36,6 +36,7 @@ const ptBR: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Configurações importadas de um link compartilhado (linhas que você tem, unidade de tamanho).',
+    cropAppliedBanner: 'Imagem recortada.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const ptBR: typeof enUS = {
   tabBar: {
     palette: 'Paleta',
     grid: 'Grade',
+    crop: 'Recortar',
   },
   uploadDropzone: {
     dragDrop: 'Arraste e solte aqui uma imagem já pixelada, ou',
@@ -89,6 +91,20 @@ const ptBR: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Imagem de origem',
+  },
+  cropControls: {
+    title: 'Recortar',
+    helper:
+      'Arraste a seleção para movê-la, ou sua alça de canto para redimensioná-la. Aplicar recalcula a grade e reamostra as cores somente dentro da seleção - um formato circular recorta tudo fora do círculo.',
+    shape: 'Formato',
+    shapeSquare: 'Quadrado',
+    shapeCircle: 'Círculo',
+    apply: 'Aplicar recorte',
+    appliedNote: 'A imagem já foi recortada uma vez - aplicar novamente recorta ainda mais a imagem atual.',
+    undo: 'Desfazer recorte',
+  },
+  cropPanel: {
+    imageAlt: 'Imagem para recortar',
   },
   palettePanel: {
     title: 'Paleta',

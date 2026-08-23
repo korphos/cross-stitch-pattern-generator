@@ -34,6 +34,7 @@ function makeProject(): PersistedProject {
     paletteMode: 'best',
     backgroundColor: { r: 255, g: 255, b: 255, a: 255 },
     ignoreBackground: true,
+    cropShape: 'circle',
     activeTab: 'palette',
     palette: [makeEntry('310')],
     cellAssignment: Array(100).fill('310'),
@@ -70,6 +71,12 @@ describe('projectFile', () => {
     const parsed = parseProjectFile(JSON.stringify({ version: 1, ...legacyProject }))
     expect(parsed.backgroundColor).toBeNull()
     expect(parsed.ignoreBackground).toBe(false)
+  })
+
+  it('defaults crop shape to null for a file exported before cropping existed', () => {
+    const { cropShape: _cs, ...legacyProject } = makeProject()
+    const parsed = parseProjectFile(JSON.stringify({ version: 1, ...legacyProject }))
+    expect(parsed.cropShape).toBeNull()
   })
 
   it('migrates a file exported before stitches were forced square (separate cellWidth/cellHeight)', () => {

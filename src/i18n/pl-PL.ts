@@ -36,6 +36,7 @@ const plPL: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Ustawienia zaimportowane z udostępnionego linku (posiadane mulliny, jednostka rozmiaru).',
+    cropAppliedBanner: 'Obraz przycięty.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const plPL: typeof enUS = {
   tabBar: {
     palette: 'Paleta',
     grid: 'Siatka',
+    crop: 'Przytnij',
   },
   uploadDropzone: {
     dragDrop: 'Przeciągnij i upuść tutaj już spikselowany obraz, albo',
@@ -89,6 +91,20 @@ const plPL: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Obraz źródłowy',
+  },
+  cropControls: {
+    title: 'Przytnij',
+    helper:
+      'Przeciągnij zaznaczenie, aby je przesunąć, lub uchwyt w rogu, aby zmienić rozmiar. Zastosowanie ponownie wykrywa siatkę i próbkuje kolory tylko w obrębie zaznaczenia - okrągły kształt wycina wszystko poza kołem.',
+    shape: 'Kształt',
+    shapeSquare: 'Kwadrat',
+    shapeCircle: 'Koło',
+    apply: 'Zastosuj przycięcie',
+    appliedNote: 'Obraz został już raz przycięty - ponowne zastosowanie przycina bieżący obraz jeszcze bardziej.',
+    undo: 'Cofnij przycięcie',
+  },
+  cropPanel: {
+    imageAlt: 'Obraz do przycięcia',
   },
   palettePanel: {
     title: 'Paleta',

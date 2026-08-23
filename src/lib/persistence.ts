@@ -1,4 +1,4 @@
-import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, RGBA } from './types'
+import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, CropShape, RGBA } from './types'
 import type { SizeUnit } from './physicalSize'
 import { migrateLegacyGrid } from './gridDetection'
 
@@ -21,6 +21,7 @@ export interface PersistedProject {
   paletteMode: PaletteMode
   backgroundColor: RGBA | null
   ignoreBackground: boolean
+  cropShape: CropShape
   activeTab: ActiveTab
   palette: PaletteEntry[]
   cellAssignment: string[]

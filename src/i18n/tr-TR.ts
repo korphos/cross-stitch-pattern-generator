@@ -36,6 +36,7 @@ const trTR: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Ayarlar paylaşılan bir bağlantıdan içe aktarıldı (sahip olunan iplikler, boyut birimi).',
+    cropAppliedBanner: 'Görsel kırpıldı.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const trTR: typeof enUS = {
   tabBar: {
     palette: 'Palet',
     grid: 'Izgara',
+    crop: 'Kırp',
   },
   uploadDropzone: {
     dragDrop: 'Zaten pikselli bir görseli buraya sürükleyip bırakın, veya',
@@ -89,6 +91,20 @@ const trTR: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Kaynak görsel',
+  },
+  cropControls: {
+    title: 'Kırp',
+    helper:
+      'Seçimi taşımak için sürükleyin, boyutlandırmak için köşe tutamacını sürükleyin. Uygulamak ızgarayı yeniden algılar ve renkleri yalnızca seçim içinde yeniden örnekler - yuvarlak bir şekil, dairenin dışındaki her şeyi keser.',
+    shape: 'Şekil',
+    shapeSquare: 'Kare',
+    shapeCircle: 'Daire',
+    apply: 'Kırpmayı uygula',
+    appliedNote: 'Görsel zaten bir kez kırpıldı - tekrar uygulamak mevcut görseli daha da kırpar.',
+    undo: 'Kırpmayı geri al',
+  },
+  cropPanel: {
+    imageAlt: 'Kırpılacak görsel',
   },
   palettePanel: {
     title: 'Palet',

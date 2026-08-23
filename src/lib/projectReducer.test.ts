@@ -181,6 +181,7 @@ describe('projectReducer RESTORE', () => {
     paletteMode: 'best' as const,
     backgroundColor: null,
     ignoreBackground: false,
+    cropShape: null,
     activeTab: 'palette' as const,
     cellAssignment: ['310'],
   }

@@ -37,6 +37,7 @@ const frFR: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Paramètres importés depuis un lien partagé (fils possédés, unité de taille).',
+    cropAppliedBanner: 'Image recadrée.',
   },
   confirmDestructive: {
     message_one:
@@ -59,6 +60,7 @@ const frFR: typeof enUS = {
   tabBar: {
     palette: 'Palette',
     grid: 'Grille',
+    crop: 'Recadrage',
   },
   uploadDropzone: {
     dragDrop: 'Glissez-déposez ici une image déjà pixelisée, ou',
@@ -90,6 +92,20 @@ const frFR: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Motif source',
+  },
+  cropControls: {
+    title: 'Recadrage',
+    helper:
+      "Faites glisser la sélection pour la déplacer, ou sa poignée d'angle pour la redimensionner. Valider recalcule la grille et rééchantillonne les couleurs uniquement dans la sélection - une forme ronde découpe tout ce qui est en dehors du cercle.",
+    shape: 'Forme',
+    shapeSquare: 'Carré',
+    shapeCircle: 'Rond',
+    apply: 'Appliquer le recadrage',
+    appliedNote: "L'image a déjà été recadrée une fois - appliquer à nouveau recadre davantage l'image actuelle.",
+    undo: 'Annuler le recadrage',
+  },
+  cropPanel: {
+    imageAlt: 'Image à recadrer',
   },
   palettePanel: {
     title: 'Palette',

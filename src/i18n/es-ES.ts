@@ -36,6 +36,7 @@ const esES: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Ajustes importados desde un enlace compartido (hilos que tienes, unidad de tamaño).',
+    cropAppliedBanner: 'Imagen recortada.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const esES: typeof enUS = {
   tabBar: {
     palette: 'Paleta',
     grid: 'Cuadrícula',
+    crop: 'Recortar',
   },
   uploadDropzone: {
     dragDrop: 'Arrastra y suelta aquí una imagen ya pixelada, o',
@@ -89,6 +91,20 @@ const esES: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Imagen de origen',
+  },
+  cropControls: {
+    title: 'Recortar',
+    helper:
+      'Arrastra la selección para moverla, o su asa de esquina para redimensionarla. Al aplicar se vuelve a detectar la cuadrícula y se vuelve a muestrear el color solo dentro de la selección - una forma circular recorta todo lo que quede fuera del círculo.',
+    shape: 'Forma',
+    shapeSquare: 'Cuadrado',
+    shapeCircle: 'Círculo',
+    apply: 'Aplicar recorte',
+    appliedNote: 'La imagen ya se ha recortado una vez - aplicar de nuevo recorta aún más la imagen actual.',
+    undo: 'Deshacer recorte',
+  },
+  cropPanel: {
+    imageAlt: 'Imagen para recortar',
   },
   palettePanel: {
     title: 'Paleta',

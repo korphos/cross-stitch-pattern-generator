@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { ActiveTab } from '../lib/types'
 
-const TABS: ActiveTab[] = ['palette', 'grid']
+const TABS: ActiveTab[] = ['palette', 'grid', 'crop']
 
 interface Props {
   activeTab: ActiveTab

@@ -36,6 +36,7 @@ const deDE: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Einstellungen aus einem geteilten Link importiert (eigene Garne, Größeneinheit).',
+    cropAppliedBanner: 'Bild zugeschnitten.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const deDE: typeof enUS = {
   tabBar: {
     palette: 'Palette',
     grid: 'Gitter',
+    crop: 'Zuschneiden',
   },
   uploadDropzone: {
     dragDrop: 'Ein bereits pixeliges Bild hierher ziehen, oder',
@@ -89,6 +91,20 @@ const deDE: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Quellbild',
+  },
+  cropControls: {
+    title: 'Zuschneiden',
+    helper:
+      'Ziehen Sie die Auswahl, um sie zu verschieben, oder ihren Eckgriff, um sie zu skalieren. Beim Anwenden wird das Raster neu erkannt und die Farben werden nur innerhalb der Auswahl neu abgetastet - eine runde Form schneidet alles außerhalb des Kreises weg.',
+    shape: 'Form',
+    shapeSquare: 'Quadrat',
+    shapeCircle: 'Kreis',
+    apply: 'Zuschnitt anwenden',
+    appliedNote: 'Das Bild wurde bereits einmal zugeschnitten - erneutes Anwenden schneidet das aktuelle Bild weiter zu.',
+    undo: 'Zuschnitt rückgängig machen',
+  },
+  cropPanel: {
+    imageAlt: 'Zuzuschneidendes Bild',
   },
   palettePanel: {
     title: 'Palette',

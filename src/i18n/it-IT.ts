@@ -36,6 +36,7 @@ const itIT: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Impostazioni importate da un link condiviso (filati posseduti, unità di misura).',
+    cropAppliedBanner: 'Immagine ritagliata.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const itIT: typeof enUS = {
   tabBar: {
     palette: 'Tavolozza',
     grid: 'Griglia',
+    crop: 'Ritaglia',
   },
   uploadDropzone: {
     dragDrop: "Trascina qui un'immagine già pixelata, oppure",
@@ -89,6 +91,20 @@ const itIT: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Immagine sorgente',
+  },
+  cropControls: {
+    title: 'Ritaglia',
+    helper:
+      "Trascina la selezione per spostarla, o la maniglia d'angolo per ridimensionarla. Applicando si ridetermina la griglia e si ricampionano i colori solo all'interno della selezione - una forma rotonda ritaglia tutto ciò che è fuori dal cerchio.",
+    shape: 'Forma',
+    shapeSquare: 'Quadrato',
+    shapeCircle: 'Cerchio',
+    apply: 'Applica ritaglio',
+    appliedNote: "L'immagine è già stata ritagliata una volta - applicando di nuovo si ritaglia ulteriormente l'immagine attuale.",
+    undo: 'Annulla ritaglio',
+  },
+  cropPanel: {
+    imageAlt: 'Immagine da ritagliare',
   },
   palettePanel: {
     title: 'Tavolozza',

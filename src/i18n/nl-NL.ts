@@ -36,6 +36,7 @@ const nlNL: typeof enUS = {
   },
   app: {
     sharedSettingsNotice: 'Instellingen geïmporteerd via een gedeelde link (eigen garens, maateenheid).',
+    cropAppliedBanner: 'Afbeelding bijgesneden.',
   },
   confirmDestructive: {
     message_one:
@@ -58,6 +59,7 @@ const nlNL: typeof enUS = {
   tabBar: {
     palette: 'Palet',
     grid: 'Raster',
+    crop: 'Bijsnijden',
   },
   uploadDropzone: {
     dragDrop: 'Sleep hier een al gepixelde afbeelding naartoe, of',
@@ -89,6 +91,20 @@ const nlNL: typeof enUS = {
   },
   gridPanel: {
     imageAlt: 'Bronafbeelding',
+  },
+  cropControls: {
+    title: 'Bijsnijden',
+    helper:
+      'Sleep de selectie om te verplaatsen, of de hoekgreep om te vergroten of verkleinen. Toepassen detecteert het raster opnieuw en bemonstert kleuren alleen binnen de selectie - een ronde vorm snijdt alles buiten de cirkel weg.',
+    shape: 'Vorm',
+    shapeSquare: 'Vierkant',
+    shapeCircle: 'Cirkel',
+    apply: 'Bijsnijden toepassen',
+    appliedNote: 'De afbeelding is al eerder bijgesneden - opnieuw toepassen snijdt de huidige afbeelding verder bij.',
+    undo: 'Bijsnijden ongedaan maken',
+  },
+  cropPanel: {
+    imageAlt: 'Afbeelding om bij te snijden',
   },
   palettePanel: {
     title: 'Palet',
