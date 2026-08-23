@@ -27,6 +27,7 @@ import type { SizeUnit } from './lib/physicalSize'
 import type { PrintMode } from './lib/printLayout'
 import type { PrintColorMode } from './lib/renderPattern'
 import type { SymbolStyle } from './lib/types'
+import { EMPTY_CELL } from './lib/types'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
 import { UploadDropzone } from './components/UploadDropzone'
@@ -421,8 +422,9 @@ function App() {
     dispatch({ type: 'SET_SYMBOL_STYLE', style })
   }, [])
 
-  // Ctrl/Cmd+Z to undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z to redo - ignored
-  // while typing in a form field so native text-undo still works there.
+  // Ctrl/Cmd+Z to undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z to redo, Delete/Backspace to
+  // clear the color of the selected cells - ignored while typing in a form field so
+  // native text-undo/deletion still works there.
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const target = e.target as HTMLElement | null
@@ -430,19 +432,25 @@ function App() {
         target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable
       if (isEditableTarget) return
       const meta = e.ctrlKey || e.metaKey
-      if (!meta) return
-      const key = e.key.toLowerCase()
-      if (key === 'z' && !e.shiftKey) {
+      if (meta) {
+        const key = e.key.toLowerCase()
+        if (key === 'z' && !e.shiftKey) {
+          e.preventDefault()
+          dispatch({ type: 'UNDO' })
+        } else if (key === 'y' || (key === 'z' && e.shiftKey)) {
+          e.preventDefault()
+          dispatch({ type: 'REDO' })
+        }
+        return
+      }
+      if ((e.key === 'Delete' || e.key === 'Backspace') && selectedCellIndices.length > 0) {
         e.preventDefault()
-        dispatch({ type: 'UNDO' })
-      } else if (key === 'y' || (key === 'z' && e.shiftKey)) {
-        e.preventDefault()
-        dispatch({ type: 'REDO' })
+        dispatch({ type: 'RECOLOR_CELLS', cellIndices: selectedCellIndices, dmcCode: EMPTY_CELL })
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [selectedCellIndices])
 
   // A file can be dropped anywhere in the app at any time to replace the
   // current image, not just onto a dedicated dropzone.
