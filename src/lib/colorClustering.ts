@@ -37,12 +37,22 @@ export interface ClusterResult {
  * each merges into the closest existing cluster centroid (CIEDE2000) if
  * within `deltaEThreshold`, otherwise it starts a new cluster. Centroids
  * are frequency-weighted averages in Lab space.
+ *
+ * The nearest-cluster search below is bucketed on a spatial hash over Lab
+ * space instead of scanning every cluster: for a real (non-pixelated) photo,
+ * the number of distinct sampled colors can run into the tens of thousands
+ * and clusters into the hundreds, and a full scan (unique colors * clusters)
+ * measured 20+ seconds on a real ~800x1000 photo, freezing the tab. Only
+ * clusters within one bucket-radius of the query can be within
+ * `deltaEThreshold` of it, cutting candidates from "every cluster formed so
+ * far" down to a handful.
  */
 export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterResult {
   interface Working {
     id: number
     centroidLab: Lab
     totalCount: number
+    bucketKey: string
   }
 
   const uniqueByKey = new Map<string, { color: RGB; count: number; indices: number[] }>()
@@ -58,6 +68,57 @@ export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterRes
   })
   const uniques = [...uniqueByKey.values()].sort((a, b) => b.count - a.count)
 
+  // Bucket cells are sized to the threshold, and the search below checks a 5x5x5 neighborhood
+  // (+/-2 cells per axis) - twice the +/-1 cell that plain Euclidean-in-Lab distance would
+  // require, since CIEDE2000's chroma/hue weighting can put two colors within
+  // `deltaEThreshold` of each other even when their raw Lab Euclidean distance runs somewhat
+  // higher (e.g. saturated colors, where CIEDE2000 discounts chroma differences more than
+  // lightness ones). A bucket too small just means a few more (cheap) neighbor cells to check,
+  // not a correctness problem - only a bucket too large would risk missing a real match.
+  const bucketSize = Math.max(deltaEThreshold, 0.1)
+  const NEIGHBOR_RADIUS = 3
+  const buckets = new Map<string, Working[]>()
+
+  const bucketCoord = (v: number) => Math.floor((v ?? 0) / bucketSize)
+  const bucketKeyFor = (lab: Lab) => `${bucketCoord(lab.l)},${bucketCoord(lab.a)},${bucketCoord(lab.b)}`
+
+  function neighborCandidates(lab: Lab): Working[] {
+    const bl = bucketCoord(lab.l)
+    const ba = bucketCoord(lab.a)
+    const bb = bucketCoord(lab.b)
+    const candidates: Working[] = []
+    for (let dl = -NEIGHBOR_RADIUS; dl <= NEIGHBOR_RADIUS; dl++) {
+      for (let da = -NEIGHBOR_RADIUS; da <= NEIGHBOR_RADIUS; da++) {
+        for (let db = -NEIGHBOR_RADIUS; db <= NEIGHBOR_RADIUS; db++) {
+          const bucket = buckets.get(`${bl + dl},${ba + da},${bb + db}`)
+          if (bucket) candidates.push(...bucket)
+        }
+      }
+    }
+    return candidates
+  }
+
+  function placeInBucket(c: Working) {
+    const key = bucketKeyFor(c.centroidLab)
+    c.bucketKey = key
+    const list = buckets.get(key)
+    if (list) list.push(c)
+    else buckets.set(key, [c])
+  }
+
+  // A merge shifts the centroid, which can move it into a different bucket - re-file it so
+  // future lookups still find it.
+  function relocateIfBucketChanged(c: Working) {
+    const newKey = bucketKeyFor(c.centroidLab)
+    if (newKey === c.bucketKey) return
+    const oldList = buckets.get(c.bucketKey)
+    if (oldList) {
+      const i = oldList.indexOf(c)
+      if (i !== -1) oldList.splice(i, 1)
+    }
+    placeInBucket(c)
+  }
+
   const clusters: Working[] = []
   const sampleToCluster = new Array<number>(samples.length).fill(-1)
 
@@ -66,7 +127,7 @@ export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterRes
 
     let bestCluster: Working | null = null
     let bestDist = Infinity
-    for (const c of clusters) {
+    for (const c of neighborCandidates(lab)) {
       const d = deltaE(lab, c.centroidLab)
       if (d < bestDist) {
         bestDist = d
@@ -84,9 +145,12 @@ export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterRes
       }
       bestCluster.totalCount = newTotal
       for (const idx of u.indices) sampleToCluster[idx] = bestCluster.id
+      relocateIfBucketChanged(bestCluster)
     } else {
       const id = clusters.length
-      clusters.push({ id, centroidLab: lab, totalCount: u.count })
+      const working: Working = { id, centroidLab: lab, totalCount: u.count, bucketKey: '' }
+      clusters.push(working)
+      placeInBucket(working)
       for (const idx of u.indices) sampleToCluster[idx] = id
     }
   }
