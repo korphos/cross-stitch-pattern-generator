@@ -179,6 +179,21 @@ export function detectGrid(img: PixelBuffer, options: DetectGridOptions = {}): D
   const cols = Math.max(1, Math.round(bbox.width / cellSize))
   const rows = Math.max(1, Math.round(bbox.height / cellSize))
 
+  // The peak-finding approach above assumes a real interior between edges - a color roughly
+  // constant across most of a cell, punctuated by a real change at each cell boundary. That
+  // breaks down for an already-pixelated image whose stitches are only a handful of source
+  // pixels each (in the extreme, a single pixel per stitch): virtually every pixel differs
+  // from its neighbor, there's no "interior" left to contrast against, and the peak search
+  // degenerates to a couple of near-arbitrary points - reported with deceptively high
+  // confidence (few gaps measured, so whatever gap recurs "most" trivially wins). A 1-or-2-cell
+  // result is never a real chart, so fall back to the only safe assumption for something this
+  // size: every source pixel is its own stitch. (For a coarser block size - e.g. a photo where
+  // each stitch was exported as a 4x4 or 9-pixel block - GridControls' pixel-grid control lets
+  // the user say so explicitly.)
+  if (cols * rows <= 2) {
+    return { bbox, cellSize: 1, cols: bbox.width, rows: bbox.height, confidence: 0, sampleOffsetX: 0, sampleOffsetY: 0 }
+  }
+
   return { bbox, cellSize, cols, rows, confidence, sampleOffsetX: 0, sampleOffsetY: 0 }
 }
 

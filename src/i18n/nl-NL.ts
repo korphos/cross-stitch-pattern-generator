@@ -81,6 +81,11 @@ const nlNL: typeof enUS = {
     confidence: 'Betrouwbaarheid van automatische detectie: {{percent}}%',
     redetect: 'Automatisch opnieuw detecteren',
     flipHorizontal: 'Horizontaal spiegelen',
+    pixelGridTitle: 'Pixelperfect raster',
+    pixelGridHelp:
+      'Voor een al gepixelde afbeelding waarbij elke steek een bekend blok bronpixels is (bijvoorbeeld 1 pixel, of een blok van 4x4 of 9 pixels) - omzeilt automatische detectie volledig, die bij zo\'n kleine afbeelding niets heeft om mee te werken.',
+    pixelsPerStitch: 'Pixels per steek',
+    applyPixelGrid: 'Toepassen',
   },
   gridPanel: {
     imageAlt: 'Bronafbeelding',

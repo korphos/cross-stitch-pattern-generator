@@ -81,6 +81,11 @@ const itIT: typeof enUS = {
     confidence: 'Affidabilità del rilevamento automatico: {{percent}}%',
     redetect: 'Rileva di nuovo automaticamente',
     flipHorizontal: 'Capovolgi orizzontalmente',
+    pixelGridTitle: 'Griglia pixel per pixel',
+    pixelGridHelp:
+      'Per un\'immagine già pixelata in cui ogni punto è un blocco noto di pixel sorgente (ad es. 1 pixel, o un blocco di 4x4 o 9 pixel) - aggira completamente il rilevamento automatico, che non ha nulla su cui lavorare in un\'immagine così piccola.',
+    pixelsPerStitch: 'Pixel per punto',
+    applyPixelGrid: 'Applica',
   },
   gridPanel: {
     imageAlt: 'Immagine sorgente',

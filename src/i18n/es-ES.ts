@@ -81,6 +81,11 @@ const esES: typeof enUS = {
     confidence: 'Confianza de la detección automática: {{percent}}%',
     redetect: 'Detectar de nuevo automáticamente',
     flipHorizontal: 'Voltear horizontalmente',
+    pixelGridTitle: 'Cuadrícula píxel a píxel',
+    pixelGridHelp:
+      'Para una imagen ya pixelada donde cada punto es un bloque conocido de píxeles de origen (por ejemplo 1 píxel, o un bloque de 4x4 o 9 píxeles) - evita por completo la detección automática, que no tiene nada con qué trabajar en una imagen tan pequeña.',
+    pixelsPerStitch: 'Píxeles por punto',
+    applyPixelGrid: 'Aplicar',
   },
   gridPanel: {
     imageAlt: 'Imagen de origen',

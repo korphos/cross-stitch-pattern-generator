@@ -77,6 +77,11 @@ const enUS = {
     confidence: 'Automatic detection confidence: {{percent}}%',
     redetect: 'Re-detect automatically',
     flipHorizontal: 'Flip horizontally',
+    pixelGridTitle: 'Pixel-perfect grid',
+    pixelGridHelp:
+      "For an already-pixelated image where every stitch is a known block of source pixels (e.g. 1 pixel, or a 4x4 or 9-pixel block) - bypasses automatic detection entirely, which has nothing to work with on an image this small.",
+    pixelsPerStitch: 'Pixels per stitch',
+    applyPixelGrid: 'Apply',
   },
   gridPanel: {
     imageAlt: 'Source pattern',

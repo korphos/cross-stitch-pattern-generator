@@ -81,6 +81,11 @@ const ptBR: typeof enUS = {
     confidence: 'Confiança da detecção automática: {{percent}}%',
     redetect: 'Detectar novamente automaticamente',
     flipHorizontal: 'Espelhar horizontalmente',
+    pixelGridTitle: 'Grade pixel a pixel',
+    pixelGridHelp:
+      'Para uma imagem já pixelada em que cada ponto é um bloco conhecido de pixels de origem (por exemplo 1 pixel, ou um bloco de 4x4 ou 9 pixels) - ignora completamente a detecção automática, que não tem com o que trabalhar em uma imagem tão pequena.',
+    pixelsPerStitch: 'Pixels por ponto',
+    applyPixelGrid: 'Aplicar',
   },
   gridPanel: {
     imageAlt: 'Imagem de origem',

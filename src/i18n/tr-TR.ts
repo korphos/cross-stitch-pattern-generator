@@ -81,6 +81,11 @@ const trTR: typeof enUS = {
     confidence: 'Otomatik algılama güveni: %{{percent}}',
     redetect: 'Otomatik olarak yeniden algıla',
     flipHorizontal: 'Yatay çevir',
+    pixelGridTitle: 'Piksel kusursuz ızgara',
+    pixelGridHelp:
+      'Her karenin bilinen bir kaynak piksel bloğu olduğu, zaten pikselli bir görsel için (örneğin 1 piksel, veya 4x4 ya da 9 piksellik bir blok) - böyle küçük bir görselde işleyecek hiçbir şeyi olmayan otomatik algılamayı tamamen atlar.',
+    pixelsPerStitch: 'Kare başına piksel',
+    applyPixelGrid: 'Uygula',
   },
   gridPanel: {
     imageAlt: 'Kaynak görsel',

@@ -81,6 +81,11 @@ const plPL: typeof enUS = {
     confidence: 'Pewność automatycznego wykrywania: {{percent}}%',
     redetect: 'Wykryj ponownie automatycznie',
     flipHorizontal: 'Odbij poziomo',
+    pixelGridTitle: 'Siatka piksel w piksel',
+    pixelGridHelp:
+      'Dla już spikselowanego obrazu, w którym każdy ścieg to znany blok pikseli źródłowych (np. 1 piksel albo blok 4x4 lub 9 pikseli) - całkowicie pomija automatyczne wykrywanie, które na tak małym obrazie nie ma na czym się oprzeć.',
+    pixelsPerStitch: 'Piksele na ścieg',
+    applyPixelGrid: 'Zastosuj',
   },
   gridPanel: {
     imageAlt: 'Obraz źródłowy',

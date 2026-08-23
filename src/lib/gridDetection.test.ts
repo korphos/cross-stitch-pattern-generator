@@ -90,4 +90,14 @@ describe('detectGrid', () => {
     expect(grid.cols).toBe(10)
     expect(grid.rows).toBe(8)
   })
+
+  it('falls back to one source pixel per stitch for an already-pixelated image with no real cell interior', () => {
+    // cellPx: 1 - every adjacent pixel differs, so the gridline peak search has nothing to
+    // lock onto and would otherwise collapse to a bogus 1-or-2-cell "grid" (see gridDetection.ts).
+    const img = makeGridImage(20, 20, 1, PALETTE)
+    const grid = detectGrid(img)
+    expect(grid.cellSize).toBe(1)
+    expect(grid.cols).toBe(20)
+    expect(grid.rows).toBe(20)
+  })
 })

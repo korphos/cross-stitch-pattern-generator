@@ -478,7 +478,7 @@ function App() {
             <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
               <div className="order-2 w-full shrink-0 border-b border-neutral-800 bg-neutral-900 lg:order-1 lg:h-full lg:w-64 lg:overflow-y-auto lg:border-b-0 lg:border-r">
                 {hasImage && project.activeTab === 'grid' && (
-                  <GridControls project={project} dispatch={dispatch} onFlipHorizontal={handleFlipHorizontal} />
+                  <GridControls project={project} dispatch={dispatch} />
                 )}
                 {hasImage && project.activeTab === 'palette' && (
                   <PalettePanel project={project} dispatch={dispatch} sizeUnit={settings.sizeUnit} />
@@ -494,7 +494,9 @@ function App() {
                     isDraggingOver={isDraggingOver}
                   />
                 )}
-                {hasImage && project.activeTab === 'grid' && <GridPanel project={project} dispatch={dispatch} />}
+                {hasImage && project.activeTab === 'grid' && (
+                  <GridPanel project={project} dispatch={dispatch} onFlipHorizontal={handleFlipHorizontal} />
+                )}
                 {hasImage && project.activeTab === 'palette' && project.palette && (
                   <div className="h-full" ref={attachWheelZoom}>
                     {selectedCellIndices.length > 0 && (

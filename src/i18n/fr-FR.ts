@@ -82,6 +82,11 @@ const frFR: typeof enUS = {
     confidence: 'Confiance de la détection automatique : {{percent}} %',
     redetect: 'Redétecter automatiquement',
     flipHorizontal: 'Retourner horizontalement',
+    pixelGridTitle: 'Grille pixel par pixel',
+    pixelGridHelp:
+      "Pour une image déjà pixelisée où chaque point est un bloc connu de pixels source (par ex. 1 pixel, ou un bloc de 4x4 ou 9 pixels) - contourne entièrement la détection automatique, qui n'a rien à exploiter sur une image aussi petite.",
+    pixelsPerStitch: 'Pixels par point',
+    applyPixelGrid: 'Appliquer',
   },
   gridPanel: {
     imageAlt: 'Motif source',

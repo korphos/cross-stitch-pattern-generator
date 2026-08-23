@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react'
 import type { CSSProperties, Dispatch, PointerEvent as ReactPointerEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FlipHorizontal } from 'lucide-react'
 import type { PatternProject, DetectedGrid } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
@@ -8,17 +9,32 @@ import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 interface Props {
   project: PatternProject
   dispatch: Dispatch<ProjectAction>
+  onFlipHorizontal: () => void
 }
 
-const MAX_DISPLAY_WIDTH = 720
+const MAX_DISPLAY_DIMENSION = 720
+// A source image smaller than this in both dimensions (e.g. an already-pixelated 20x20 sprite)
+// gets scaled UP to at least this size instead of rendering at its tiny native size - otherwise
+// the resize handles land a few pixels apart and dragging becomes unusable.
+const MIN_DISPLAY_DIMENSION = 480
+
+/** Shrinks a large image down to fit, or grows a small one up to stay usably draggable - never
+ * both, since the two triggers can't apply to the same image at once. */
+function computeDisplayScale(width: number, height: number): number {
+  const largest = Math.max(width, height)
+  if (largest > MAX_DISPLAY_DIMENSION) return MAX_DISPLAY_DIMENSION / largest
+  const smallest = Math.min(width, height)
+  if (smallest < MIN_DISPLAY_DIMENSION) return MIN_DISPLAY_DIMENSION / smallest
+  return 1
+}
 
 type DragMode = 'tl' | 'br' | 'move'
 
-export function GridPanel({ project, dispatch }: Props) {
+export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
   const { t } = useTranslation()
   const grid = project.confirmedGrid!
   const imageData = project.imageData!
-  const scale = Math.min(1, MAX_DISPLAY_WIDTH / imageData.width)
+  const scale = computeDisplayScale(imageData.width, imageData.height)
   const displayWidth = imageData.width * scale
   const displayHeight = imageData.height * scale
 
@@ -140,6 +156,10 @@ export function GridPanel({ project, dispatch }: Props) {
           src={project.imageDataUrl!}
           alt={t('gridPanel.imageAlt')}
           className="pointer-events-none absolute inset-0 h-full w-full"
+          // Scaling a tiny source image up would otherwise blur it via the browser's default
+          // smoothing, hiding exactly the per-pixel detail this view exists to line a grid up
+          // against - nearest-neighbor keeps it crisp instead.
+          style={scale > 1 ? { imageRendering: 'pixelated' } : undefined}
           draggable={false}
         />
         <GridOverlay grid={displayGrid} scale={scale} />
@@ -155,6 +175,21 @@ export function GridPanel({ project, dispatch }: Props) {
           }}
           onPointerDown={startDrag('br')}
         />
+      </div>
+
+      {/* Positioned against the nearest ancestor that actually sets `position` - the shared
+          relative wrapper in App.tsx around this whole viewport pane (same trick ZoomControls
+          uses in the palette tab) - so it stays fixed in the corner regardless of how far the
+          image itself is scrolled or zoomed inside this panel's own overflow-auto container. */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-md border border-neutral-700 bg-neutral-900/90 px-1 py-1 shadow-lg">
+        <button
+          type="button"
+          onClick={onFlipHorizontal}
+          title={t('gridControls.flipHorizontal')}
+          className="flex h-7 w-7 items-center justify-center rounded text-neutral-200 hover:bg-neutral-800"
+        >
+          <FlipHorizontal className="h-4 w-4" />
+        </button>
       </div>
     </div>
   )

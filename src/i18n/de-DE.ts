@@ -81,6 +81,11 @@ const deDE: typeof enUS = {
     confidence: 'Sicherheit der automatischen Erkennung: {{percent}}%',
     redetect: 'Automatisch neu erkennen',
     flipHorizontal: 'Horizontal spiegeln',
+    pixelGridTitle: 'Pixelgenaues Gitter',
+    pixelGridHelp:
+      'Für ein bereits pixeliges Bild, bei dem jeder Stich ein bekannter Block aus Quellpixeln ist (z. B. 1 Pixel oder ein 4x4- oder 9-Pixel-Block) - umgeht die automatische Erkennung vollständig, die bei einem so kleinen Bild nichts hat, womit sie arbeiten könnte.',
+    pixelsPerStitch: 'Pixel pro Stich',
+    applyPixelGrid: 'Anwenden',
   },
   gridPanel: {
     imageAlt: 'Quellbild',

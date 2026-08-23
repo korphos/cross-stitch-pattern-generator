@@ -78,6 +78,10 @@ const zhCN: typeof enUS = {
     confidence: '自动识别置信度:{{percent}}%',
     redetect: '重新自动识别',
     flipHorizontal: '水平翻转',
+    pixelGridTitle: '像素级精确网格',
+    pixelGridHelp: '适用于已经像素化的图片,每一针都是已知的原始像素块(例如 1 像素,或 4x4、9 像素的色块)—— 完全跳过自动识别,因为这么小的图片本来就没有可供识别的边缘。',
+    pixelsPerStitch: '每针像素数',
+    applyPixelGrid: '应用',
   },
   gridPanel: {
     imageAlt: '原始图片',
