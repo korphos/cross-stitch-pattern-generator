@@ -10,7 +10,7 @@ import {
   IMAGE_DECODE_ERROR,
   CANVAS_UNAVAILABLE_ERROR,
 } from './lib/imageLoader'
-import { flipImageHorizontal, cropImageToSquare, maskOutsideCircle } from './lib/imageTransform'
+import { flipImageHorizontal, cropImageToRect, maskOutsideEllipse } from './lib/imageTransform'
 import { loadPersistedProject, savePersistedProject, loadSettings, saveSettings, DEFAULT_SETTINGS } from './lib/persistence'
 import type { PersistedProject } from './lib/persistence'
 import {
@@ -33,7 +33,7 @@ import { UploadDropzone } from './components/UploadDropzone'
 import { GridPanel } from './components/GridPanel'
 import { GridControls } from './components/GridControls'
 import { CropPanel } from './components/CropPanel'
-import type { CropSelection } from './components/CropPanel'
+import type { CropSelection, CropShapeChoice } from './components/CropPanel'
 import { CropControls } from './components/CropControls'
 import { PatternCanvas } from './components/PatternCanvas'
 import { PalettePanel } from './components/PalettePanel'
@@ -83,7 +83,7 @@ function App() {
   const [sharedSettingsNotice, setSharedSettingsNotice] = useState(false)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
-  const [cropShapeChoice, setCropShapeChoice] = useState<'square' | 'circle'>('square')
+  const [cropShapeChoice, setCropShapeChoice] = useState<CropShapeChoice>('square')
   // Drag adjustments override the centered default below; cleared whenever the underlying image
   // itself changes (new upload, or a crop just applied), so the default re-centers on it.
   const [cropOverride, setCropOverride] = useState<CropSelection | null>(null)
@@ -92,7 +92,7 @@ function App() {
     if (!project.imageData) return null
     const { width, height } = project.imageData
     const size = Math.round(Math.min(width, height) * 0.96)
-    return { x: Math.round((width - size) / 2), y: Math.round((height - size) / 2), size }
+    return { x: Math.round((width - size) / 2), y: Math.round((height - size) / 2), width: size, height: size }
   }, [project.imageData])
   const cropSelection = cropOverride ?? cropDefaultSelection
   const [cropBannerDismissed, setCropBannerDismissed] = useState(false)
@@ -272,11 +272,12 @@ function App() {
     if (!project.imageData || !cropSelection) return
     if (!confirmDestructiveEdit(project.history.past.length)) return
     const { width, height } = project.imageData
-    const size = Math.max(1, Math.round(cropSelection.size))
-    const x = Math.min(Math.max(0, Math.round(cropSelection.x)), Math.max(0, width - size))
-    const y = Math.min(Math.max(0, Math.round(cropSelection.y)), Math.max(0, height - size))
-    let cropped = cropImageToSquare(project.imageData, x, y, size)
-    if (cropShapeChoice === 'circle') cropped = maskOutsideCircle(cropped)
+    const cropWidth = Math.max(1, Math.round(cropSelection.width))
+    const cropHeight = Math.max(1, Math.round(cropSelection.height))
+    const x = Math.min(Math.max(0, Math.round(cropSelection.x)), Math.max(0, width - cropWidth))
+    const y = Math.min(Math.max(0, Math.round(cropSelection.y)), Math.max(0, height - cropHeight))
+    let cropped = cropImageToRect(project.imageData, x, y, cropWidth, cropHeight)
+    if (cropShapeChoice === 'circle' || cropShapeChoice === 'oval') cropped = maskOutsideEllipse(cropped)
     const detectedGrid = detectGrid(cropped)
     const backgroundColor = detectBackgroundColor(cropped)
     dispatch({

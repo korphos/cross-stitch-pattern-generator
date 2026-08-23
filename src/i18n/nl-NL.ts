@@ -95,10 +95,12 @@ const nlNL: typeof enUS = {
   cropControls: {
     title: 'Bijsnijden',
     helper:
-      'Sleep de selectie om te verplaatsen, of de hoekgreep om te vergroten of verkleinen. Toepassen detecteert het raster opnieuw en bemonstert kleuren alleen binnen de selectie - een ronde vorm snijdt alles buiten de cirkel weg.',
+      'Sleep de selectie om te verplaatsen, of de hoekgreep om te vergroten of verkleinen. Toepassen detecteert het raster opnieuw en bemonstert kleuren alleen binnen de selectie - een cirkel of ovaal snijdt alles erbuiten weg.',
     shape: 'Vorm',
     shapeSquare: 'Vierkant',
+    shapeRectangle: 'Rechthoek',
     shapeCircle: 'Cirkel',
+    shapeOval: 'Ovaal',
     apply: 'Bijsnijden toepassen',
     appliedNote: 'De afbeelding is al eerder bijgesneden - opnieuw toepassen snijdt de huidige afbeelding verder bij.',
     undo: 'Bijsnijden ongedaan maken',

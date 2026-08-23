@@ -18,51 +18,55 @@ export function flipImageHorizontal(img: PixelBuffer): PixelBuffer {
 }
 
 /**
- * Extracts a square region as a brand-new image, used by the Crop tab. Out-of-bounds source
- * pixels (a selection dragged past the image edge) come out fully transparent rather than
- * clamped or wrapped, since there's no real pixel data there to show.
+ * Extracts a rectangular region (square is just the width===height case) as a brand-new image,
+ * used by the Crop tab. Out-of-bounds source pixels (a selection dragged past the image edge)
+ * come out fully transparent rather than clamped or wrapped, since there's no real pixel data
+ * there to show.
  */
-export function cropImageToSquare(img: PixelBuffer, x: number, y: number, size: number): PixelBuffer {
+export function cropImageToRect(img: PixelBuffer, x: number, y: number, width: number, height: number): PixelBuffer {
   const sx = Math.round(x)
   const sy = Math.round(y)
-  const s = Math.max(1, Math.round(size))
-  const out = new Uint8ClampedArray(s * s * 4)
-  for (let row = 0; row < s; row++) {
+  const w = Math.max(1, Math.round(width))
+  const h = Math.max(1, Math.round(height))
+  const out = new Uint8ClampedArray(w * h * 4)
+  for (let row = 0; row < h; row++) {
     const srcY = sy + row
     if (srcY < 0 || srcY >= img.height) continue
-    for (let col = 0; col < s; col++) {
+    for (let col = 0; col < w; col++) {
       const srcX = sx + col
       if (srcX < 0 || srcX >= img.width) continue
       const srcI = (srcY * img.width + srcX) * 4
-      const dstI = (row * s + col) * 4
+      const dstI = (row * w + col) * 4
       out[dstI] = img.data[srcI]
       out[dstI + 1] = img.data[srcI + 1]
       out[dstI + 2] = img.data[srcI + 2]
       out[dstI + 3] = img.data[srcI + 3]
     }
   }
-  return { data: out, width: s, height: s }
+  return { data: out, width: w, height: h }
 }
 
 /**
- * Zeroes out every channel (not just alpha) of pixels outside the circle inscribed in `img` -
- * fully zeroing, not just alpha, keeps the border-ring "background" color detection in
- * gridDetection.ts clean and unambiguous (a real transparent-cutout PNG usually zeroes RGB too,
- * for smaller file size - see the comment in backgroundMask.ts). The circle mask cross-stitch
- * cells themselves get blanked independently and unconditionally in the reducer's crop-shape
- * handling, so this is really just about giving the cropped preview a clean transparent look.
+ * Zeroes out every channel (not just alpha) of pixels outside the ellipse inscribed in `img`
+ * (a circle is just the width===height case) - fully zeroing, not just alpha, keeps the
+ * border-ring "background" color detection in gridDetection.ts clean and unambiguous (a real
+ * transparent-cutout PNG usually zeroes RGB too, for smaller file size - see the comment in
+ * backgroundMask.ts). The ellipse-masked cross-stitch cells themselves get blanked independently
+ * and unconditionally in the reducer's crop-shape handling, so this is really just about giving
+ * the cropped preview a clean transparent look.
  */
-export function maskOutsideCircle(img: PixelBuffer): PixelBuffer {
+export function maskOutsideEllipse(img: PixelBuffer): PixelBuffer {
   const { width, height, data } = img
   const out = new Uint8ClampedArray(data)
   const cx = (width - 1) / 2
   const cy = (height - 1) / 2
-  const r = Math.min(width, height) / 2
+  const rx = width / 2
+  const ry = height / 2
   for (let y = 0; y < height; y++) {
-    const dy = y - cy
+    const ny = (y - cy) / ry
     for (let x = 0; x < width; x++) {
-      const dx = x - cx
-      if (dx * dx + dy * dy > r * r) {
+      const nx = (x - cx) / rx
+      if (nx * nx + ny * ny > 1) {
         const i = (y * width + x) * 4
         out[i] = 0
         out[i + 1] = 0

@@ -95,10 +95,12 @@ const esES: typeof enUS = {
   cropControls: {
     title: 'Recortar',
     helper:
-      'Arrastra la selección para moverla, o su asa de esquina para redimensionarla. Al aplicar se vuelve a detectar la cuadrícula y se vuelve a muestrear el color solo dentro de la selección - una forma circular recorta todo lo que quede fuera del círculo.',
+      'Arrastra la selección para moverla, o su asa de esquina para redimensionarla. Al aplicar se vuelve a detectar la cuadrícula y se vuelve a muestrear el color solo dentro de la selección - un círculo o un óvalo recorta todo lo que quede fuera de la forma.',
     shape: 'Forma',
     shapeSquare: 'Cuadrado',
+    shapeRectangle: 'Rectángulo',
     shapeCircle: 'Círculo',
+    shapeOval: 'Óvalo',
     apply: 'Aplicar recorte',
     appliedNote: 'La imagen ya se ha recortado una vez - aplicar de nuevo recorta aún más la imagen actual.',
     undo: 'Deshacer recorte',

@@ -1,13 +1,21 @@
 import { useTranslation } from 'react-i18next'
-import { Circle, Square, Undo2 } from 'lucide-react'
+import { Undo2 } from 'lucide-react'
+import type { CropShapeChoice } from './CropPanel'
 
 interface Props {
-  shape: 'square' | 'circle'
-  onShapeChange: (shape: 'square' | 'circle') => void
+  shape: CropShapeChoice
+  onShapeChange: (shape: CropShapeChoice) => void
   onApply: () => void
   canUndo: boolean
   onUndo: () => void
 }
+
+const SHAPES: { value: CropShapeChoice; labelKey: string; swatchClassName: string }[] = [
+  { value: 'square', labelKey: 'cropControls.shapeSquare', swatchClassName: 'h-4 w-4 rounded-sm' },
+  { value: 'rectangle', labelKey: 'cropControls.shapeRectangle', swatchClassName: 'h-3 w-5 rounded-sm' },
+  { value: 'circle', labelKey: 'cropControls.shapeCircle', swatchClassName: 'h-4 w-4 rounded-full' },
+  { value: 'oval', labelKey: 'cropControls.shapeOval', swatchClassName: 'h-3 w-5 rounded-full' },
+]
 
 export function CropControls({ shape, onShapeChange, onApply, canUndo, onUndo }: Props) {
   const { t } = useTranslation()
@@ -20,30 +28,21 @@ export function CropControls({ shape, onShapeChange, onApply, canUndo, onUndo }:
       <div className="flex flex-col gap-1.5">
         <span className="text-sm text-neutral-300">{t('cropControls.shape')}</span>
         <div className="grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            onClick={() => onShapeChange('square')}
-            className={
-              shape === 'square'
-                ? 'flex items-center justify-center gap-1.5 rounded-md border border-indigo-500 bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white'
-                : 'flex items-center justify-center gap-1.5 rounded-md border border-neutral-600 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-800'
-            }
-          >
-            <Square className="h-4 w-4" />
-            {t('cropControls.shapeSquare')}
-          </button>
-          <button
-            type="button"
-            onClick={() => onShapeChange('circle')}
-            className={
-              shape === 'circle'
-                ? 'flex items-center justify-center gap-1.5 rounded-md border border-indigo-500 bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white'
-                : 'flex items-center justify-center gap-1.5 rounded-md border border-neutral-600 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-800'
-            }
-          >
-            <Circle className="h-4 w-4" />
-            {t('cropControls.shapeCircle')}
-          </button>
+          {SHAPES.map(({ value, labelKey, swatchClassName }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onShapeChange(value)}
+              className={
+                shape === value
+                  ? 'flex items-center justify-center gap-1.5 rounded-md border border-indigo-500 bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white'
+                  : 'flex items-center justify-center gap-1.5 rounded-md border border-neutral-600 px-3 py-1.5 text-sm text-neutral-100 hover:bg-neutral-800'
+              }
+            >
+              <span className={`shrink-0 border-2 border-current ${swatchClassName}`} />
+              {t(labelKey)}
+            </button>
+          ))}
         </div>
       </div>
 

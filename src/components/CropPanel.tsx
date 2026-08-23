@@ -6,15 +6,18 @@ import type { PixelBuffer } from '../lib/types'
 export interface CropSelection {
   x: number
   y: number
-  size: number
+  width: number
+  height: number
 }
+
+export type CropShapeChoice = 'square' | 'rectangle' | 'circle' | 'oval'
 
 interface Props {
   imageData: PixelBuffer
   imageDataUrl: string
   selection: CropSelection
   onSelectionChange: (next: CropSelection) => void
-  shape: 'square' | 'circle'
+  shape: CropShapeChoice
 }
 
 const MAX_DISPLAY_DIMENSION = 720
@@ -23,6 +26,16 @@ const MIN_CROP_SIZE = 12
 const MIN_ZOOM = 1
 const MAX_ZOOM = 8
 const ZOOM_STEP_FACTOR = 1.25
+
+/** 'square'/'circle' keep the selection's width and height locked together while resizing. */
+function isLockedAspect(shape: CropShapeChoice): boolean {
+  return shape === 'square' || shape === 'circle'
+}
+
+/** 'circle'/'oval' clip the selection down to its inscribed ellipse. */
+function isElliptical(shape: CropShapeChoice): boolean {
+  return shape === 'circle' || shape === 'oval'
+}
 
 function clampZoom(zoom: number): number {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom))
@@ -58,6 +71,8 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
   imageSizeRef.current = { width: imageData.width, height: imageData.height }
   const onSelectionChangeRef = useRef(onSelectionChange)
   onSelectionChangeRef.current = onSelectionChange
+  const shapeRef = useRef(shape)
+  shapeRef.current = shape
 
   // Zoom resets whenever the underlying image changes (new upload, or a crop was just applied) -
   // a zoom level chosen for the previous image rarely still makes sense for the new one.
@@ -97,14 +112,20 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
     if (drag.mode === 'move') {
       const dx = x - drag.startX
       const dy = y - drag.startY
-      const newX = Math.max(0, Math.min(start.x + dx, imgW - start.size))
-      const newY = Math.max(0, Math.min(start.y + dy, imgH - start.size))
+      const newX = Math.max(0, Math.min(start.x + dx, imgW - start.width))
+      const newY = Math.max(0, Math.min(start.y + dy, imgH - start.height))
       onSelectionChangeRef.current({ ...start, x: newX, y: newY })
-    } else {
+    } else if (isLockedAspect(shapeRef.current)) {
       const maxSize = Math.min(imgW - start.x, imgH - start.y)
       const desired = Math.max(x - start.x, y - start.y)
       const size = Math.max(MIN_CROP_SIZE, Math.min(desired, maxSize))
-      onSelectionChangeRef.current({ ...start, size })
+      onSelectionChangeRef.current({ ...start, width: size, height: size })
+    } else {
+      const maxWidth = imgW - start.x
+      const maxHeight = imgH - start.y
+      const width = Math.max(MIN_CROP_SIZE, Math.min(x - start.x, maxWidth))
+      const height = Math.max(MIN_CROP_SIZE, Math.min(y - start.y, maxHeight))
+      onSelectionChangeRef.current({ ...start, width, height })
     }
   }, [])
 
@@ -131,7 +152,8 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
 
   const selLeft = selection.x * scale
   const selTop = selection.y * scale
-  const selSize = selection.size * scale
+  const selWidth = selection.width * scale
+  const selHeight = selection.height * scale
 
   return (
     <div className="flex h-full items-center justify-center overflow-auto p-8" ref={attachWheelZoom}>
@@ -148,30 +170,30 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
           draggable={false}
         />
 
-        {/* Dim everything outside the square selection. */}
+        {/* Dim everything outside the selection rectangle. */}
         <div className="pointer-events-none absolute inset-x-0 top-0 bg-black/55" style={{ height: selTop }} />
         <div
           className="pointer-events-none absolute inset-x-0 bottom-0 bg-black/55"
-          style={{ height: displayHeight - selTop - selSize }}
+          style={{ height: displayHeight - selTop - selHeight }}
         />
         <div
           className="pointer-events-none absolute bg-black/55"
-          style={{ left: 0, top: selTop, width: selLeft, height: selSize }}
+          style={{ left: 0, top: selTop, width: selLeft, height: selHeight }}
         />
         <div
           className="pointer-events-none absolute bg-black/55"
-          style={{ left: selLeft + selSize, top: selTop, width: displayWidth - selLeft - selSize, height: selSize }}
+          style={{ left: selLeft + selWidth, top: selTop, width: displayWidth - selLeft - selWidth, height: selHeight }}
         />
 
         <div
           className="absolute cursor-move touch-none border-2 border-indigo-400"
-          style={{ left: selLeft, top: selTop, width: selSize, height: selSize }}
+          style={{ left: selLeft, top: selTop, width: selWidth, height: selHeight }}
           onPointerDown={startDrag('move')}
         >
-          {shape === 'circle' && <CircleDimOverlay size={selSize} />}
+          {isElliptical(shape) && <EllipseDimOverlay width={selWidth} height={selHeight} />}
         </div>
 
-        <Handle style={{ left: selLeft + selSize, top: selTop + selSize }} onPointerDown={startDrag('resize')} />
+        <Handle style={{ left: selLeft + selWidth, top: selTop + selHeight }} onPointerDown={startDrag('resize')} />
       </div>
 
       {/* Positioned against the App.tsx viewport wrapper (the nearest ancestor with `position`
@@ -207,14 +229,16 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
   )
 }
 
-/** Additionally dims the square selection's own corners when the crop shape is a circle, so
- * what will actually survive the crop (the inscribed circle) is visually obvious. */
-function CircleDimOverlay({ size }: { size: number }) {
-  const r = size / 2
+/** Additionally dims the selection rectangle's own corners when the crop shape is a circle or
+ * oval, so what will actually survive the crop (the inscribed ellipse) is visually obvious. */
+function EllipseDimOverlay({ width, height }: { width: number; height: number }) {
+  const cx = width / 2
+  const rx = width / 2
+  const ry = height / 2
   return (
-    <svg className="pointer-events-none absolute inset-0" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg className="pointer-events-none absolute inset-0" width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       <path
-        d={`M0 0H${size}V${size}H0Z M${r} 0A${r} ${r} 0 1 0 ${r} ${size}A${r} ${r} 0 1 0 ${r} 0Z`}
+        d={`M0 0H${width}V${height}H0Z M${cx} 0A${rx} ${ry} 0 1 0 ${cx} ${height}A${rx} ${ry} 0 1 0 ${cx} 0Z`}
         fillRule="evenodd"
         fill="rgba(0,0,0,0.55)"
       />

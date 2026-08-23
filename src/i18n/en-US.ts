@@ -91,10 +91,12 @@ const enUS = {
   cropControls: {
     title: 'Crop',
     helper:
-      'Drag the selection to move it, or drag its corner handle to resize. Applying re-detects the grid and re-samples colors from the selection only - a round shape crops out everything outside the circle.',
+      'Drag the selection to move it, or drag its corner handle to resize. Applying re-detects the grid and re-samples colors from the selection only - a circle or oval crops out everything outside it.',
     shape: 'Shape',
     shapeSquare: 'Square',
+    shapeRectangle: 'Rectangle',
     shapeCircle: 'Circle',
+    shapeOval: 'Oval',
     apply: 'Apply crop',
     appliedNote: 'The image has already been cropped once - applying again crops further into the current image.',
     undo: 'Undo crop',

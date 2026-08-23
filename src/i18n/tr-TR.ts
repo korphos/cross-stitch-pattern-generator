@@ -95,10 +95,12 @@ const trTR: typeof enUS = {
   cropControls: {
     title: 'Kırp',
     helper:
-      'Seçimi taşımak için sürükleyin, boyutlandırmak için köşe tutamacını sürükleyin. Uygulamak ızgarayı yeniden algılar ve renkleri yalnızca seçim içinde yeniden örnekler - yuvarlak bir şekil, dairenin dışındaki her şeyi keser.',
+      'Seçimi taşımak için sürükleyin, boyutlandırmak için köşe tutamacını sürükleyin. Uygulamak ızgarayı yeniden algılar ve renkleri yalnızca seçim içinde yeniden örnekler - daire veya oval, şeklin dışındaki her şeyi keser.',
     shape: 'Şekil',
     shapeSquare: 'Kare',
+    shapeRectangle: 'Dikdörtgen',
     shapeCircle: 'Daire',
+    shapeOval: 'Oval',
     apply: 'Kırpmayı uygula',
     appliedNote: 'Görsel zaten bir kez kırpıldı - tekrar uygulamak mevcut görseli daha da kırpar.',
     undo: 'Kırpmayı geri al',

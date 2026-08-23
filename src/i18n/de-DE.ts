@@ -95,10 +95,12 @@ const deDE: typeof enUS = {
   cropControls: {
     title: 'Zuschneiden',
     helper:
-      'Ziehen Sie die Auswahl, um sie zu verschieben, oder ihren Eckgriff, um sie zu skalieren. Beim Anwenden wird das Raster neu erkannt und die Farben werden nur innerhalb der Auswahl neu abgetastet - eine runde Form schneidet alles außerhalb des Kreises weg.',
+      'Ziehen Sie die Auswahl, um sie zu verschieben, oder ihren Eckgriff, um sie zu skalieren. Beim Anwenden wird das Raster neu erkannt und die Farben werden nur innerhalb der Auswahl neu abgetastet - ein Kreis oder Oval schneidet alles außerhalb davon weg.',
     shape: 'Form',
     shapeSquare: 'Quadrat',
+    shapeRectangle: 'Rechteck',
     shapeCircle: 'Kreis',
+    shapeOval: 'Oval',
     apply: 'Zuschnitt anwenden',
     appliedNote: 'Das Bild wurde bereits einmal zugeschnitten - erneutes Anwenden schneidet das aktuelle Bild weiter zu.',
     undo: 'Zuschnitt rückgängig machen',

@@ -95,10 +95,12 @@ const itIT: typeof enUS = {
   cropControls: {
     title: 'Ritaglia',
     helper:
-      "Trascina la selezione per spostarla, o la maniglia d'angolo per ridimensionarla. Applicando si ridetermina la griglia e si ricampionano i colori solo all'interno della selezione - una forma rotonda ritaglia tutto ciò che è fuori dal cerchio.",
+      "Trascina la selezione per spostarla, o la maniglia d'angolo per ridimensionarla. Applicando si ridetermina la griglia e si ricampionano i colori solo all'interno della selezione - un cerchio o un ovale ritaglia tutto ciò che è al di fuori.",
     shape: 'Forma',
     shapeSquare: 'Quadrato',
+    shapeRectangle: 'Rettangolo',
     shapeCircle: 'Cerchio',
+    shapeOval: 'Ovale',
     apply: 'Applica ritaglio',
     appliedNote: "L'immagine è già stata ritagliata una volta - applicando di nuovo si ritaglia ulteriormente l'immagine attuale.",
     undo: 'Annulla ritaglio',

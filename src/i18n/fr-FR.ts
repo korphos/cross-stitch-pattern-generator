@@ -96,10 +96,12 @@ const frFR: typeof enUS = {
   cropControls: {
     title: 'Recadrage',
     helper:
-      "Faites glisser la sélection pour la déplacer, ou sa poignée d'angle pour la redimensionner. Valider recalcule la grille et rééchantillonne les couleurs uniquement dans la sélection - une forme ronde découpe tout ce qui est en dehors du cercle.",
+      "Faites glisser la sélection pour la déplacer, ou sa poignée d'angle pour la redimensionner. Valider recalcule la grille et rééchantillonne les couleurs uniquement dans la sélection - un cercle ou un ovale découpe tout ce qui se trouve à l'extérieur.",
     shape: 'Forme',
     shapeSquare: 'Carré',
+    shapeRectangle: 'Rectangle',
     shapeCircle: 'Rond',
+    shapeOval: 'Ovale',
     apply: 'Appliquer le recadrage',
     appliedNote: "L'image a déjà été recadrée une fois - appliquer à nouveau recadre davantage l'image actuelle.",
     undo: 'Annuler le recadrage',

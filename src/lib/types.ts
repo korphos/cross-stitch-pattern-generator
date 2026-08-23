@@ -87,7 +87,7 @@ export type ActiveTab = 'grid' | 'palette' | 'crop'
 /** Shape the image was last cropped to - 'circle' keeps masking the corners (outside the
  * inscribed ellipse) as no-stitch on every resample, since cropping itself only trims the
  * image down to the selection's square bounding box. Null before any crop is applied. */
-export type CropShape = 'square' | 'circle' | null
+export type CropShape = 'square' | 'rectangle' | 'circle' | 'oval' | null
 
 /**
  * 'best' matches every color to the closest DMC thread regardless of what

@@ -90,10 +90,12 @@ const zhCN: typeof enUS = {
   },
   cropControls: {
     title: '裁剪',
-    helper: '拖动选区可移动，拖动角上的手柄可调整大小。应用后将重新检测网格，并仅在选区内重新采样颜色——圆形会裁掉圆圈以外的所有内容。',
+    helper: '拖动选区可移动，拖动角上的手柄可调整大小。应用后将重新检测网格，并仅在选区内重新采样颜色——圆形或椭圆形会裁掉形状以外的所有内容。',
     shape: '形状',
     shapeSquare: '正方形',
+    shapeRectangle: '矩形',
     shapeCircle: '圆形',
+    shapeOval: '椭圆形',
     apply: '应用裁剪',
     appliedNote: '图片已经裁剪过一次——再次应用会在当前图片基础上进一步裁剪。',
     undo: '撤销裁剪',

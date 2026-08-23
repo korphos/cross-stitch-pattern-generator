@@ -95,10 +95,12 @@ const plPL: typeof enUS = {
   cropControls: {
     title: 'Przytnij',
     helper:
-      'Przeciągnij zaznaczenie, aby je przesunąć, lub uchwyt w rogu, aby zmienić rozmiar. Zastosowanie ponownie wykrywa siatkę i próbkuje kolory tylko w obrębie zaznaczenia - okrągły kształt wycina wszystko poza kołem.',
+      'Przeciągnij zaznaczenie, aby je przesunąć, lub uchwyt w rogu, aby zmienić rozmiar. Zastosowanie ponownie wykrywa siatkę i próbkuje kolory tylko w obrębie zaznaczenia - koło lub owal wycina wszystko poza kształtem.',
     shape: 'Kształt',
     shapeSquare: 'Kwadrat',
+    shapeRectangle: 'Prostokąt',
     shapeCircle: 'Koło',
+    shapeOval: 'Owal',
     apply: 'Zastosuj przycięcie',
     appliedNote: 'Obraz został już raz przycięty - ponowne zastosowanie przycina bieżący obraz jeszcze bardziej.',
     undo: 'Cofnij przycięcie',

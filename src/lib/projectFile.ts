@@ -1,6 +1,8 @@
 import type { PersistedProject } from './persistence'
-import type { ActiveTab } from './types'
+import type { ActiveTab, CropShape } from './types'
 import { migrateLegacyGrid } from './gridDetection'
+
+const VALID_CROP_SHAPES: Exclude<CropShape, null>[] = ['square', 'rectangle', 'circle', 'oval']
 
 /** Extension used for exported project files. */
 export const PROJECT_FILE_EXTENSION = '.xstitch'
@@ -86,8 +88,8 @@ export function parseProjectFile(text: string): PersistedProject {
     // rather than silently blanking cells the exporter never intended to.
     backgroundColor: isRecord(backgroundColor) ? (backgroundColor as PersistedProject['backgroundColor']) : null,
     ignoreBackground: ignoreBackground === true,
-    // Older exported files predate cropping entirely - default to no mask.
-    cropShape: cropShape === 'circle' || cropShape === 'square' ? cropShape : null,
+    // Older exported files predate cropping entirely (or rectangle/oval shapes) - default to no mask.
+    cropShape: cropShape != null && VALID_CROP_SHAPES.includes(cropShape) ? cropShape : null,
     activeTab: (['grid', 'crop'] as ActiveTab[]).includes(activeTab as ActiveTab) ? (activeTab as ActiveTab) : 'palette',
     palette: palette as PersistedProject['palette'],
     cellAssignment: cellAssignment as PersistedProject['cellAssignment'],

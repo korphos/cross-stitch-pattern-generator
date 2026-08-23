@@ -95,10 +95,12 @@ const ptBR: typeof enUS = {
   cropControls: {
     title: 'Recortar',
     helper:
-      'Arraste a seleção para movê-la, ou sua alça de canto para redimensioná-la. Aplicar recalcula a grade e reamostra as cores somente dentro da seleção - um formato circular recorta tudo fora do círculo.',
+      'Arraste a seleção para movê-la, ou sua alça de canto para redimensioná-la. Aplicar recalcula a grade e reamostra as cores somente dentro da seleção - um círculo ou oval recorta tudo fora da forma.',
     shape: 'Formato',
     shapeSquare: 'Quadrado',
+    shapeRectangle: 'Retângulo',
     shapeCircle: 'Círculo',
+    shapeOval: 'Oval',
     apply: 'Aplicar recorte',
     appliedNote: 'A imagem já foi recortada uma vez - aplicar novamente recorta ainda mais a imagem atual.',
     undo: 'Desfazer recorte',

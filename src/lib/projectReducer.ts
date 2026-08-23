@@ -103,13 +103,15 @@ export const initialProject: PatternProject = {
 }
 
 /**
- * Cells outside the ellipse inscribed in the grid's bbox - what a 'circle' crop leaves outside
- * the round selection. Worked out geometrically from cols/rows rather than reusing the
- * transparent-corner pixels the crop itself painted in, so it keeps masking those same corners
- * on every future resample (grid tweaks, threshold changes, etc.) regardless of the
- * ignore-background toggle, which the user is free to turn off independently.
+ * Cells outside the ellipse inscribed in the grid's bbox - what a 'circle' or 'oval' crop leaves
+ * outside the round/oval selection (normalizing each axis by its own cols/rows independently
+ * makes this a true ellipse already, so a circle is just the special case where it's inscribed in
+ * a square bbox - no separate math needed for 'oval'). Worked out geometrically from cols/rows
+ * rather than reusing the transparent-corner pixels the crop itself painted in, so it keeps
+ * masking those same corners on every future resample (grid tweaks, threshold changes, etc.)
+ * regardless of the ignore-background toggle, which the user is free to turn off independently.
  */
-function circleMaskCellIndices(grid: DetectedGrid): Set<number> {
+function ellipseMaskCellIndices(grid: DetectedGrid): Set<number> {
   const { cols, rows } = grid
   const indices = new Set<number>()
   for (let row = 0; row < rows; row++) {
@@ -126,8 +128,8 @@ function circleMaskCellIndices(grid: DetectedGrid): Set<number> {
  * Indices of `cellColors` to leave blank: the union of whatever the
  * ignore-background toggle excludes (a flood fill from the grid's border,
  * see `findBackgroundCells`, so an interior highlight that merely shares
- * the background's color isn't swept away with it) and, for a 'circle'
- * crop, the cells outside the round selection.
+ * the background's color isn't swept away with it) and, for a 'circle' or
+ * 'oval' crop, the cells outside the round/oval selection.
  */
 function backgroundCellIndicesFor(
   cellColors: RGB[],
@@ -141,7 +143,7 @@ function backgroundCellIndicesFor(
     ignoreBackground && backgroundColor
       ? findBackgroundCells(cellColors, grid.cols, grid.rows, backgroundColor, cellAlpha ?? undefined)
       : undefined
-  const cropMask = cropShape === 'circle' ? circleMaskCellIndices(grid) : undefined
+  const cropMask = cropShape === 'circle' || cropShape === 'oval' ? ellipseMaskCellIndices(grid) : undefined
   if (!background) return cropMask
   if (!cropMask) return background
   return new Set([...background, ...cropMask])
