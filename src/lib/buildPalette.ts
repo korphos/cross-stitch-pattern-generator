@@ -1,4 +1,4 @@
-import type { RGB, DmcColor, PaletteEntry, PaletteMode } from './types'
+import type { RGB, DmcColor, PaletteEntry, PaletteMode, SymbolStyle } from './types'
 import { EMPTY_CELL } from './types'
 import { clusterColors } from './colorClustering'
 import { nearestDmc, findFinishAlternative } from './colorMatch'
@@ -16,6 +16,8 @@ export interface BuildPaletteOptions {
   ownedCodes: ReadonlySet<string>
   /** indices into `cellColors` to leave blank (EMPTY_CELL) instead of matching to a thread - see `findBackgroundCells` */
   backgroundCellIndices?: ReadonlySet<number>
+  /** defaults to 'letters' - see SymbolStyle */
+  symbolStyle?: SymbolStyle
 }
 
 const DEFAULT_OPTIONS: BuildPaletteOptions = { mode: 'best', ownedCodes: new Set() }
@@ -101,7 +103,7 @@ export function buildPalette(
     finishAlternative: findFinishAlternative(acc.dmc),
   }))
 
-  const withSymbols = assignSymbols(merged)
+  const withSymbols = assignSymbols(merged, options.symbolStyle ?? 'letters')
   const palette: PaletteEntry[] = withSymbols.map((entry) => ({
     ...entry,
     textColor: contrastTextColor(entry.color),

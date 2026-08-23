@@ -100,6 +100,42 @@ describe('projectReducer RECOLOR_CELLS', () => {
   })
 })
 
+describe('projectReducer SET_SYMBOL_STYLE', () => {
+  it('re-glyphs every entry from the icon pool, keeping cellAssignment/history/counts untouched', () => {
+    const project = makeProject({
+      palette: [
+        { ...makeEntry('310', 4), symbol: 'A' },
+        { ...makeEntry('666', 2), symbol: 'B' },
+      ],
+    })
+    const next = projectReducer(project, { type: 'SET_SYMBOL_STYLE', style: 'icons' })
+    expect(next.symbolStyle).toBe('icons')
+    expect(next.palette?.[0].symbol).toBe('●')
+    expect(next.palette?.[1].symbol).toBe('■')
+    expect(next.palette?.map((p) => p.dmc.code)).toEqual(['310', '666'])
+    expect(next.palette?.map((p) => p.count)).toEqual([4, 2])
+    expect(next.cellAssignment).toEqual(project.cellAssignment)
+    expect(next.history).toBe(project.history)
+  })
+
+  it('does not re-sort by count - a stale order from a manual recolor is preserved', () => {
+    const project = makeProject({
+      palette: [
+        { ...makeEntry('310', 2), symbol: 'A' },
+        { ...makeEntry('666', 40), symbol: 'B' },
+      ],
+    })
+    const next = projectReducer(project, { type: 'SET_SYMBOL_STYLE', style: 'icons' })
+    expect(next.palette?.map((p) => p.dmc.code)).toEqual(['310', '666'])
+  })
+
+  it('just sets the field when no palette exists yet', () => {
+    const next = projectReducer(initialProject, { type: 'SET_SYMBOL_STYLE', style: 'icons' })
+    expect(next.symbolStyle).toBe('icons')
+    expect(next.palette).toBeNull()
+  })
+})
+
 describe('projectReducer FLIP_IMAGE_HORIZONTAL', () => {
   function makeFlippableProject(): PatternProject {
     return makeProject({
@@ -179,6 +215,7 @@ describe('projectReducer RESTORE', () => {
     fabricCount: 14,
     strands: 2,
     paletteMode: 'best' as const,
+    symbolStyle: 'letters' as const,
     backgroundColor: null,
     ignoreBackground: false,
     cropShape: null,

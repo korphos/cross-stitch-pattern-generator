@@ -7,6 +7,7 @@ import type {
   DmcColor,
   EditSnapshot,
   PaletteMode,
+  SymbolStyle,
   CropShape,
   RGB,
   RGBA,
@@ -16,7 +17,7 @@ import { sampleGridColors, sampleGridAlpha } from './cellSampling'
 import { buildPalette } from './buildPalette'
 import { findBackgroundCells } from './backgroundMask'
 import { mirrorRowMajorHorizontal } from './imageTransform'
-import { assignSymbols, contrastTextColor } from './symbolAssignment'
+import { assignSymbols, relabelSymbols, contrastTextColor } from './symbolAssignment'
 import { findFinishAlternative } from './colorMatch'
 import { FABRIC_COUNTS } from './physicalSize'
 
@@ -29,6 +30,7 @@ export type ProjectAction =
   | { type: 'SET_STRANDS'; strands: number }
   | { type: 'SET_PALETTE_MODE'; mode: PaletteMode }
   | { type: 'SET_OWNED_THREADS'; codes: string[] }
+  | { type: 'SET_SYMBOL_STYLE'; style: SymbolStyle }
   | { type: 'SET_IGNORE_BACKGROUND'; ignore: boolean }
   | { type: 'SET_ACTIVE_TAB'; tab: ActiveTab }
   | {
@@ -57,6 +59,7 @@ export type ProjectAction =
       strands: number
       paletteMode: PaletteMode
       ownedThreadCodes: string[]
+      symbolStyle: SymbolStyle
       backgroundColor: RGBA | null
       ignoreBackground: boolean
       activeTab: ActiveTab
@@ -91,6 +94,7 @@ export const initialProject: PatternProject = {
   strands: defaultStrandsFor(DEFAULT_FABRIC_COUNT),
   paletteMode: 'best',
   ownedThreadCodes: [],
+  symbolStyle: 'letters',
   backgroundColor: null,
   ignoreBackground: true,
   cropShape: null,
@@ -156,6 +160,7 @@ function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
   const { palette, cellAssignment } = buildPalette(cellColors, project.clusterThreshold, {
     mode: project.paletteMode,
     ownedCodes: new Set(project.ownedThreadCodes),
+    symbolStyle: project.symbolStyle,
     backgroundCellIndices: backgroundCellIndicesFor(
       cellColors,
       cellAlpha,
@@ -194,6 +199,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           ...initialProject,
           ownedThreadCodes: project.ownedThreadCodes,
           paletteMode: project.paletteMode,
+          symbolStyle: project.symbolStyle,
           ignoreBackground: project.ignoreBackground,
           backgroundColor: action.backgroundColor,
           imageData: action.imageData,
@@ -240,6 +246,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       const { palette, cellAssignment } = buildPalette(project.cellColors, action.threshold, {
         mode: project.paletteMode,
         ownedCodes: new Set(project.ownedThreadCodes),
+        symbolStyle: project.symbolStyle,
         backgroundCellIndices: backgroundCellIndicesFor(
           project.cellColors,
           project.cellAlpha,
@@ -265,6 +272,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
         mode: action.mode,
         ownedCodes: new Set(project.ownedThreadCodes),
+        symbolStyle: project.symbolStyle,
         backgroundCellIndices: backgroundCellIndicesFor(
           project.cellColors,
           project.cellAlpha,
@@ -286,6 +294,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
           mode: project.paletteMode,
           ownedCodes: new Set(ownedThreadCodes),
+          symbolStyle: project.symbolStyle,
           backgroundCellIndices: backgroundCellIndicesFor(
             project.cellColors,
             project.cellAlpha,
@@ -305,11 +314,19 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       return { ...project, ownedThreadCodes, palette }
     }
 
+    case 'SET_SYMBOL_STYLE': {
+      // Purely cosmetic re-glyphing - never discards cellAssignment/history, and keeps each
+      // entry in its current order (see relabelSymbols) rather than re-sorting by count.
+      if (!project.palette) return { ...project, symbolStyle: action.style }
+      return { ...project, symbolStyle: action.style, palette: relabelSymbols(project.palette, action.style) }
+    }
+
     case 'SET_IGNORE_BACKGROUND': {
       if (!project.cellColors || !project.palette) return { ...project, ignoreBackground: action.ignore }
       const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
         mode: project.paletteMode,
         ownedCodes: new Set(project.ownedThreadCodes),
+        symbolStyle: project.symbolStyle,
         backgroundCellIndices: backgroundCellIndicesFor(
           project.cellColors,
           project.cellAlpha,
@@ -433,7 +450,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       // free glyph) keeps every entry's symbol consistent with its count
       // rank; since the new entry starts at count 0 it sorts last and
       // doesn't disturb any existing entry's symbol.
-      const palette = assignSymbols([...project.palette, newEntry])
+      const palette = assignSymbols([...project.palette, newEntry], project.symbolStyle)
       return { ...project, history, palette }
     }
 
@@ -467,9 +484,14 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       // The `owned` flag baked into each saved/imported entry can be stale
       // though (e.g. a .xstitch file imported from another device/session,
       // or ownership changed after the last autosave) - always re-derive it
-      // from the ownedThreadCodes that are actually in effect now.
+      // from the ownedThreadCodes that are actually in effect now. Symbols
+      // are re-glyphed the same way so a restored/imported palette always
+      // matches whatever style is currently selected, without re-sorting.
       const ownedSet = new Set(action.ownedThreadCodes)
-      const palette = action.palette.map((entry) => ({ ...entry, owned: ownedSet.has(entry.dmc.code) }))
+      const palette = relabelSymbols(
+        action.palette.map((entry) => ({ ...entry, owned: ownedSet.has(entry.dmc.code) })),
+        action.symbolStyle,
+      )
       return {
         ...initialProject,
         imageData: action.imageData,
@@ -483,6 +505,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         strands: action.strands,
         paletteMode: action.paletteMode,
         ownedThreadCodes: action.ownedThreadCodes,
+        symbolStyle: action.symbolStyle,
         backgroundColor: action.backgroundColor,
         ignoreBackground: action.ignoreBackground,
         cropShape: action.cropShape,

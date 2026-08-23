@@ -1,15 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { SYMBOL_POOL, assignSymbols, contrastTextColor } from './symbolAssignment'
+import { LETTER_SYMBOL_POOL, ICON_SYMBOL_POOL, assignSymbols, relabelSymbols, contrastTextColor } from './symbolAssignment'
 
-describe('SYMBOL_POOL', () => {
+describe('LETTER_SYMBOL_POOL', () => {
   it('excludes visually confusable characters, keeping one representative per group', () => {
     for (const ch of ['O', 'Q', '0', '1', 'I', 'L', 'l']) {
-      expect(SYMBOL_POOL.includes(ch)).toBe(false)
+      expect(LETTER_SYMBOL_POOL.includes(ch)).toBe(false)
     }
   })
 
   it('has no duplicate glyphs', () => {
-    expect(new Set(SYMBOL_POOL).size).toBe(SYMBOL_POOL.length)
+    expect(new Set(LETTER_SYMBOL_POOL).size).toBe(LETTER_SYMBOL_POOL.length)
+  })
+})
+
+describe('ICON_SYMBOL_POOL', () => {
+  it('has no duplicate glyphs', () => {
+    expect(new Set(ICON_SYMBOL_POOL).size).toBe(ICON_SYMBOL_POOL.length)
   })
 })
 
@@ -18,9 +24,27 @@ describe('assignSymbols', () => {
     const entries = [{ count: 3 }, { count: 50 }, { count: 12 }]
     const result = assignSymbols(entries)
     expect(result[0].count).toBe(50)
-    expect(result[0].symbol).toBe(SYMBOL_POOL[0])
+    expect(result[0].symbol).toBe(LETTER_SYMBOL_POOL[0])
     expect(result[1].count).toBe(12)
     expect(result[2].count).toBe(3)
+  })
+
+  it('draws from the icon pool when style is icons', () => {
+    const entries = [{ count: 1 }]
+    const result = assignSymbols(entries, 'icons')
+    expect(result[0].symbol).toBe(ICON_SYMBOL_POOL[0])
+  })
+})
+
+describe('relabelSymbols', () => {
+  it('re-glyphs entries in their existing order without re-sorting by count', () => {
+    // Deliberately out of count order - a stale order left by a manual recolor.
+    const entries = [{ count: 3 }, { count: 50 }]
+    const result = relabelSymbols(entries, 'icons')
+    expect(result[0].count).toBe(3)
+    expect(result[0].symbol).toBe(ICON_SYMBOL_POOL[0])
+    expect(result[1].count).toBe(50)
+    expect(result[1].symbol).toBe(ICON_SYMBOL_POOL[1])
   })
 })
 

@@ -97,6 +97,11 @@ export type CropShape = 'square' | 'circle' | null
  */
 export type PaletteMode = 'best' | 'ownedOnly'
 
+/** 'letters' (default) assigns A, B, C... glyphs; 'icons' assigns distinct Unicode shapes
+ * (circles, squares, stars...) for users who find same-shaped letters harder to tell apart on a
+ * printed grid - see symbolAssignment.ts. */
+export type SymbolStyle = 'letters' | 'icons'
+
 /**
  * Sentinel `cellAssignment` value meaning "no stitch" - a blank square
  * with no fill/symbol, e.g. for a background color the user doesn't want
@@ -132,6 +137,8 @@ export interface PatternProject {
   paletteMode: PaletteMode
   /** mirrors the global Settings inventory, kept in sync so buildPalette can use it synchronously */
   ownedThreadCodes: string[]
+  /** mirrors the global Settings symbol style, kept in sync so buildPalette/assignSymbols can use it synchronously */
+  symbolStyle: SymbolStyle
   /**
    * Modal color of the image's outer border, detected once at load time - the best guess at
    * "background". Includes alpha: a low `.a` means the border is actually transparent (a PNG

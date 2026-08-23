@@ -4,6 +4,8 @@ import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
 import type { PrintMode } from '../lib/printLayout'
 import type { PrintColorMode } from '../lib/renderPattern'
+import type { SymbolStyle } from '../lib/types'
+import { ICON_SYMBOL_POOL, LETTER_SYMBOL_POOL } from '../lib/symbolAssignment'
 import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
 import { SUPPORTED_LANGUAGES } from '../i18n'
 
@@ -16,6 +18,8 @@ interface Props {
   onSetPrintMode: (mode: PrintMode) => void
   printColorMode: PrintColorMode
   onSetPrintColorMode: (mode: PrintColorMode) => void
+  symbolStyle: SymbolStyle
+  onSetSymbolStyle: (style: SymbolStyle) => void
   onClose: () => void
 }
 
@@ -34,6 +38,8 @@ export function SettingsPage({
   onSetPrintMode,
   printColorMode,
   onSetPrintColorMode,
+  symbolStyle,
+  onSetSymbolStyle,
   onClose,
 }: Props) {
   const { t, i18n } = useTranslation()
@@ -47,7 +53,7 @@ export function SettingsPage({
     url.hash = ''
     url.searchParams.set(
       SETTINGS_SHARE_PARAM,
-      encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit, printMode, printColorMode }),
+      encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit, printMode, printColorMode, symbolStyle }),
     )
     void navigator.clipboard.writeText(url.toString()).then(() => {
       setCopied(true)
@@ -117,6 +123,29 @@ export function SettingsPage({
                   }
                 >
                   {unit === 'cm' ? t('settingsPage.centimeters') : t('settingsPage.inches')}
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="bg-neutral-950 p-4">
+            <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.symbolStyle')}</h2>
+            <p className="mb-2 text-xs text-neutral-500">{t('settingsPage.symbolStyleHelp')}</p>
+            <div className="flex flex-col gap-2">
+              {(['letters', 'icons'] as const).map((style) => (
+                <button
+                  key={style}
+                  type="button"
+                  onClick={() => onSetSymbolStyle(style)}
+                  className={
+                    symbolStyle === style
+                      ? 'rounded-md bg-indigo-600 px-4 py-1.5 text-left text-sm font-medium text-white'
+                      : 'rounded-md border border-neutral-700 px-4 py-1.5 text-left text-sm text-neutral-300 hover:bg-neutral-800'
+                  }
+                >
+                  {style === 'letters'
+                    ? t('settingsPage.symbolStyleLetters', { sample: LETTER_SYMBOL_POOL.slice(0, 3).join(', ') })
+                    : t('settingsPage.symbolStyleIcons', { sample: ICON_SYMBOL_POOL.slice(0, 3).join(', ') })}
                 </button>
               ))}
             </div>

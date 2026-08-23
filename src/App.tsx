@@ -26,6 +26,7 @@ import { confirmDestructiveEdit } from './lib/confirmDestructive'
 import type { SizeUnit } from './lib/physicalSize'
 import type { PrintMode } from './lib/printLayout'
 import type { PrintColorMode } from './lib/renderPattern'
+import type { SymbolStyle } from './lib/types'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
 import { UploadDropzone } from './components/UploadDropzone'
@@ -169,6 +170,7 @@ function App() {
             strands: savedProject.strands,
             paletteMode: savedProject.paletteMode,
             ownedThreadCodes: effectiveSettings.ownedThreadCodes,
+            symbolStyle: effectiveSettings.symbolStyle,
             backgroundColor: savedProject.backgroundColor ?? null,
             ignoreBackground: savedProject.ignoreBackground ?? false,
             cropShape: savedProject.cropShape ?? null,
@@ -176,8 +178,13 @@ function App() {
             palette: savedProject.palette,
             cellAssignment: savedProject.cellAssignment,
           })
-        } else if (effectiveSettings.ownedThreadCodes.length > 0) {
-          dispatch({ type: 'SET_OWNED_THREADS', codes: effectiveSettings.ownedThreadCodes })
+        } else {
+          if (effectiveSettings.ownedThreadCodes.length > 0) {
+            dispatch({ type: 'SET_OWNED_THREADS', codes: effectiveSettings.ownedThreadCodes })
+          }
+          if (effectiveSettings.symbolStyle !== 'letters') {
+            dispatch({ type: 'SET_SYMBOL_STYLE', style: effectiveSettings.symbolStyle })
+          }
         }
       } catch {
         // no usable saved state (first visit, corrupted record, etc.) - start fresh
@@ -329,6 +336,7 @@ function App() {
           strands: persisted.strands,
           paletteMode: persisted.paletteMode,
           ownedThreadCodes: project.ownedThreadCodes,
+          symbolStyle: project.symbolStyle,
           backgroundColor: persisted.backgroundColor,
           ignoreBackground: persisted.ignoreBackground,
           cropShape: persisted.cropShape,
@@ -342,7 +350,7 @@ function App() {
         setIsImporting(false)
       }
     },
-    [project.ownedThreadCodes, describeError],
+    [project.ownedThreadCodes, project.symbolStyle, describeError],
   )
 
   // The browser's "Save as PDF" dialog suggests `document.title` as the
@@ -401,6 +409,15 @@ function App() {
       void saveSettings(next)
       return next
     })
+  }, [])
+
+  const handleSetSymbolStyle = useCallback((style: SymbolStyle) => {
+    setSettings((prev) => {
+      const next = { ...prev, symbolStyle: style }
+      void saveSettings(next)
+      return next
+    })
+    dispatch({ type: 'SET_SYMBOL_STYLE', style })
   }, [])
 
   // Ctrl/Cmd+Z to undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z to redo - ignored
@@ -507,6 +524,8 @@ function App() {
             onSetPrintMode={handleSetPrintMode}
             printColorMode={settings.printColorMode}
             onSetPrintColorMode={handleSetPrintColorMode}
+            symbolStyle={settings.symbolStyle}
+            onSetSymbolStyle={handleSetSymbolStyle}
             onClose={() => setView('workspace')}
           />
         ) : (
