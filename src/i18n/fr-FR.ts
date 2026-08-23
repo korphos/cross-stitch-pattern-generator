@@ -78,7 +78,7 @@ const frFR: typeof enUS = {
     rows: 'Lignes',
     samplePointOffset: "Décalage du point d'échantillonnage",
     samplePointInfo:
-      "L'endroit dans la cellule où la couleur de chaque maille est lue, plutôt qu'en plein centre - par exemple pour une photo de motif en perles où la couleur de l'anneau est plus fidèle que le reflet central. Affiché par des points roses sur l'image. Limité à un demi-cellule dans chaque direction.",
+      "L'endroit dans la cellule où la couleur de chaque maille est lue, plutôt qu'en plein centre - par exemple pour une photo de motif en perles où la couleur de l'anneau est plus fidèle que le reflet central. Affiché par des croix cyan sur l'image. Limité à un demi-cellule dans chaque direction.",
     sampleOffsetX: "Décalage d'échantillonnage X (px)",
     sampleOffsetY: "Décalage d'échantillonnage Y (px)",
     confidence: 'Confiance de la détection automatique : {{percent}} %',
@@ -90,6 +90,18 @@ const frFR: typeof enUS = {
     calibrateHintStep1: 'Cliquez sur un point',
     calibrateHintStep2: 'Cliquez sur le point équivalent de la maille suivante',
     sampleHint: "Cliquez-glissez n'importe où pour déplacer le point d'échantillonnage",
+    wizardStart: 'Configuration guidée',
+    wizardStepCount: 'Étape {{step}} sur 3',
+    wizardStep1Intro:
+      "Cela définit la taille d'un point dans votre photo - c'est l'échelle sur laquelle repose le reste de la grille. Recommencez autant de fois que nécessaire, puis cliquez sur Suivant une fois satisfait du résultat.",
+    wizardStep2Hint:
+      "Faites glisser l'image pour que le coin supérieur gauche de la grille s'aligne avec le début de votre motif - le nombre de colonnes et de lignes s'ajuste automatiquement pour continuer à couvrir le reste de l'image. Une poignée d'angle permet aussi de redimensionner directement si besoin. Cliquez sur Suivant une fois bien positionné.",
+    wizardStep3Hint:
+      "Facultatif : par défaut, chaque point lit sa couleur exactement en son centre. Faites glisser n'importe où sur l'image si vous préférez lire un autre endroit, par exemple l'anneau d'une perle plutôt que son reflet central. Cliquez sur Terminer une fois fini.",
+    wizardNext: 'Suivant',
+    wizardBack: 'Précédent',
+    wizardFinish: 'Terminer',
+    wizardExit: 'Quitter la configuration guidée',
     pixelGridTitle: 'Grille pixel par pixel',
     pixelGridHelp:
       "Pour une image déjà pixelisée où chaque point est un bloc connu de pixels source (par ex. 1 pixel, ou un bloc de 4x4 ou 9 pixels) - contourne entièrement la détection automatique, qui n'a rien à exploiter sur une image aussi petite.",

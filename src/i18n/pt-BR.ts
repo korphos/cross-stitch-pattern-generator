@@ -77,7 +77,7 @@ const ptBR: typeof enUS = {
     rows: 'Linhas',
     samplePointOffset: 'Deslocamento do ponto de amostragem',
     samplePointInfo:
-      'De onde dentro da célula a cor de cada ponto é lida, em vez do centro exato - por exemplo, para uma foto de padrão de miçangas em que a cor do anel é mais fiel do que o brilho central. Mostrado como pontos rosa na imagem. Limitado a meia célula em cada direção.',
+      'De onde dentro da célula a cor de cada ponto é lida, em vez do centro exato - por exemplo, para uma foto de padrão de miçangas em que a cor do anel é mais fiel do que o brilho central. Mostrado como cruzes ciano na imagem. Limitado a meia célula em cada direção.',
     sampleOffsetX: 'Deslocamento de amostragem X (px)',
     sampleOffsetY: 'Deslocamento de amostragem Y (px)',
     confidence: 'Confiança da detecção automática: {{percent}}%',
@@ -89,6 +89,18 @@ const ptBR: typeof enUS = {
     calibrateHintStep1: 'Clique em um ponto',
     calibrateHintStep2: 'Clique no ponto equivalente do próximo ponto',
     sampleHint: 'Clique e arraste em qualquer lugar para mover o ponto de amostragem',
+    wizardStart: 'Configuração guiada',
+    wizardStepCount: 'Etapa {{step}} de 3',
+    wizardStep1Intro:
+      'Isso define o tamanho de um ponto na sua foto - é a escala sobre a qual o resto da grade é construído. Repita quantas vezes quiser e depois clique em Próximo quando estiver satisfeito com o resultado.',
+    wizardStep2Hint:
+      'Arraste a imagem para que o canto superior esquerdo da grade se alinhe com o início do seu padrão - as colunas e linhas se ajustam automaticamente para continuar cobrindo o resto da imagem. Uma alça de canto também redimensiona diretamente, se necessário. Clique em Próximo quando estiver bem posicionada.',
+    wizardStep3Hint:
+      'Opcional: por padrão, cada ponto lê sua cor bem no centro. Arraste em qualquer lugar da imagem se preferir ler outro ponto, por exemplo o anel de uma miçanga em vez do brilho central. Clique em Concluir quando terminar.',
+    wizardNext: 'Próximo',
+    wizardBack: 'Voltar',
+    wizardFinish: 'Concluir',
+    wizardExit: 'Sair da configuração guiada',
     pixelGridTitle: 'Grade pixel a pixel',
     pixelGridHelp:
       'Para uma imagem já pixelada em que cada ponto é um bloco conhecido de pixels de origem (por exemplo 1 pixel, ou um bloco de 4x4 ou 9 pixels) - ignora completamente a detecção automática, que não tem com o que trabalhar em uma imagem tão pequena.',

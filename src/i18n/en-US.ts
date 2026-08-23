@@ -73,7 +73,7 @@ const enUS = {
     rows: 'Rows',
     samplePointOffset: 'Sample point offset',
     samplePointInfo:
-      'Where each stitch reads its color from within its cell, instead of dead center - e.g. for a bead pattern photo where the ring color reads better than the center highlight. Shown as pink dots on the image. Bounded to half a cell in either direction.',
+      'Where each stitch reads its color from within its cell, instead of dead center - e.g. for a bead pattern photo where the ring color reads better than the center highlight. Shown as cyan crosses on the image. Bounded to half a cell in either direction.',
     sampleOffsetX: 'Sample offset X (px)',
     sampleOffsetY: 'Sample offset Y (px)',
     confidence: 'Automatic detection confidence: {{percent}}%',
@@ -85,6 +85,18 @@ const enUS = {
     calibrateHintStep1: 'Click one point',
     calibrateHintStep2: 'Click the matching point on the next stitch',
     sampleHint: 'Click and drag anywhere to move the sample point',
+    wizardStart: 'Guided setup',
+    wizardStepCount: 'Step {{step}} of 3',
+    wizardStep1Intro:
+      "This sets how big one stitch is in your photo - it's the scale the rest of the grid is built from. Repeat as many times as you like, then click Next when you're happy with the result.",
+    wizardStep2Hint:
+      "Drag the image so the grid's top-left corner lines up with where your pattern starts - columns and rows adjust automatically to keep covering the rest of the image. A corner handle also resizes it directly if needed. Click Next once it's positioned correctly.",
+    wizardStep3Hint:
+      "Optional: each stitch reads its color from its exact center by default. Drag anywhere on the image if you'd rather read from a different spot, e.g. a bead's ring instead of its center highlight. Click Finish when you're done.",
+    wizardNext: 'Next',
+    wizardBack: 'Back',
+    wizardFinish: 'Finish',
+    wizardExit: 'Exit guided setup',
     pixelGridTitle: 'Pixel-perfect grid',
     pixelGridHelp:
       "For an already-pixelated image where every stitch is a known block of source pixels (e.g. 1 pixel, or a 4x4 or 9-pixel block) - bypasses automatic detection entirely, which has nothing to work with on an image this small.",

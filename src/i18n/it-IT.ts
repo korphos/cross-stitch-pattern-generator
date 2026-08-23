@@ -77,7 +77,7 @@ const itIT: typeof enUS = {
     rows: 'Righe',
     samplePointOffset: 'Scostamento del punto di campionamento',
     samplePointInfo:
-      "Il punto all'interno della cella da cui viene letto il colore di ogni punto, invece del centro esatto - ad esempio per una foto di uno schema con perline in cui il colore dell'anello si legge meglio del riflesso centrale. Mostrato come puntini rosa sull'immagine. Limitato a metà cella in ogni direzione.",
+      "Il punto all'interno della cella da cui viene letto il colore di ogni punto, invece del centro esatto - ad esempio per una foto di uno schema con perline in cui il colore dell'anello si legge meglio del riflesso centrale. Mostrato come crocette ciano sull'immagine. Limitato a metà cella in ogni direzione.",
     sampleOffsetX: 'Scostamento di campionamento X (px)',
     sampleOffsetY: 'Scostamento di campionamento Y (px)',
     confidence: 'Affidabilità del rilevamento automatico: {{percent}}%',
@@ -89,6 +89,18 @@ const itIT: typeof enUS = {
     calibrateHintStep1: 'Clicca su un punto',
     calibrateHintStep2: 'Clicca sul punto corrispondente del punto successivo',
     sampleHint: 'Clicca e trascina in un punto qualsiasi per spostare il punto di campionamento',
+    wizardStart: 'Configurazione guidata',
+    wizardStepCount: 'Passaggio {{step}} di 3',
+    wizardStep1Intro:
+      'Questo definisce quanto è grande un punto nella tua foto - è la scala su cui si basa il resto della griglia. Ripeti tutte le volte che vuoi, poi clicca su Avanti quando sei soddisfatto del risultato.',
+    wizardStep2Hint:
+      "Trascina l'immagine in modo che l'angolo superiore sinistro della griglia si allinei con l'inizio del tuo schema - colonne e righe si adattano automaticamente per continuare a coprire il resto dell'immagine. Una maniglia d'angolo permette anche di ridimensionarla direttamente, se necessario. Clicca su Avanti una volta posizionata correttamente.",
+    wizardStep3Hint:
+      "Facoltativo: per impostazione predefinita ogni punto legge il colore esattamente al centro. Trascina in un punto qualsiasi dell'immagine se preferisci leggere da un altro punto, ad esempio l'anello di una perlina invece del riflesso centrale. Clicca su Fine quando hai terminato.",
+    wizardNext: 'Avanti',
+    wizardBack: 'Indietro',
+    wizardFinish: 'Fine',
+    wizardExit: 'Esci dalla configurazione guidata',
     pixelGridTitle: 'Griglia pixel per pixel',
     pixelGridHelp:
       'Per un\'immagine già pixelata in cui ogni punto è un blocco noto di pixel sorgente (ad es. 1 pixel, o un blocco di 4x4 o 9 pixel) - aggira completamente il rilevamento automatico, che non ha nulla su cui lavorare in un\'immagine così piccola.',

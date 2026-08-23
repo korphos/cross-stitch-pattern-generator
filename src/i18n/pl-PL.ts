@@ -77,7 +77,7 @@ const plPL: typeof enUS = {
     rows: 'Wiersze',
     samplePointOffset: 'Przesunięcie punktu próbkowania',
     samplePointInfo:
-      'Miejsce w komórce, z którego odczytywany jest kolor każdego ściegu, zamiast dokładnego środka - na przykład dla zdjęcia wzoru z koralikami, gdzie kolor obwódki lepiej oddaje wygląd niż odblask na środku. Pokazane jako różowe kropki na obrazie. Ograniczone do połowy komórki w każdym kierunku.',
+      'Miejsce w komórce, z którego odczytywany jest kolor każdego ściegu, zamiast dokładnego środka - na przykład dla zdjęcia wzoru z koralikami, gdzie kolor obwódki lepiej oddaje wygląd niż odblask na środku. Pokazane jako cyjanowe krzyżyki na obrazie. Ograniczone do połowy komórki w każdym kierunku.',
     sampleOffsetX: 'Przesunięcie próbkowania X (px)',
     sampleOffsetY: 'Przesunięcie próbkowania Y (px)',
     confidence: 'Pewność automatycznego wykrywania: {{percent}}%',
@@ -89,6 +89,18 @@ const plPL: typeof enUS = {
     calibrateHintStep1: 'Kliknij jeden punkt',
     calibrateHintStep2: 'Kliknij odpowiadający punkt następnego ściegu',
     sampleHint: 'Kliknij i przeciągnij w dowolnym miejscu, aby przesunąć punkt próbkowania',
+    wizardStart: 'Kreator konfiguracji',
+    wizardStepCount: 'Krok {{step}} z 3',
+    wizardStep1Intro:
+      'To ustawia, jak duży jest jeden ścieg na Twoim zdjęciu - to skala, na której opiera się reszta siatki. Powtarzaj dowolną liczbę razy, a potem kliknij Dalej, gdy wynik Ci odpowiada.',
+    wizardStep2Hint:
+      'Przeciągnij obraz tak, aby lewy górny róg siatki pokrywał się z początkiem wzoru - liczba kolumn i wierszy dostosowuje się automatycznie, aby nadal pokrywać resztę obrazu. Uchwyt w rogu również pozwala bezpośrednio zmienić rozmiar, jeśli trzeba. Kliknij Dalej, gdy siatka będzie dobrze ustawiona.',
+    wizardStep3Hint:
+      'Opcjonalnie: domyślnie każdy ścieg odczytuje kolor dokładnie ze środka. Przeciągnij w dowolnym miejscu obrazu, jeśli wolisz odczytywać z innego miejsca, np. obwódkę koralika zamiast odblasku na środku. Kliknij Zakończ, gdy skończysz.',
+    wizardNext: 'Dalej',
+    wizardBack: 'Wstecz',
+    wizardFinish: 'Zakończ',
+    wizardExit: 'Zamknij kreator konfiguracji',
     pixelGridTitle: 'Siatka piksel w piksel',
     pixelGridHelp:
       'Dla już spikselowanego obrazu, w którym każdy ścieg to znany blok pikseli źródłowych (np. 1 piksel albo blok 4x4 lub 9 pikseli) - całkowicie pomija automatyczne wykrywanie, które na tak małym obrazie nie ma na czym się oprzeć.',

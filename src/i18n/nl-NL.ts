@@ -77,7 +77,7 @@ const nlNL: typeof enUS = {
     rows: 'Rijen',
     samplePointOffset: 'Verschuiving van het meetpunt',
     samplePointInfo:
-      'Van waar binnen de cel de kleur van elke steek wordt gelezen, in plaats van precies het midden - bijvoorbeeld bij een kralenpatroon-foto waar de kleur van de rand beter overkomt dan de glans in het midden. Weergegeven als roze puntjes op de afbeelding. Beperkt tot een halve cel in elke richting.',
+      'Van waar binnen de cel de kleur van elke steek wordt gelezen, in plaats van precies het midden - bijvoorbeeld bij een kralenpatroon-foto waar de kleur van de rand beter overkomt dan de glans in het midden. Weergegeven als cyaan kruisjes op de afbeelding. Beperkt tot een halve cel in elke richting.',
     sampleOffsetX: 'Meetpunt-verschuiving X (px)',
     sampleOffsetY: 'Meetpunt-verschuiving Y (px)',
     confidence: 'Betrouwbaarheid van automatische detectie: {{percent}}%',
@@ -89,6 +89,18 @@ const nlNL: typeof enUS = {
     calibrateHintStep1: 'Klik op een punt',
     calibrateHintStep2: 'Klik op het overeenkomstige punt van de volgende steek',
     sampleHint: 'Klik en sleep ergens om het meetpunt te verplaatsen',
+    wizardStart: 'Begeleide instelling',
+    wizardStepCount: 'Stap {{step}} van 3',
+    wizardStep1Intro:
+      'Dit bepaalt hoe groot één steek op je foto is - dat is de schaal waarop de rest van het raster wordt gebouwd. Herhaal zo vaak als je wilt en klik daarna op Volgende zodra je tevreden bent met het resultaat.',
+    wizardStep2Hint:
+      'Sleep de afbeelding zodat de linkerbovenhoek van het raster overeenkomt met het begin van je patroon - kolommen en rijen passen zich automatisch aan om de rest van de afbeelding te blijven bedekken. Een hoekgreep verandert indien nodig ook direct het formaat. Klik op Volgende zodra het goed gepositioneerd is.',
+    wizardStep3Hint:
+      'Optioneel: standaard leest elke steek zijn kleur precies in het midden. Sleep ergens op de afbeelding als je liever op een andere plek leest, bijvoorbeeld de rand van een kraal in plaats van de glans in het midden. Klik op Voltooien als je klaar bent.',
+    wizardNext: 'Volgende',
+    wizardBack: 'Terug',
+    wizardFinish: 'Voltooien',
+    wizardExit: 'Begeleide instelling verlaten',
     pixelGridTitle: 'Pixelperfect raster',
     pixelGridHelp:
       'Voor een al gepixelde afbeelding waarbij elke steek een bekend blok bronpixels is (bijvoorbeeld 1 pixel, of een blok van 4x4 of 9 pixels) - omzeilt automatische detectie volledig, die bij zo\'n kleine afbeelding niets heeft om mee te werken.',

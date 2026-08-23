@@ -77,7 +77,7 @@ const trTR: typeof enUS = {
     rows: 'Satırlar',
     samplePointOffset: 'Örnekleme noktası konumu',
     samplePointInfo:
-      'Her karenin rengi, hücrenin tam merkezi yerine hücre içindeki hangi noktadan okunacağı - örneğin, halka renginin ortadaki parlamadan daha iyi okunduğu boncuk deseni fotoğrafları için. Görselde pembe noktalar olarak gösterilir. Her yönde yarım hücreyle sınırlıdır.',
+      'Her karenin rengi, hücrenin tam merkezi yerine hücre içindeki hangi noktadan okunacağı - örneğin, halka renginin ortadaki parlamadan daha iyi okunduğu boncuk deseni fotoğrafları için. Görselde camgöbeği artı işaretleri olarak gösterilir. Her yönde yarım hücreyle sınırlıdır.',
     sampleOffsetX: 'Örnekleme konumu X (px)',
     sampleOffsetY: 'Örnekleme konumu Y (px)',
     confidence: 'Otomatik algılama güveni: %{{percent}}',
@@ -89,6 +89,18 @@ const trTR: typeof enUS = {
     calibrateHintStep1: 'Bir noktaya tıklayın',
     calibrateHintStep2: 'Sonraki karenin eşleşen noktasına tıklayın',
     sampleHint: 'Örnekleme noktasını taşımak için herhangi bir yere tıklayıp sürükleyin',
+    wizardStart: 'Rehberli kurulum',
+    wizardStepCount: 'Adım {{step}}/3',
+    wizardStep1Intro:
+      'Bu, fotoğrafınızda bir karenin ne kadar büyük olduğunu belirler - ızgaranın geri kalanı bu ölçeğe göre oluşturulur. İstediğiniz kadar tekrarlayın, ardından sonuçtan memnun kaldığınızda İleri\'ye tıklayın.',
+    wizardStep2Hint:
+      "Görseli, ızgaranın sol üst köşesi deseninizin başlangıcıyla hizalanacak şekilde sürükleyin - sütun ve satır sayısı, görselin geri kalanını kapsamaya devam etmek için otomatik olarak ayarlanır. Gerekirse bir köşe tutamağı da doğrudan yeniden boyutlandırır. Doğru konumlandığında İleri'ye tıklayın.",
+    wizardStep3Hint:
+      "İsteğe bağlı: varsayılan olarak her kare rengini tam merkezinden okur. Farklı bir noktadan okumak isterseniz (örneğin ortadaki parlama yerine bir boncuğun halkasından), görselde herhangi bir yeri sürükleyin. Bitirdiğinizde Bitir'e tıklayın.",
+    wizardNext: 'İleri',
+    wizardBack: 'Geri',
+    wizardFinish: 'Bitir',
+    wizardExit: 'Rehberli kurulumdan çık',
     pixelGridTitle: 'Piksel kusursuz ızgara',
     pixelGridHelp:
       'Her karenin bilinen bir kaynak piksel bloğu olduğu, zaten pikselli bir görsel için (örneğin 1 piksel, veya 4x4 ya da 9 piksellik bir blok) - böyle küçük bir görselde işleyecek hiçbir şeyi olmayan otomatik algılamayı tamamen atlar.',

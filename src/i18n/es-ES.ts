@@ -77,7 +77,7 @@ const esES: typeof enUS = {
     rows: 'Filas',
     samplePointOffset: 'Desplazamiento del punto de muestreo',
     samplePointInfo:
-      'El punto dentro de cada celda desde el que se lee el color de la puntada, en vez del centro exacto - por ejemplo para una foto de un patrón de mostacillas donde el color del borde se lee mejor que el reflejo central. Se muestra como puntos rosas en la imagen. Limitado a media celda en cada dirección.',
+      'El punto dentro de cada celda desde el que se lee el color de la puntada, en vez del centro exacto - por ejemplo para una foto de un patrón de mostacillas donde el color del borde se lee mejor que el reflejo central. Se muestra como cruces cian en la imagen. Limitado a media celda en cada dirección.',
     sampleOffsetX: 'Desplazamiento de muestreo X (px)',
     sampleOffsetY: 'Desplazamiento de muestreo Y (px)',
     confidence: 'Confianza de la detección automática: {{percent}}%',
@@ -89,6 +89,18 @@ const esES: typeof enUS = {
     calibrateHintStep1: 'Haz clic en un punto',
     calibrateHintStep2: 'Haz clic en el punto equivalente de la siguiente puntada',
     sampleHint: 'Haz clic y arrastra en cualquier parte para mover el punto de muestreo',
+    wizardStart: 'Configuración guiada',
+    wizardStepCount: 'Paso {{step}} de 3',
+    wizardStep1Intro:
+      'Esto define el tamaño de una puntada en tu foto - es la escala sobre la que se construye el resto de la cuadrícula. Repite tantas veces como quieras y luego haz clic en Siguiente cuando estés conforme con el resultado.',
+    wizardStep2Hint:
+      'Arrastra la imagen para que la esquina superior izquierda de la cuadrícula coincida con el inicio de tu patrón - las columnas y filas se ajustan automáticamente para seguir cubriendo el resto de la imagen. También puedes arrastrar una esquina para redimensionarla directamente si hace falta. Haz clic en Siguiente cuando esté bien colocada.',
+    wizardStep3Hint:
+      'Opcional: por defecto, cada puntada lee su color justo en el centro. Arrastra en cualquier parte de la imagen si prefieres leer otro punto, por ejemplo el borde de una mostacilla en vez del reflejo central. Haz clic en Finalizar cuando termines.',
+    wizardNext: 'Siguiente',
+    wizardBack: 'Atrás',
+    wizardFinish: 'Finalizar',
+    wizardExit: 'Salir de la configuración guiada',
     pixelGridTitle: 'Cuadrícula píxel a píxel',
     pixelGridHelp:
       'Para una imagen ya pixelada donde cada punto es un bloque conocido de píxeles de origen (por ejemplo 1 píxel, o un bloque de 4x4 o 9 píxeles) - evita por completo la detección automática, que no tiene nada con qué trabajar en una imagen tan pequeña.',

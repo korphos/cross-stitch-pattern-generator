@@ -85,6 +85,10 @@ function App() {
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
   const [cropShapeChoice, setCropShapeChoice] = useState<CropShapeChoice>('square')
+  // Incremented (never read for its value) each time GridControls' wizard button is clicked -
+  // GridPanel owns the actual wizard state machine and just watches this to (re)start it, so the
+  // button can live in the sidebar without lifting the grid mode/step state itself up here.
+  const [gridWizardTrigger, setGridWizardTrigger] = useState(0)
   // Drag adjustments override the centered default below; cleared whenever the underlying image
   // itself changes (new upload, or a crop just applied), so the default re-centers on it.
   const [cropOverride, setCropOverride] = useState<CropSelection | null>(null)
@@ -588,7 +592,11 @@ function App() {
             <div className="flex flex-1 flex-col overflow-y-auto lg:flex-row lg:overflow-hidden">
               <div className="order-2 w-full shrink-0 border-b border-neutral-800 bg-neutral-900 lg:order-1 lg:h-full lg:w-64 lg:overflow-y-auto lg:border-b-0 lg:border-r">
                 {hasImage && project.activeTab === 'grid' && (
-                  <GridControls project={project} dispatch={dispatch} />
+                  <GridControls
+                    project={project}
+                    dispatch={dispatch}
+                    onStartWizard={() => setGridWizardTrigger((t) => t + 1)}
+                  />
                 )}
                 {hasImage && project.activeTab === 'palette' && (
                   <PalettePanel project={project} dispatch={dispatch} sizeUnit={settings.sizeUnit} />
@@ -614,7 +622,12 @@ function App() {
                   />
                 )}
                 {hasImage && project.activeTab === 'grid' && (
-                  <GridPanel project={project} dispatch={dispatch} onFlipHorizontal={handleFlipHorizontal} />
+                  <GridPanel
+                    project={project}
+                    dispatch={dispatch}
+                    onFlipHorizontal={handleFlipHorizontal}
+                    wizardTrigger={gridWizardTrigger}
+                  />
                 )}
                 {hasImage && project.activeTab === 'crop' && project.imageData && cropSelection && (
                   <CropPanel

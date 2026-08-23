@@ -17,6 +17,9 @@ interface Props {
   project: PatternProject
   dispatch: Dispatch<ProjectAction>
   onFlipHorizontal: () => void
+  /** Bumped by GridControls' wizard button to (re)start the guided setup - the value itself is
+   * never read, only watched for changes, since this component owns the wizard's actual state. */
+  wizardTrigger: number
 }
 
 const MAX_DISPLAY_DIMENSION = 720
@@ -48,13 +51,20 @@ function clampZoom(zoom: number): number {
 
 type DragMode = 'tl' | 'br' | 'move' | 'sample'
 type GridMode = 'adjust' | 'calibrate' | 'sample'
+// Mirrors the three modes in the order the guided setup walks them: cell size first (everything
+// else is measured in stitches), then position, then the optional sample-point nudge.
+type WizardStep = 0 | 1 | 2
+const WIZARD_STEP_MODE: Record<WizardStep, GridMode> = { 0: 'calibrate', 1: 'adjust', 2: 'sample' }
+// Zoom level the wizard jumps to on step 1 - zoomed out, individual stitches are too small to
+// click a precise calibration point on.
+const WIZARD_ZOOM = 2.5
 
 interface ImagePoint {
   x: number
   y: number
 }
 
-export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
+export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }: Props) {
   const { t } = useTranslation()
   const grid = project.confirmedGrid!
   const imageData = project.imageData!
@@ -86,6 +96,13 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
   const [calibrationPoint, setCalibrationPoint] = useState<ImagePoint | null>(null)
   const [cursorPoint, setCursorPoint] = useState<ImagePoint | null>(null)
 
+  // Guided setup: null when not running, otherwise which of the 3 steps is active. Walks the
+  // same three modes above in order, just with instructions and Back/Next controls instead of
+  // requiring the toolbar buttons.
+  const [wizardStep, setWizardStep] = useState<WizardStep | null>(null)
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const centerPendingRef = useRef(false)
+
   const containerRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{ mode: DragMode; startGrid: DetectedGrid; startX: number; startY: number } | null>(null)
   const scaleRef = useRef(scale)
@@ -116,6 +133,63 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
     setCursorPoint(null)
   }, [])
 
+  const zoomAndCenter = useCallback((factor: number) => {
+    setZoomFactor(clampZoom(factor))
+    centerPendingRef.current = true
+  }, [])
+
+  // Runs once the DOM has settled after a zoomAndCenter call (scrollWidth/clientWidth need the
+  // new size already committed), not inside the click handler itself.
+  useEffect(() => {
+    if (!centerPendingRef.current) return
+    centerPendingRef.current = false
+    const el = scrollContainerRef.current
+    if (!el) return
+    el.scrollLeft = (el.scrollWidth - el.clientWidth) / 2
+    el.scrollTop = (el.scrollHeight - el.clientHeight) / 2
+  }, [zoomFactor])
+
+  const startWizard = useCallback(() => {
+    setWizardStep(0)
+    switchMode(WIZARD_STEP_MODE[0])
+    zoomAndCenter(WIZARD_ZOOM)
+  }, [switchMode, zoomAndCenter])
+
+  function goToWizardStep(step: WizardStep) {
+    setWizardStep(step)
+    switchMode(WIZARD_STEP_MODE[step])
+  }
+
+  function wizardNext() {
+    if (wizardStep === null) return
+    if (wizardStep === 2) {
+      setWizardStep(null)
+      switchMode('adjust')
+      setZoomFactor(1)
+      return
+    }
+    goToWizardStep((wizardStep + 1) as WizardStep)
+  }
+
+  function wizardBack() {
+    if (wizardStep === null || wizardStep === 0) return
+    goToWizardStep((wizardStep - 1) as WizardStep)
+  }
+
+  function exitWizard() {
+    setWizardStep(null)
+    setZoomFactor(1)
+  }
+
+  // (Re)starts the wizard whenever GridControls' button bumps this - the initial value (0) must
+  // not itself trigger a start, only later changes to it.
+  const wizardTriggerRef = useRef(wizardTrigger)
+  useEffect(() => {
+    if (wizardTrigger === wizardTriggerRef.current) return
+    wizardTriggerRef.current = wizardTrigger
+    startWizard()
+  }, [wizardTrigger, startWizard])
+
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
       const drag = dragRef.current
@@ -129,11 +203,22 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
 
       let next: DetectedGrid
       if (drag.mode === 'move') {
-        const dx = x - drag.startX
-        const dy = y - drag.startY
-        const newX = Math.max(0, Math.min(start.bbox.x + dx, imgW - start.bbox.width))
-        const newY = Math.max(0, Math.min(start.bbox.y + dy, imgH - start.bbox.height))
-        next = { ...start, bbox: { ...start.bbox, x: newX, y: newY } }
+        // Not clamped to keep the grid inside the image - if cols/rows already nearly fill the
+        // image (e.g. right after a calibration that re-fit them), that clamp left almost no
+        // room to actually drag. Instead, cols/rows are re-fit live from the new origin out to
+        // the image's far edge on every tick, same as calibration does on commit - the grid
+        // keeps covering the image without overflowing it, but the origin itself is free to go
+        // anywhere, including past an edge.
+        const newX = start.bbox.x + (x - drag.startX)
+        const newY = start.bbox.y + (y - drag.startY)
+        const cols = Math.max(1, Math.round((imgW - newX) / start.cellSize))
+        const rows = Math.max(1, Math.round((imgH - newY) / start.cellSize))
+        next = {
+          ...start,
+          bbox: { x: newX, y: newY, width: cols * start.cellSize, height: rows * start.cellSize },
+          cols,
+          rows,
+        }
       } else if (drag.mode === 'tl') {
         // Resize handles: stitches must stay square, so a single cellSize is derived from
         // both axes of the drag (averaged) rather than letting width/height scale independently.
@@ -244,6 +329,7 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
   // onWheel is passive.
   const attachWheelHandlers = useCallback(
     (el: HTMLDivElement | null) => {
+      scrollContainerRef.current = el
       if (!el) return
       function onWheel(e: globalThis.WheelEvent) {
         if (e.ctrlKey || e.metaKey) {
@@ -367,7 +453,13 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
     const rows = Math.max(1, Math.round((imageData.height - grid.bbox.y) / distance))
     const next = applyGridFieldPatch(grid, imageData.width, imageData.height, { cellSize: distance, cols, rows })
     if (next) updateGrid(next)
-    switchMode('adjust')
+    // Mid-wizard, stays in calibrate mode instead of auto-advancing - calibration is exploratory
+    // and the first attempt often isn't the one the user wants to keep, so only the explicit
+    // "Next" button moves the wizard on. Outside the wizard, a calibration is still a single-shot
+    // gesture that returns to the plain adjust mode right away.
+    if (wizardStep === null) {
+      switchMode('adjust')
+    }
   }
 
   const cursorClass =
@@ -444,7 +536,7 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
           </>
         )}
 
-        {mode === 'calibrate' && (
+        {wizardStep === null && mode === 'calibrate' && (
           <div className="pointer-events-none absolute top-2 left-2 z-10 rounded-md bg-neutral-900/90 px-2 py-1 text-xs text-neutral-200 shadow">
             {calibrationPoint
               ? t('gridControls.calibrateHintStep2')
@@ -452,29 +544,95 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
           </div>
         )}
 
-        {mode === 'sample' && (
+        {wizardStep === null && mode === 'sample' && (
           <div className="pointer-events-none absolute top-2 left-2 z-10 rounded-md bg-neutral-900/90 px-2 py-1 text-xs text-neutral-200 shadow">
             {t('gridControls.sampleHint')}
           </div>
         )}
+
       </div>
+
+      {/* Anchored to the viewport, not the image (unlike the plain per-mode hints above) - the
+          wizard auto-zooms and centers on step 1, which can easily scroll the image's own top-left
+          corner (where those hints sit) out of view entirely. */}
+      {wizardStep !== null && (
+        <div className="absolute top-4 left-4 z-20 flex w-72 flex-col gap-2 rounded-md border border-indigo-500/50 bg-neutral-900/95 p-3 text-neutral-200 shadow-lg">
+          <div className="flex items-start justify-between gap-2">
+            <span className="text-sm font-semibold text-neutral-100">
+              {t('gridControls.wizardStepCount', { step: wizardStep + 1 })}
+            </span>
+            <button
+              type="button"
+              onClick={exitWizard}
+              title={t('gridControls.wizardExit')}
+              className="shrink-0 text-neutral-400 hover:text-neutral-200"
+            >
+              ✕
+            </button>
+          </div>
+          {/* Explains what this step is for, not just what to click - step 1 in particular does
+              nothing self-evident: two clicks setting a "cell size" needs the why (it's the scale
+              for the whole grid) spelled out, not just the mechanical steps. */}
+          <p className="text-xs text-neutral-300">
+            {wizardStep === 0
+              ? t('gridControls.wizardStep1Intro')
+              : wizardStep === 1
+                ? t('gridControls.wizardStep2Hint')
+                : t('gridControls.wizardStep3Hint')}
+          </p>
+          {wizardStep === 0 && (
+            <p className="text-xs font-medium text-indigo-300">
+              {calibrationPoint ? t('gridControls.calibrateHintStep2') : t('gridControls.calibrateHintStep1')}
+            </p>
+          )}
+          <div className="flex justify-end gap-2 pt-1">
+            {wizardStep > 0 && (
+              <button
+                type="button"
+                onClick={wizardBack}
+                className="rounded-md border border-neutral-600 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-800"
+              >
+                {t('gridControls.wizardBack')}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={wizardNext}
+              className="rounded-md bg-indigo-600 px-2 py-1 text-xs font-medium text-white hover:bg-indigo-500"
+            >
+              {wizardStep === 2 ? t('gridControls.wizardFinish') : t('gridControls.wizardNext')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Positioned against the nearest ancestor that actually sets `position` - the shared
           relative wrapper in App.tsx around this whole viewport pane (same trick ZoomControls
           uses in the palette tab) - so it stays fixed in the corner regardless of how far the
           image itself is scrolled or zoomed inside this panel's own overflow-auto container. */}
       <div className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-md border border-neutral-700 bg-neutral-900/90 px-1 py-1 shadow-lg">
-        <ModeButton active={mode === 'adjust'} title={t('gridControls.modeAdjust')} onClick={() => switchMode('adjust')}>
+        <ModeButton
+          active={mode === 'adjust'}
+          disabled={wizardStep !== null}
+          title={t('gridControls.modeAdjust')}
+          onClick={() => switchMode('adjust')}
+        >
           <Move className="h-4 w-4" />
         </ModeButton>
         <ModeButton
           active={mode === 'calibrate'}
+          disabled={wizardStep !== null}
           title={t('gridControls.modeCalibrate')}
           onClick={() => switchMode('calibrate')}
         >
           <Ruler className="h-4 w-4" />
         </ModeButton>
-        <ModeButton active={mode === 'sample'} title={t('gridControls.modeSample')} onClick={() => switchMode('sample')}>
+        <ModeButton
+          active={mode === 'sample'}
+          disabled={wizardStep !== null}
+          title={t('gridControls.modeSample')}
+          onClick={() => switchMode('sample')}
+        >
           <Crosshair className="h-4 w-4" />
         </ModeButton>
         <div className="mx-0.5 h-5 w-px bg-neutral-700" />
@@ -520,11 +678,13 @@ export function GridPanel({ project, dispatch, onFlipHorizontal }: Props) {
 
 function ModeButton({
   active,
+  disabled = false,
   title,
   onClick,
   children,
 }: {
   active: boolean
+  disabled?: boolean
   title: string
   onClick: () => void
   children: ReactNode
@@ -533,9 +693,10 @@ function ModeButton({
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       title={title}
       aria-pressed={active}
-      className={`flex h-7 w-7 items-center justify-center rounded ${
+      className={`flex h-7 w-7 items-center justify-center rounded disabled:cursor-not-allowed disabled:opacity-40 ${
         active ? 'bg-indigo-600 text-white' : 'text-neutral-200 hover:bg-neutral-800'
       }`}
     >

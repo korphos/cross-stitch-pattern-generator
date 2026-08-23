@@ -77,7 +77,7 @@ const deDE: typeof enUS = {
     rows: 'Zeilen',
     samplePointOffset: 'Versatz des Abtastpunkts',
     samplePointInfo:
-      'Von wo innerhalb der Zelle die Farbe jedes Stichs gelesen wird, statt von der genauen Mitte - etwa bei einem Perlenmuster-Foto, wo die Ringfarbe aussagekräftiger ist als der Lichtreflex in der Mitte. Wird als rosa Punkte im Bild angezeigt. Auf eine halbe Zelle in jede Richtung begrenzt.',
+      'Von wo innerhalb der Zelle die Farbe jedes Stichs gelesen wird, statt von der genauen Mitte - etwa bei einem Perlenmuster-Foto, wo die Ringfarbe aussagekräftiger ist als der Lichtreflex in der Mitte. Wird als cyanfarbene Kreuze im Bild angezeigt. Auf eine halbe Zelle in jede Richtung begrenzt.',
     sampleOffsetX: 'Abtastversatz X (px)',
     sampleOffsetY: 'Abtastversatz Y (px)',
     confidence: 'Sicherheit der automatischen Erkennung: {{percent}}%',
@@ -89,6 +89,18 @@ const deDE: typeof enUS = {
     calibrateHintStep1: 'Klicke auf einen Punkt',
     calibrateHintStep2: 'Klicke auf den entsprechenden Punkt des nächsten Stichs',
     sampleHint: 'Klicke und ziehe an einer beliebigen Stelle, um den Abtastpunkt zu verschieben',
+    wizardStart: 'Geführte Einrichtung',
+    wizardStepCount: 'Schritt {{step}} von 3',
+    wizardStep1Intro:
+      'Das legt fest, wie groß ein Stich auf deinem Foto ist - das ist der Maßstab, auf dem der Rest des Gitters aufbaut. Wiederhole das so oft du möchtest und klicke dann auf Weiter, sobald du mit dem Ergebnis zufrieden bist.',
+    wizardStep2Hint:
+      'Ziehe das Bild so, dass die obere linke Ecke des Gitters mit dem Anfang deines Musters übereinstimmt - Spalten und Zeilen passen sich automatisch an, um weiterhin das restliche Bild abzudecken. Ein Eckgriff ändert bei Bedarf auch direkt die Größe. Klicke auf Weiter, sobald es richtig positioniert ist.',
+    wizardStep3Hint:
+      'Optional: Standardmäßig liest jeder Stich seine Farbe genau in der Mitte. Ziehe an einer beliebigen Stelle im Bild, wenn du lieber an einer anderen Stelle lesen möchtest, z. B. den Ring einer Perle statt des Lichtreflexes in der Mitte. Klicke auf Fertig, wenn du fertig bist.',
+    wizardNext: 'Weiter',
+    wizardBack: 'Zurück',
+    wizardFinish: 'Fertig',
+    wizardExit: 'Geführte Einrichtung verlassen',
     pixelGridTitle: 'Pixelgenaues Gitter',
     pixelGridHelp:
       'Für ein bereits pixeliges Bild, bei dem jeder Stich ein bekannter Block aus Quellpixeln ist (z. B. 1 Pixel oder ein 4x4- oder 9-Pixel-Block) - umgeht die automatische Erkennung vollständig, die bei einem so kleinen Bild nichts hat, womit sie arbeiten könnte.',

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Dispatch } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Info } from 'lucide-react'
+import { Info, Wand2 } from 'lucide-react'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { detectGrid } from '../lib/gridDetection'
@@ -11,9 +11,10 @@ import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 interface Props {
   project: PatternProject
   dispatch: Dispatch<ProjectAction>
+  onStartWizard: () => void
 }
 
-export function GridControls({ project, dispatch }: Props) {
+export function GridControls({ project, dispatch, onStartWizard }: Props) {
   const { t } = useTranslation()
   const grid = project.confirmedGrid!
   const imageData = project.imageData!
@@ -64,6 +65,15 @@ export function GridControls({ project, dispatch }: Props) {
     <div className="flex h-full flex-col gap-3 overflow-y-auto p-4">
       <h2 className="text-sm font-semibold text-neutral-100">{t('gridControls.title')}</h2>
       <p className="text-xs text-neutral-400">{t('gridControls.helper')}</p>
+
+      <button
+        type="button"
+        onClick={onStartWizard}
+        className="flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500"
+      >
+        <Wand2 className="h-4 w-4" />
+        {t('gridControls.wizardStart')}
+      </button>
 
       <div className="grid grid-cols-2 gap-3">
         <NumberField label={t('gridControls.offsetX')} value={grid.bbox.x} onChange={(v) => setField({ offsetX: v })} />
