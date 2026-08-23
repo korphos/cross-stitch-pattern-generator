@@ -202,6 +202,8 @@ const itIT: typeof enUS = {
     printModeAuto: 'Automatico (suddivide solo se necessario)',
     printModeSingle: 'Sempre una pagina (può essere ridotta)',
     printModeMulti: 'Suddividi sempre su più pagine',
+    printBlackAndWhite: 'Stampa in bianco e nero',
+    printBlackAndWhiteHelp: "Solo simboli, senza i colori dei fili - risparmia inchiostro. Disattivato per impostazione predefinita.",
     shareSettings: 'Condividi impostazioni',
     shareHelp:
       'Copia un link che porta con sé i tuoi filati posseduti e la tua unità di misura. Aprirlo su un altro dispositivo (ad es. il telefono) sostituisce le sue impostazioni con queste - nessun file di importazione/esportazione necessario.',

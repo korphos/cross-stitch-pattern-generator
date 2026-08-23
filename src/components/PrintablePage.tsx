@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PatternProject, PaletteEntry, DetectedGrid } from '../lib/types'
-import { computeCanvasSize, renderPattern, renderPageMapOverlay, setupCanvasForDpr } from '../lib/renderPattern'
+import { computeCanvasSize, renderPattern, renderPageMapOverlay, setupCanvasForDpr, type PrintColorMode } from '../lib/renderPattern'
 import { Legend } from './Legend'
 import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
 import { estimateThreadUsage } from '../lib/threadEstimate'
@@ -12,6 +12,7 @@ interface Props {
   project: PatternProject
   sizeUnit: SizeUnit
   printMode: PrintMode
+  printColorMode: PrintColorMode
 }
 
 /**
@@ -24,11 +25,12 @@ interface Props {
  * several fixed-cell-size sheets tiling the grid (large patterns, where shrinking to fit one
  * page would make the stitches illegible) - see printLayout.ts.
  */
-export function PrintablePage({ project, sizeUnit, printMode }: Props) {
+export function PrintablePage({ project, sizeUnit, printMode, printColorMode }: Props) {
   const { t } = useTranslation()
   const grid = project.confirmedGrid
   const palette = project.palette
   const cellAssignment = project.cellAssignment
+  const monochrome = printColorMode === 'blackAndWhite'
 
   const layout = useMemo(
     () => (grid && cellAssignment ? computePrintLayout(grid.cols, grid.rows, printMode, cellAssignment) : null),
@@ -60,6 +62,7 @@ export function PrintablePage({ project, sizeUnit, printMode }: Props) {
           cellAssignment={cellAssignment}
           cellPx={layout.cellPx}
           summaryText={summaryText}
+          monochrome={monochrome}
         />
       ) : (
         <>
@@ -69,6 +72,7 @@ export function PrintablePage({ project, sizeUnit, printMode }: Props) {
             cellAssignment={cellAssignment}
             tiles={layout.tiles}
             summaryText={summaryText}
+            monochrome={monochrome}
           />
           {layout.tiles.map((tile) => (
             <TileSheet
@@ -80,6 +84,7 @@ export function PrintablePage({ project, sizeUnit, printMode }: Props) {
               totalPages={layout.tiles.length}
               cellPx={layout.cellPx}
               isLast={tile.index === layout.tiles.length - 1}
+              monochrome={monochrome}
             />
           ))}
         </>
@@ -101,7 +106,8 @@ function SinglePageSheet({
   cellAssignment,
   cellPx,
   summaryText,
-}: SheetGridProps & { cellPx: number; summaryText: ReactNode }) {
+  monochrome,
+}: SheetGridProps & { cellPx: number; summaryText: ReactNode; monochrome: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [fit, setFit] = useState({ scale: 1, naturalHeight: 0 })
@@ -112,13 +118,13 @@ function SinglePageSheet({
     if (!canvas || !content) return
     const { width, height } = computeCanvasSize(grid.cols, grid.rows, cellPx)
     const ctx = setupCanvasForDpr(canvas, width, height)
-    renderPattern(ctx, { cols: grid.cols, rows: grid.rows, cellAssignment, palette }, { cellPx })
+    renderPattern(ctx, { cols: grid.cols, rows: grid.rows, cellAssignment, palette }, { cellPx, monochrome })
 
     // `transform: scale` doesn't affect layout metrics, so this reads the
     // block's natural (unscaled) height regardless of the previous scale.
     const naturalHeight = content.scrollHeight
     setFit({ naturalHeight, scale: Math.min(1, PAGE_USABLE_HEIGHT_PX / naturalHeight) })
-  }, [grid, cellAssignment, palette, cellPx])
+  }, [grid, cellAssignment, palette, cellPx, monochrome])
 
   return (
     <div
@@ -139,7 +145,7 @@ function SinglePageSheet({
       >
         <div className="w-full text-center text-sm text-gray-600">{summaryText}</div>
         <canvas ref={canvasRef} />
-        <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" />
+        <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" monochrome={monochrome} />
       </div>
     </div>
   )
@@ -155,7 +161,8 @@ function TileSheet({
   totalPages,
   cellPx,
   isLast,
-}: SheetGridProps & { tile: PageTile; totalPages: number; cellPx: number; isLast: boolean }) {
+  monochrome,
+}: SheetGridProps & { tile: PageTile; totalPages: number; cellPx: number; isLast: boolean; monochrome: boolean }) {
   const { t } = useTranslation()
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -165,8 +172,8 @@ function TileSheet({
     const tileWindow = { colStart: tile.colStart, colEnd: tile.colEnd, rowStart: tile.rowStart, rowEnd: tile.rowEnd }
     const { width, height } = computeCanvasSize(grid.cols, grid.rows, cellPx, true, tileWindow)
     const ctx = setupCanvasForDpr(canvas, width, height)
-    renderPattern(ctx, { cols: grid.cols, rows: grid.rows, cellAssignment, palette }, { cellPx, window: tileWindow })
-  }, [grid, cellAssignment, palette, cellPx, tile])
+    renderPattern(ctx, { cols: grid.cols, rows: grid.rows, cellAssignment, palette }, { cellPx, window: tileWindow, monochrome })
+  }, [grid, cellAssignment, palette, cellPx, tile, monochrome])
 
   return (
     <div
@@ -190,7 +197,8 @@ function ColorsSheet({
   cellAssignment,
   tiles,
   summaryText,
-}: SheetGridProps & { tiles: PageTile[]; summaryText: ReactNode }) {
+  monochrome,
+}: SheetGridProps & { tiles: PageTile[]; summaryText: ReactNode; monochrome: boolean }) {
   const { t } = useTranslation()
   const thumbCanvasRef = useRef<HTMLCanvasElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -209,6 +217,9 @@ function ColorsSheet({
     if (!canvas || !content) return
     const { width, height } = computeCanvasSize(grid.cols, grid.rows, thumbCellPx, false)
     const ctx = setupCanvasForDpr(canvas, width, height)
+    // Deliberately always in color, even in black & white print mode: it already has no symbols
+    // (too small to read at this scale), so a monochrome render would just be a blank square -
+    // the one place ink is worth spending regardless, since it's the only whole-pattern preview.
     renderPattern(
       ctx,
       { cols: grid.cols, rows: grid.rows, cellAssignment, palette },
@@ -235,7 +246,7 @@ function ColorsSheet({
           {t('printablePage.multiPageNote', { count: tiles.length })}
         </div>
         <canvas ref={thumbCanvasRef} className="border border-gray-300" />
-        <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" />
+        <Legend palette={palette} cols={grid.cols} rows={grid.rows} className="w-full" monochrome={monochrome} />
       </div>
     </div>
   )

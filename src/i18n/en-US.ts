@@ -198,6 +198,8 @@ const enUS = {
     printModeAuto: 'Auto (split only if needed)',
     printModeSingle: 'Always one page (may shrink to fit)',
     printModeMulti: 'Always split into multiple pages',
+    printBlackAndWhite: 'Print in black & white',
+    printBlackAndWhiteHelp: 'Symbols only, no thread colors - saves ink. Off by default.',
     shareSettings: 'Share settings',
     shareHelp:
       'Copy a link that carries your owned threads and size unit. Opening it on another device (e.g. your phone) replaces its settings with these - no import/export file needed.',

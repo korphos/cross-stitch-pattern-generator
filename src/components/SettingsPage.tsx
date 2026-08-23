@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { allDmcColors } from '../data/dmcSpecialtyColors'
 import type { SizeUnit } from '../lib/physicalSize'
 import type { PrintMode } from '../lib/printLayout'
+import type { PrintColorMode } from '../lib/renderPattern'
 import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
 import { SUPPORTED_LANGUAGES } from '../i18n'
 
@@ -13,6 +14,8 @@ interface Props {
   onSetSizeUnit: (unit: SizeUnit) => void
   printMode: PrintMode
   onSetPrintMode: (mode: PrintMode) => void
+  printColorMode: PrintColorMode
+  onSetPrintColorMode: (mode: PrintColorMode) => void
   onClose: () => void
 }
 
@@ -22,7 +25,17 @@ type FilterMode = 'all' | 'owned' | 'specialty'
  * A standalone full-page view (not a modal) so it's comfortable to use on a
  * phone - e.g. checking your DMC stash while standing in a craft store.
  */
-export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUnit, printMode, onSetPrintMode, onClose }: Props) {
+export function SettingsPage({
+  ownedCodes,
+  onToggleOwned,
+  sizeUnit,
+  onSetSizeUnit,
+  printMode,
+  onSetPrintMode,
+  printColorMode,
+  onSetPrintColorMode,
+  onClose,
+}: Props) {
   const { t, i18n } = useTranslation()
   const [search, setSearch] = useState('')
   const [filterMode, setFilterMode] = useState<FilterMode>('all')
@@ -32,7 +45,10 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
     const url = new URL(window.location.href)
     url.search = ''
     url.hash = ''
-    url.searchParams.set(SETTINGS_SHARE_PARAM, encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit, printMode }))
+    url.searchParams.set(
+      SETTINGS_SHARE_PARAM,
+      encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit, printMode, printColorMode }),
+    )
     void navigator.clipboard.writeText(url.toString()).then(() => {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
@@ -118,6 +134,16 @@ export function SettingsPage({ ownedCodes, onToggleOwned, sizeUnit, onSetSizeUni
               <option value="single">{t('settingsPage.printModeSingle')}</option>
               <option value="multi">{t('settingsPage.printModeMulti')}</option>
             </select>
+            <label className="mt-3 flex items-center gap-2 text-sm text-neutral-300">
+              <input
+                type="checkbox"
+                checked={printColorMode === 'blackAndWhite'}
+                onChange={(e) => onSetPrintColorMode(e.target.checked ? 'blackAndWhite' : 'color')}
+                className="h-4 w-4 accent-indigo-500"
+              />
+              {t('settingsPage.printBlackAndWhite')}
+            </label>
+            <p className="mt-1 text-xs text-neutral-500">{t('settingsPage.printBlackAndWhiteHelp')}</p>
           </section>
 
           <section className="bg-neutral-950 p-4">

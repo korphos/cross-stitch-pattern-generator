@@ -202,6 +202,8 @@ const plPL: typeof enUS = {
     printModeAuto: 'Automatycznie (dziel tylko w razie potrzeby)',
     printModeSingle: 'Zawsze jedna strona (może zostać zmniejszona)',
     printModeMulti: 'Zawsze dziel na kilka stron',
+    printBlackAndWhite: 'Drukuj w czerni i bieli',
+    printBlackAndWhiteHelp: 'Tylko symbole, bez kolorów muliny - oszczędza tusz. Domyślnie wyłączone.',
     shareSettings: 'Udostępnij ustawienia',
     shareHelp:
       'Skopiuj link, który przenosi Twoje posiadane mulliny i jednostkę rozmiaru. Otwarcie go na innym urządzeniu (np. telefonie) zastąpi jego ustawienia tymi - bez potrzeby pliku importu/eksportu.',

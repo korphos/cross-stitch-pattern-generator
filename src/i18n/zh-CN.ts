@@ -193,6 +193,8 @@ const zhCN: typeof enUS = {
     printModeAuto: '自动(仅在需要时拆分)',
     printModeSingle: '始终一页(可能会缩小以适应)',
     printModeMulti: '始终拆分为多页',
+    printBlackAndWhite: '黑白打印',
+    printBlackAndWhiteHelp: '仅符号,不含绣线颜色——节省墨水。默认关闭。',
     shareSettings: '分享设置',
     shareHelp: '复制一个包含你的绣线库存和尺寸单位的链接。在其他设备(例如手机)上打开该链接会用这些设置替换原有设置 —— 无需导入/导出文件。',
     copyShareLink: '复制分享链接',

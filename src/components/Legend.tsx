@@ -8,9 +8,12 @@ interface Props {
   className?: string
   /** the swatch colors are always the true DMC colors; this only affects surrounding text/chrome */
   dark?: boolean
+  /** draws every swatch as an outlined white box instead of its DMC color fill, matching the
+   * ink-saving black & white print mode (see renderPattern.ts's own `monochrome` option) */
+  monochrome?: boolean
 }
 
-export function Legend({ palette, cols, rows, className, dark = false }: Props) {
+export function Legend({ palette, cols, rows, className, dark = false, monochrome = false }: Props) {
   const { t } = useTranslation()
   return (
     <div className={className}>
@@ -22,10 +25,11 @@ export function Legend({ palette, cols, rows, className, dark = false }: Props) 
           <li key={entry.dmc.code} className="flex items-center gap-2">
             <span
               className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-black/20 font-mono text-[11px]"
-              style={{
-                backgroundColor: `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})`,
-                color: entry.textColor,
-              }}
+              style={
+                monochrome
+                  ? { backgroundColor: '#ffffff', color: '#000000' }
+                  : { backgroundColor: `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})`, color: entry.textColor }
+              }
             >
               {entry.symbol}
             </span>

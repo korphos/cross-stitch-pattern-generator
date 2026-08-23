@@ -202,6 +202,8 @@ const deDE: typeof enUS = {
     printModeAuto: 'Automatisch (nur bei Bedarf aufteilen)',
     printModeSingle: 'Immer eine Seite (wird ggf. verkleinert)',
     printModeMulti: 'Immer auf mehrere Seiten aufteilen',
+    printBlackAndWhite: 'In Schwarzweiß drucken',
+    printBlackAndWhiteHelp: 'Nur Symbole, keine Garnfarben - spart Tinte. Standardmäßig deaktiviert.',
     shareSettings: 'Einstellungen teilen',
     shareHelp:
       'Kopiere einen Link, der deine eigenen Garne und deine Größeneinheit enthält. Öffnest du ihn auf einem anderen Gerät (z. B. deinem Handy), ersetzt er dessen Einstellungen durch diese - keine Import-/Exportdatei nötig.',

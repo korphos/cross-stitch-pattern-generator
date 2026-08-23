@@ -202,6 +202,8 @@ const nlNL: typeof enUS = {
     printModeAuto: 'Automatisch (alleen splitsen indien nodig)',
     printModeSingle: 'Altijd één pagina (kan verkleind worden)',
     printModeMulti: "Altijd over meerdere pagina's verdelen",
+    printBlackAndWhite: 'Afdrukken in zwart-wit',
+    printBlackAndWhiteHelp: 'Alleen symbolen, geen garenkleuren - bespaart inkt. Standaard uitgeschakeld.',
     shareSettings: 'Instellingen delen',
     shareHelp:
       'Kopieer een link die je eigen garens en maateenheid meeneemt. Als je die op een ander apparaat opent (bijvoorbeeld je telefoon), vervangt dit de instellingen daar door deze - geen import-/exportbestand nodig.',

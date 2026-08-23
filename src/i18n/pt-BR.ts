@@ -202,6 +202,8 @@ const ptBR: typeof enUS = {
     printModeAuto: 'Automático (divide somente se necessário)',
     printModeSingle: 'Sempre uma página (pode reduzir para caber)',
     printModeMulti: 'Sempre dividir em várias páginas',
+    printBlackAndWhite: 'Imprimir em preto e branco',
+    printBlackAndWhiteHelp: 'Apenas símbolos, sem cores das linhas - economiza tinta. Desativado por padrão.',
     shareSettings: 'Compartilhar configurações',
     shareHelp:
       'Copie um link que carrega suas linhas e sua unidade de tamanho. Abri-lo em outro aparelho (por exemplo seu celular) substitui as configurações dele por estas - sem precisar de arquivo de importação/exportação.',

@@ -11,6 +11,10 @@ export interface RenderGridInput {
   highlightCode?: string | null
 }
 
+/** 'color' (default) prints each cell's DMC color; 'blackAndWhite' prints only the symbol
+ * glyphs on a plain white background, to save ink - see `RenderOptions.monochrome`. */
+export type PrintColorMode = 'color' | 'blackAndWhite'
+
 /** A sub-rectangle of the full grid, in global row/col coordinates - see the multi-page print
  * layout in printLayout.ts. Rendering a window draws only these cells, sized to just the
  * window's own dimensions, while keeping ruler numbers in *global* coordinates. */
@@ -50,6 +54,9 @@ export interface RenderOptions {
    * `RenderWindow`. Ruler numbers are always labeled at the window's own edges in addition to
    * the usual every-5 ticks, so a printed page's exact boundary is unambiguous. */
   window?: RenderWindow
+  /** leaves every cell's fill plain white and always draws glyphs in black instead of each
+   * entry's own color/textColor - an ink-saving print option, symbols only. */
+  monochrome?: boolean
 }
 
 const RULER_EVERY = 5
@@ -94,6 +101,7 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
   const showRulers = options.showRulers ?? true
   const showSymbols = options.showSymbols ?? true
   const showGridLines = options.showGridLines ?? true
+  const monochrome = options.monochrome ?? false
   const isWindowed = options.window !== undefined
   const win = options.window ?? { colStart: 0, colEnd: cols, rowStart: 0, rowEnd: rows }
   const { rulerMargin, width, height } = computeCanvasSize(cols, rows, cellPx, showRulers, win)
@@ -112,11 +120,15 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
   // 1. cell fills - cells with no matching palette entry (deleted colors,
   // e.g. a background left unstitched) are filled plain white rather than
   // left transparent, so they read as blank fabric, not a rendering gap.
-  for (let row = win.rowStart; row < win.rowEnd; row++) {
-    for (let col = win.colStart; col < win.colEnd; col++) {
-      const entry = paletteByCode.get(cellAssignment[row * cols + col])
-      ctx.fillStyle = entry ? `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})` : '#ffffff'
-      ctx.fillRect(toPxX(col), toPxY(row), cellPx, cellPx)
+  // Monochrome print mode skips the colored fill entirely (every cell white) - only the glyphs
+  // carry the color information, so nothing but text ink hits the page.
+  if (!monochrome) {
+    for (let row = win.rowStart; row < win.rowEnd; row++) {
+      for (let col = win.colStart; col < win.colEnd; col++) {
+        const entry = paletteByCode.get(cellAssignment[row * cols + col])
+        ctx.fillStyle = entry ? `rgb(${entry.color.r}, ${entry.color.g}, ${entry.color.b})` : '#ffffff'
+        ctx.fillRect(toPxX(col), toPxY(row), cellPx, cellPx)
+      }
     }
   }
 
@@ -129,7 +141,9 @@ export function renderPattern(ctx: CanvasRenderingContext2D, grid: RenderGridInp
       for (let col = win.colStart; col < win.colEnd; col++) {
         const entry = paletteByCode.get(cellAssignment[row * cols + col])
         if (!entry) continue
-        ctx.fillStyle = entry.textColor
+        // entry.textColor is chosen to contrast against that entry's own fill color, which
+        // monochrome mode never draws - always black instead, the only fill is white.
+        ctx.fillStyle = monochrome ? '#000000' : entry.textColor
         ctx.fillText(entry.symbol, toPxX(col) + cellPx / 2, toPxY(row) + cellPx / 2 + cellPx * 0.03)
       }
     }

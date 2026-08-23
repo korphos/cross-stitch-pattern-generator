@@ -1,6 +1,7 @@
 import type { DetectedGrid, ActiveTab, PaletteEntry, PaletteMode, CropShape, RGBA } from './types'
 import type { SizeUnit } from './physicalSize'
 import type { PrintMode } from './printLayout'
+import type { PrintColorMode } from './renderPattern'
 import { migrateLegacyGrid } from './gridDetection'
 
 /**
@@ -36,9 +37,12 @@ export interface AppSettings {
   /** 'auto' splits a large pattern across multiple printed sheets once one page would shrink
    * stitches below legibility; 'single'/'multi' force one or the other - see printLayout.ts. */
   printMode: PrintMode
+  /** 'color' (default) prints each thread's actual color; 'blackAndWhite' prints symbols only,
+   * to save ink - opt-in since most people printing a pattern want the color reference. */
+  printColorMode: PrintColorMode
 }
 
-export const DEFAULT_SETTINGS: AppSettings = { ownedThreadCodes: [], sizeUnit: 'cm', printMode: 'auto' }
+export const DEFAULT_SETTINGS: AppSettings = { ownedThreadCodes: [], sizeUnit: 'cm', printMode: 'auto', printColorMode: 'color' }
 
 const DB_NAME = 'cross-stitch-pattern-generator'
 const DB_VERSION = 2

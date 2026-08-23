@@ -201,6 +201,8 @@ const trTR: typeof enUS = {
     printModeAuto: 'Otomatik (yalnızca gerekirse böl)',
     printModeSingle: 'Her zaman tek sayfa (sığdırmak için küçülebilir)',
     printModeMulti: 'Her zaman birden çok sayfaya böl',
+    printBlackAndWhite: 'Siyah beyaz yazdır',
+    printBlackAndWhiteHelp: 'Sadece semboller, iplik renkleri olmadan - mürekkep tasarrufu sağlar. Varsayılan olarak kapalı.',
     shareSettings: 'Ayarları paylaş',
     shareHelp:
       'Sahip olduğunuz iplikleri ve boyut biriminizi taşıyan bir bağlantıyı kopyalayın. Başka bir cihazda (örneğin telefonunuzda) açmak, oradaki ayarları bunlarla değiştirir - içe/dışa aktarma dosyasına gerek yoktur.',

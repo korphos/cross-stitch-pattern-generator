@@ -88,10 +88,10 @@ export function decodeSettings(token: string): AppSettings | null {
     for (let i = 0; i < rest.length; i += 2) {
       ownedThreadCodes.push(unpackCode((rest[i] << 8) | rest[i + 1]))
     }
-    // Print mode is a local device/paper-size preference, not worth the wire-format bytes to
-    // carry cross-device - a shared link always lands on the default and the recipient can
-    // change it themselves in Settings.
-    return { ownedThreadCodes, sizeUnit, printMode: 'auto' }
+    // Print mode/color are local device/paper preferences, not worth the wire-format bytes to
+    // carry cross-device - a shared link always lands on the defaults and the recipient can
+    // change them themselves in Settings.
+    return { ownedThreadCodes, sizeUnit, printMode: 'auto', printColorMode: 'color' }
   } catch {
     return null
   }

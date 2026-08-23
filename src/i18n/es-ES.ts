@@ -202,6 +202,8 @@ const esES: typeof enUS = {
     printModeAuto: 'Automático (divide solo si es necesario)',
     printModeSingle: 'Siempre una página (puede reducirse para caber)',
     printModeMulti: 'Dividir siempre en varias páginas',
+    printBlackAndWhite: 'Imprimir en blanco y negro',
+    printBlackAndWhiteHelp: 'Solo símbolos, sin colores de hilo - ahorra tinta. Desactivado por defecto.',
     shareSettings: 'Compartir ajustes',
     shareHelp:
       'Copia un enlace que lleva tus hilos y tu unidad de tamaño. Al abrirlo en otro dispositivo (por ejemplo tu teléfono) reemplaza sus ajustes por estos - no hace falta ningún archivo de importación/exportación.',

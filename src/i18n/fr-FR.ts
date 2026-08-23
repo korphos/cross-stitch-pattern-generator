@@ -203,6 +203,8 @@ const frFR: typeof enUS = {
     printModeAuto: 'Auto (répartit seulement si nécessaire)',
     printModeSingle: 'Toujours une seule page (peut être réduite)',
     printModeMulti: 'Toujours répartir sur plusieurs pages',
+    printBlackAndWhite: 'Imprimer en noir et blanc',
+    printBlackAndWhiteHelp: "Symboles seulement, sans les couleurs des fils - économise l'encre. Désactivé par défaut.",
     shareSettings: 'Partager les paramètres',
     shareHelp:
       "Copiez un lien qui transporte vos fils possédés et votre unité de taille. L'ouvrir sur un autre appareil (par ex. votre téléphone) remplace ses paramètres par ceux-ci - aucun fichier d'import/export nécessaire.",

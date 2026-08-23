@@ -25,6 +25,7 @@ import { decodeSettings, SETTINGS_SHARE_PARAM } from './lib/settingsShare'
 import { confirmDestructiveEdit } from './lib/confirmDestructive'
 import type { SizeUnit } from './lib/physicalSize'
 import type { PrintMode } from './lib/printLayout'
+import type { PrintColorMode } from './lib/renderPattern'
 import { AppHeader } from './components/AppHeader'
 import { TabBar } from './components/TabBar'
 import { UploadDropzone } from './components/UploadDropzone'
@@ -394,6 +395,14 @@ function App() {
     })
   }, [])
 
+  const handleSetPrintColorMode = useCallback((mode: PrintColorMode) => {
+    setSettings((prev) => {
+      const next = { ...prev, printColorMode: mode }
+      void saveSettings(next)
+      return next
+    })
+  }, [])
+
   // Ctrl/Cmd+Z to undo, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z to redo - ignored
   // while typing in a form field so native text-undo still works there.
   useEffect(() => {
@@ -496,6 +505,8 @@ function App() {
             onSetSizeUnit={handleSetSizeUnit}
             printMode={settings.printMode}
             onSetPrintMode={handleSetPrintMode}
+            printColorMode={settings.printColorMode}
+            onSetPrintColorMode={handleSetPrintColorMode}
             onClose={() => setView('workspace')}
           />
         ) : (
@@ -693,7 +704,12 @@ function App() {
         />
       )}
 
-      <PrintablePage project={project} sizeUnit={settings.sizeUnit} printMode={settings.printMode} />
+      <PrintablePage
+        project={project}
+        sizeUnit={settings.sizeUnit}
+        printMode={settings.printMode}
+        printColorMode={settings.printColorMode}
+      />
     </div>
   )
 }
