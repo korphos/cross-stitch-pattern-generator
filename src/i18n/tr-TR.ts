@@ -101,11 +101,11 @@ const trTR: typeof enUS = {
     wizardBack: 'Geri',
     wizardFinish: 'Bitir',
     wizardExit: 'Rehberli kurulumdan çık',
-    pixelGridTitle: 'Piksel kusursuz ızgara',
+    pixelGridTitle: 'Piksel kusursuz ızgaraya sıfırla',
     pixelGridHelp:
-      'Her karenin bilinen bir kaynak piksel bloğu olduğu, zaten pikselli bir görsel için (örneğin 1 piksel, veya 4x4 ya da 9 piksellik bir blok) - böyle küçük bir görselde işleyecek hiçbir şeyi olmayan otomatik algılamayı tamamen atlar.',
+      'Her karenin bilinen bir kaynak piksel bloğu olduğu, zaten pikselli bir görsel için (örneğin 1 piksel, veya 4x4 ya da 9 piksellik bir blok) - tüm ızgarayı bu sabit boyuta göre sıfırdan sıfırlar ve böyle küçük bir görselde işleyecek hiçbir şeyi olmayan otomatik algılamayı tamamen atlar.',
     pixelsPerStitch: 'Kare başına piksel',
-    applyPixelGrid: 'Uygula',
+    applyPixelGrid: 'Izgarayı sıfırla',
   },
   gridPanel: {
     imageAlt: 'Kaynak görsel',

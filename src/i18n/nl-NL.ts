@@ -101,11 +101,11 @@ const nlNL: typeof enUS = {
     wizardBack: 'Terug',
     wizardFinish: 'Voltooien',
     wizardExit: 'Begeleide instelling verlaten',
-    pixelGridTitle: 'Pixelperfect raster',
+    pixelGridTitle: 'Terugzetten naar pixelperfect raster',
     pixelGridHelp:
-      'Voor een al gepixelde afbeelding waarbij elke steek een bekend blok bronpixels is (bijvoorbeeld 1 pixel, of een blok van 4x4 of 9 pixels) - omzeilt automatische detectie volledig, die bij zo\'n kleine afbeelding niets heeft om mee te werken.',
+      'Voor een al gepixelde afbeelding waarbij elke steek een bekend blok bronpixels is (bijvoorbeeld 1 pixel, of een blok van 4x4 of 9 pixels) - zet het hele raster terug naar deze vaste grootte en omzeilt automatische detectie volledig, die bij zo\'n kleine afbeelding niets heeft om mee te werken.',
     pixelsPerStitch: 'Pixels per steek',
-    applyPixelGrid: 'Toepassen',
+    applyPixelGrid: 'Raster terugzetten',
   },
   gridPanel: {
     imageAlt: 'Bronafbeelding',

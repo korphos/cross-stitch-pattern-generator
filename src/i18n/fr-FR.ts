@@ -102,11 +102,11 @@ const frFR: typeof enUS = {
     wizardBack: 'Précédent',
     wizardFinish: 'Terminer',
     wizardExit: 'Quitter la configuration guidée',
-    pixelGridTitle: 'Grille pixel par pixel',
+    pixelGridTitle: 'Réinitialiser en grille pixel par pixel',
     pixelGridHelp:
-      "Pour une image déjà pixelisée où chaque point est un bloc connu de pixels source (par ex. 1 pixel, ou un bloc de 4x4 ou 9 pixels) - contourne entièrement la détection automatique, qui n'a rien à exploiter sur une image aussi petite.",
+      "Pour une image déjà pixelisée où chaque point est un bloc connu de pixels source (par ex. 1 pixel, ou un bloc de 4x4 ou 9 pixels) - réinitialise entièrement la grille avec cette taille fixe, en contournant la détection automatique, qui n'a rien à exploiter sur une image aussi petite.",
     pixelsPerStitch: 'Pixels par point',
-    applyPixelGrid: 'Appliquer',
+    applyPixelGrid: 'Réinitialiser la grille',
   },
   gridPanel: {
     imageAlt: 'Motif source',

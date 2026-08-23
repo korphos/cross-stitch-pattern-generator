@@ -101,11 +101,11 @@ const itIT: typeof enUS = {
     wizardBack: 'Indietro',
     wizardFinish: 'Fine',
     wizardExit: 'Esci dalla configurazione guidata',
-    pixelGridTitle: 'Griglia pixel per pixel',
+    pixelGridTitle: 'Reimposta griglia pixel per pixel',
     pixelGridHelp:
-      'Per un\'immagine già pixelata in cui ogni punto è un blocco noto di pixel sorgente (ad es. 1 pixel, o un blocco di 4x4 o 9 pixel) - aggira completamente il rilevamento automatico, che non ha nulla su cui lavorare in un\'immagine così piccola.',
+      'Per un\'immagine già pixelata in cui ogni punto è un blocco noto di pixel sorgente (ad es. 1 pixel, o un blocco di 4x4 o 9 pixel) - reimposta l\'intera griglia da zero con questa dimensione fissa, aggirando completamente il rilevamento automatico, che non ha nulla su cui lavorare in un\'immagine così piccola.',
     pixelsPerStitch: 'Pixel per punto',
-    applyPixelGrid: 'Applica',
+    applyPixelGrid: 'Reimposta griglia',
   },
   gridPanel: {
     imageAlt: 'Immagine sorgente',

@@ -101,11 +101,11 @@ const esES: typeof enUS = {
     wizardBack: 'Atrás',
     wizardFinish: 'Finalizar',
     wizardExit: 'Salir de la configuración guiada',
-    pixelGridTitle: 'Cuadrícula píxel a píxel',
+    pixelGridTitle: 'Restablecer a cuadrícula píxel a píxel',
     pixelGridHelp:
-      'Para una imagen ya pixelada donde cada punto es un bloque conocido de píxeles de origen (por ejemplo 1 píxel, o un bloque de 4x4 o 9 píxeles) - evita por completo la detección automática, que no tiene nada con qué trabajar en una imagen tan pequeña.',
+      'Para una imagen ya pixelada donde cada punto es un bloque conocido de píxeles de origen (por ejemplo 1 píxel, o un bloque de 4x4 o 9 píxeles) - restablece toda la cuadrícula desde cero con este tamaño fijo, evitando por completo la detección automática, que no tiene nada con qué trabajar en una imagen tan pequeña.',
     pixelsPerStitch: 'Píxeles por punto',
-    applyPixelGrid: 'Aplicar',
+    applyPixelGrid: 'Restablecer cuadrícula',
   },
   gridPanel: {
     imageAlt: 'Imagen de origen',

@@ -101,11 +101,11 @@ const plPL: typeof enUS = {
     wizardBack: 'Wstecz',
     wizardFinish: 'Zakończ',
     wizardExit: 'Zamknij kreator konfiguracji',
-    pixelGridTitle: 'Siatka piksel w piksel',
+    pixelGridTitle: 'Zresetuj do siatki piksel w piksel',
     pixelGridHelp:
-      'Dla już spikselowanego obrazu, w którym każdy ścieg to znany blok pikseli źródłowych (np. 1 piksel albo blok 4x4 lub 9 pikseli) - całkowicie pomija automatyczne wykrywanie, które na tak małym obrazie nie ma na czym się oprzeć.',
+      'Dla już spikselowanego obrazu, w którym każdy ścieg to znany blok pikseli źródłowych (np. 1 piksel albo blok 4x4 lub 9 pikseli) - resetuje całą siatkę od nowa do tego stałego rozmiaru, całkowicie pomijając automatyczne wykrywanie, które na tak małym obrazie nie ma na czym się oprzeć.',
     pixelsPerStitch: 'Piksele na ścieg',
-    applyPixelGrid: 'Zastosuj',
+    applyPixelGrid: 'Resetuj siatkę',
   },
   gridPanel: {
     imageAlt: 'Obraz źródłowy',

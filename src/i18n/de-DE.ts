@@ -101,11 +101,11 @@ const deDE: typeof enUS = {
     wizardBack: 'Zurück',
     wizardFinish: 'Fertig',
     wizardExit: 'Geführte Einrichtung verlassen',
-    pixelGridTitle: 'Pixelgenaues Gitter',
+    pixelGridTitle: 'Auf pixelgenaues Gitter zurücksetzen',
     pixelGridHelp:
-      'Für ein bereits pixeliges Bild, bei dem jeder Stich ein bekannter Block aus Quellpixeln ist (z. B. 1 Pixel oder ein 4x4- oder 9-Pixel-Block) - umgeht die automatische Erkennung vollständig, die bei einem so kleinen Bild nichts hat, womit sie arbeiten könnte.',
+      'Für ein bereits pixeliges Bild, bei dem jeder Stich ein bekannter Block aus Quellpixeln ist (z. B. 1 Pixel oder ein 4x4- oder 9-Pixel-Block) - setzt das gesamte Gitter auf diese feste Größe zurück und umgeht dabei die automatische Erkennung vollständig, die bei einem so kleinen Bild nichts hat, womit sie arbeiten könnte.',
     pixelsPerStitch: 'Pixel pro Stich',
-    applyPixelGrid: 'Anwenden',
+    applyPixelGrid: 'Gitter zurücksetzen',
   },
   gridPanel: {
     imageAlt: 'Quellbild',
