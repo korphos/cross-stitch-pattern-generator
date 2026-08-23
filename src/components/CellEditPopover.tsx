@@ -22,7 +22,7 @@ export function CellEditPopover({ cellIndices, cols, palette, currentCode, onPic
       : t('cellEditPopover.cellsSelected', { count: cellIndices.length })
 
   return (
-    <div className="absolute inset-x-0 top-0 z-10 flex flex-wrap items-center gap-2 border-b border-neutral-800 bg-neutral-900/95 px-4 py-2 shadow-lg">
+    <div className="z-10 flex shrink-0 flex-wrap items-center gap-2 border-b border-neutral-800 bg-neutral-900/95 px-4 py-2 shadow-lg">
       <span className="text-sm text-neutral-300">{label}</span>
       <div className="flex flex-wrap gap-1">
         {palette.map((entry) => (

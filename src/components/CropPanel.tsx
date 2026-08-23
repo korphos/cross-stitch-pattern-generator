@@ -156,10 +156,10 @@ export function CropPanel({ imageData, imageDataUrl, selection, onSelectionChang
   const selHeight = selection.height * scale
 
   return (
-    <div className="flex h-full items-center justify-center overflow-auto p-8" ref={attachWheelZoom}>
+    <div className="flex h-full overflow-auto p-8" ref={attachWheelZoom}>
       <div
         ref={containerRef}
-        className="relative shrink-0 border border-neutral-700 shadow-lg"
+        className="relative m-auto shrink-0 border border-neutral-700 shadow-lg"
         style={{ width: displayWidth, height: displayHeight }}
       >
         <img

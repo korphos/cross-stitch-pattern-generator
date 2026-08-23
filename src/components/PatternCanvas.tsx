@@ -90,10 +90,10 @@ export function PatternCanvas({
   }
 
   return (
-    <div className="flex h-full items-center justify-center overflow-auto p-8">
+    <div className="flex h-full overflow-auto p-8">
       <canvas
         ref={canvasRef}
-        className={`shadow-lg ${onCellClick ? 'cursor-pointer' : ''}`}
+        className={`m-auto shadow-lg ${onCellClick ? 'cursor-pointer' : ''}`}
         onClick={handleClick}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}

@@ -596,7 +596,7 @@ function App() {
                 )}
               </div>
 
-              <div className="relative order-1 h-[55vh] w-full shrink-0 lg:order-2 lg:h-full lg:flex-1">
+              <div className="relative order-1 h-[55vh] w-full shrink-0 lg:order-2 lg:h-full lg:min-w-0 lg:flex-1">
                 {!hasImage && !isRestoring && (
                   <UploadDropzone
                     onFile={handleFile}
@@ -618,7 +618,7 @@ function App() {
                   />
                 )}
                 {hasImage && project.activeTab === 'palette' && project.palette && (
-                  <div className="h-full" ref={attachWheelZoom}>
+                  <div className="flex h-full flex-col" ref={attachWheelZoom}>
                     {selectedCellIndices.length > 0 && (
                       <CellEditPopover
                         cellIndices={selectedCellIndices}
@@ -634,27 +634,29 @@ function App() {
                         }}
                       />
                     )}
-                    <PatternCanvas
-                      cols={project.confirmedGrid!.cols}
-                      rows={project.confirmedGrid!.rows}
-                      cellAssignment={project.cellAssignment!}
-                      palette={project.palette}
-                      cellPx={cellPx}
-                      selectedCellIndices={new Set(selectedCellIndices)}
-                      highlightCode={hoveredCode}
-                      previewMode={previewMode}
-                      onCellClick={handleCellClick}
-                      onCellHover={setHoveredCode}
-                    />
-                    <ZoomControls
-                      cellPx={cellPx}
-                      defaultCellPx={DEFAULT_CELL_PX}
-                      previewMode={previewMode}
-                      onZoomIn={zoomIn}
-                      onZoomOut={zoomOut}
-                      onReset={zoomReset}
-                      onTogglePreview={() => setPreviewMode((p) => !p)}
-                    />
+                    <div className="relative min-h-0 flex-1">
+                      <PatternCanvas
+                        cols={project.confirmedGrid!.cols}
+                        rows={project.confirmedGrid!.rows}
+                        cellAssignment={project.cellAssignment!}
+                        palette={project.palette}
+                        cellPx={cellPx}
+                        selectedCellIndices={new Set(selectedCellIndices)}
+                        highlightCode={hoveredCode}
+                        previewMode={previewMode}
+                        onCellClick={handleCellClick}
+                        onCellHover={setHoveredCode}
+                      />
+                      <ZoomControls
+                        cellPx={cellPx}
+                        defaultCellPx={DEFAULT_CELL_PX}
+                        previewMode={previewMode}
+                        onZoomIn={zoomIn}
+                        onZoomOut={zoomOut}
+                        onReset={zoomReset}
+                        onTogglePreview={() => setPreviewMode((p) => !p)}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
