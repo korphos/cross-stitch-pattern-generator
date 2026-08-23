@@ -8,11 +8,15 @@ export interface FabricCount {
 
 /** Standard Aida fabric counts (stitches per inch). */
 export const FABRIC_COUNTS: FabricCount[] = [
+  { labelKey: 'aida6', stitchesPerInch: 6, defaultStrands: 6 },
+  { labelKey: 'aida8', stitchesPerInch: 8, defaultStrands: 4 },
   { labelKey: 'aida11', stitchesPerInch: 11, defaultStrands: 3 },
   { labelKey: 'aida14', stitchesPerInch: 14, defaultStrands: 2 },
   { labelKey: 'aida16', stitchesPerInch: 16, defaultStrands: 2 },
   { labelKey: 'aida18', stitchesPerInch: 18, defaultStrands: 1 },
+  { labelKey: 'aida20', stitchesPerInch: 20, defaultStrands: 1 },
   { labelKey: 'aida22', stitchesPerInch: 22, defaultStrands: 1 },
+  { labelKey: 'aida28', stitchesPerInch: 28, defaultStrands: 1 },
 ]
 
 const CM_PER_INCH = 2.54

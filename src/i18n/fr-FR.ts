@@ -132,11 +132,15 @@ const frFR: typeof enUS = {
     estimateNote: "L'estimation de fil est approximative - prévoyez un peu plus de chaque couleur.",
   },
   fabricCounts: {
+    aida6: 'Aida 6 fils',
+    aida8: 'Aida 8 fils',
     aida11: 'Aida 11 fils',
     aida14: 'Aida 14 fils',
     aida16: 'Aida 16 fils',
     aida18: 'Aida 18 fils',
+    aida20: 'Aida 20 fils',
     aida22: 'Aida 22 fils',
+    aida28: 'Aida 28 fils',
   },
   dmcColorList: {
     pickColorTitle: "Choisir une couleur depuis la photo d'origine",

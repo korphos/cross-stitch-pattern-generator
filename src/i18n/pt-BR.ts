@@ -131,11 +131,15 @@ const ptBR: typeof enUS = {
     estimateNote: 'A estimativa de linha é aproximada - compre um pouco a mais de cada cor.',
   },
   fabricCounts: {
+    aida6: 'Aida contagem 6',
+    aida8: 'Aida contagem 8',
     aida11: 'Aida contagem 11',
     aida14: 'Aida contagem 14',
     aida16: 'Aida contagem 16',
     aida18: 'Aida contagem 18',
+    aida20: 'Aida contagem 20',
     aida22: 'Aida contagem 22',
+    aida28: 'Aida contagem 28',
   },
   dmcColorList: {
     pickColorTitle: 'Escolher uma cor da foto original',

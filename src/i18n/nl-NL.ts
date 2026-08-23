@@ -131,11 +131,15 @@ const nlNL: typeof enUS = {
     estimateNote: 'De garenschatting is bij benadering - koop van elke kleur wat extra.',
   },
   fabricCounts: {
+    aida6: 'Aida telling 6',
+    aida8: 'Aida telling 8',
     aida11: 'Aida telling 11',
     aida14: 'Aida telling 14',
     aida16: 'Aida telling 16',
     aida18: 'Aida telling 18',
+    aida20: 'Aida telling 20',
     aida22: 'Aida telling 22',
+    aida28: 'Aida telling 28',
   },
   dmcColorList: {
     pickColorTitle: 'Kies een kleur uit de originele foto',

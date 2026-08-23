@@ -131,11 +131,15 @@ const trTR: typeof enUS = {
     estimateNote: 'İplik tahmini yaklaşıktır - her renkten biraz fazla alın.',
   },
   fabricCounts: {
+    aida6: 'Aida 6 sayı',
+    aida8: 'Aida 8 sayı',
     aida11: 'Aida 11 sayı',
     aida14: 'Aida 14 sayı',
     aida16: 'Aida 16 sayı',
     aida18: 'Aida 18 sayı',
+    aida20: 'Aida 20 sayı',
     aida22: 'Aida 22 sayı',
+    aida28: 'Aida 28 sayı',
   },
   dmcColorList: {
     pickColorTitle: 'Orijinal fotoğraftan bir renk seçin',

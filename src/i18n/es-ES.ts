@@ -131,11 +131,15 @@ const esES: typeof enUS = {
     estimateNote: 'La estimación de hilo es aproximada - compra un poco más de cada color.',
   },
   fabricCounts: {
+    aida6: 'Aida cuenta 6',
+    aida8: 'Aida cuenta 8',
     aida11: 'Aida cuenta 11',
     aida14: 'Aida cuenta 14',
     aida16: 'Aida cuenta 16',
     aida18: 'Aida cuenta 18',
+    aida20: 'Aida cuenta 20',
     aida22: 'Aida cuenta 22',
+    aida28: 'Aida cuenta 28',
   },
   dmcColorList: {
     pickColorTitle: 'Elegir un color de la foto original',

@@ -131,11 +131,15 @@ const plPL: typeof enUS = {
     estimateNote: 'Szacowana ilość muliny jest przybliżona - kup nieco więcej każdego koloru.',
   },
   fabricCounts: {
+    aida6: 'Aida 6 (splot 6)',
+    aida8: 'Aida 8 (splot 8)',
     aida11: 'Aida 11 (splot 11)',
     aida14: 'Aida 14 (splot 14)',
     aida16: 'Aida 16 (splot 16)',
     aida18: 'Aida 18 (splot 18)',
+    aida20: 'Aida 20 (splot 20)',
     aida22: 'Aida 22 (splot 22)',
+    aida28: 'Aida 28 (splot 28)',
   },
   dmcColorList: {
     pickColorTitle: 'Wybierz kolor z oryginalnego zdjęcia',

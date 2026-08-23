@@ -125,11 +125,15 @@ const zhCN: typeof enUS = {
     estimateNote: '绣线用量为估算值 —— 建议每种颜色多买一点备用。',
   },
   fabricCounts: {
+    aida6: '6 目 Aida 布',
+    aida8: '8 目 Aida 布',
     aida11: '11 目 Aida 布',
     aida14: '14 目 Aida 布',
     aida16: '16 目 Aida 布',
     aida18: '18 目 Aida 布',
+    aida20: '20 目 Aida 布',
     aida22: '22 目 Aida 布',
+    aida28: '28 目 Aida 布',
   },
   dmcColorList: {
     pickColorTitle: '从原始照片取色',

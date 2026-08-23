@@ -131,11 +131,15 @@ const deDE: typeof enUS = {
     estimateNote: 'Die Garnschätzung ist ungefähr - kaufe von jeder Farbe etwas mehr.',
   },
   fabricCounts: {
+    aida6: 'Aida 6 fädig',
+    aida8: 'Aida 8 fädig',
     aida11: 'Aida 11 fädig',
     aida14: 'Aida 14 fädig',
     aida16: 'Aida 16 fädig',
     aida18: 'Aida 18 fädig',
+    aida20: 'Aida 20 fädig',
     aida22: 'Aida 22 fädig',
+    aida28: 'Aida 28 fädig',
   },
   dmcColorList: {
     pickColorTitle: 'Eine Farbe aus dem Originalfoto auswählen',

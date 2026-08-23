@@ -127,11 +127,15 @@ const enUS = {
     estimateNote: 'Thread estimate is approximate - buy a bit extra of each color.',
   },
   fabricCounts: {
+    aida6: 'Aida 6 count',
+    aida8: 'Aida 8 count',
     aida11: 'Aida 11 count',
     aida14: 'Aida 14 count',
     aida16: 'Aida 16 count',
     aida18: 'Aida 18 count',
+    aida20: 'Aida 20 count',
     aida22: 'Aida 22 count',
+    aida28: 'Aida 28 count',
   },
   dmcColorList: {
     pickColorTitle: 'Pick a color from the original photo',
