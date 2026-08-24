@@ -100,7 +100,7 @@ export function ColorEditDialog({ entry, otherEntries, onMergeInto, onRecolor, o
             <p className="mb-2 text-xs text-neutral-500">
               {t('colorEditDialog.replaceHelper', { symbol: entry.symbol })}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto pr-1">
               {otherEntries.map((other) => {
                 const owned = ownedCodes.has(other.dmc.code)
                 return (
