@@ -128,7 +128,9 @@ const deDE: typeof enUS = {
   },
   palettePanel: {
     title: 'Palette',
-    mergeSimilar: 'Ähnliche Farben zusammenführen',
+    targetColorCount: 'Angestrebte Farbanzahl',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Auf automatische Erkennung zurücksetzen',
     ignoreTransparentBackground: 'Transparenten Hintergrund ignorieren',
     ignoreBackgroundColor: 'Hintergrundfarbe ignorieren',
     colorsToUse: 'Zu verwendende Farben',

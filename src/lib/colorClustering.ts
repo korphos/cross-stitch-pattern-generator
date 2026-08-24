@@ -28,6 +28,46 @@ export interface ClusterResult {
   sampleToCluster: number[]
 }
 
+interface UniqueColor {
+  color: RGB
+  lab: Lab
+  count: number
+  indices: number[]
+}
+
+export interface PreparedColors {
+  sampleCount: number
+  /** distinct colors, most-frequent first, with their Lab conversion already computed */
+  uniques: UniqueColor[]
+}
+
+/**
+ * Deduplicates `samples` into distinct colors (most-frequent first) and
+ * converts each to Lab once - the part of `clusterColors` that doesn't
+ * depend on `deltaEThreshold` at all. Split out so a caller that needs the
+ * clustering result at several different thresholds for the *same* samples
+ * (see `buildPaletteForTargetCount`'s search) can do this once and feed it
+ * to `clusterPreparedColors` repeatedly, instead of re-deduplicating and
+ * re-converting tens of thousands of colors to Lab on every threshold tried.
+ */
+export function prepareColors(samples: RGB[]): PreparedColors {
+  const uniqueByKey = new Map<string, { color: RGB; count: number; indices: number[] }>()
+  samples.forEach((color, idx) => {
+    const key = `${color.r},${color.g},${color.b}`
+    const entry = uniqueByKey.get(key)
+    if (entry) {
+      entry.count++
+      entry.indices.push(idx)
+    } else {
+      uniqueByKey.set(key, { color, count: 1, indices: [idx] })
+    }
+  })
+  const uniques = [...uniqueByKey.values()]
+    .sort((a, b) => b.count - a.count)
+    .map((u) => ({ ...u, lab: rgbToLab(u.color) }))
+  return { sampleCount: samples.length, uniques }
+}
+
 /**
  * Merges near-identical sampled colors into clusters, so anti-aliasing /
  * compression noise doesn't produce spuriously distinct DMC matches for
@@ -47,7 +87,7 @@ export interface ClusterResult {
  * `deltaEThreshold` of it, cutting candidates from "every cluster formed so
  * far" down to a handful.
  */
-export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterResult {
+export function clusterPreparedColors(prepared: PreparedColors, deltaEThreshold = 2.3): ClusterResult {
   interface Working {
     id: number
     centroidLab: Lab
@@ -55,18 +95,7 @@ export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterRes
     bucketKey: string
   }
 
-  const uniqueByKey = new Map<string, { color: RGB; count: number; indices: number[] }>()
-  samples.forEach((color, idx) => {
-    const key = `${color.r},${color.g},${color.b}`
-    const entry = uniqueByKey.get(key)
-    if (entry) {
-      entry.count++
-      entry.indices.push(idx)
-    } else {
-      uniqueByKey.set(key, { color, count: 1, indices: [idx] })
-    }
-  })
-  const uniques = [...uniqueByKey.values()].sort((a, b) => b.count - a.count)
+  const { sampleCount, uniques } = prepared
 
   // Bucket cells are sized to the threshold, and the search below checks a 5x5x5 neighborhood
   // (+/-2 cells per axis) - twice the +/-1 cell that plain Euclidean-in-Lab distance would
@@ -120,10 +149,10 @@ export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterRes
   }
 
   const clusters: Working[] = []
-  const sampleToCluster = new Array<number>(samples.length).fill(-1)
+  const sampleToCluster = new Array<number>(sampleCount).fill(-1)
 
   for (const u of uniques) {
-    const lab = rgbToLab(u.color)
+    const lab = u.lab
 
     let bestCluster: Working | null = null
     let bestDist = Infinity
@@ -159,4 +188,9 @@ export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterRes
     clusters: clusters.map((c) => ({ id: c.id, color: labToRgb(c.centroidLab), count: c.totalCount })),
     sampleToCluster,
   }
+}
+
+/** Convenience wrapper over `prepareColors` + `clusterPreparedColors` for a one-off clustering pass. */
+export function clusterColors(samples: RGB[], deltaEThreshold = 2.3): ClusterResult {
+  return clusterPreparedColors(prepareColors(samples), deltaEThreshold)
 }

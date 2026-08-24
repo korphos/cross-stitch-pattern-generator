@@ -128,7 +128,9 @@ const trTR: typeof enUS = {
   },
   palettePanel: {
     title: 'Palet',
-    mergeSimilar: 'Benzer renkleri birleştir',
+    targetColorCount: 'Hedef renk sayısı',
+    targetColorCountAuto: 'Otomatik',
+    targetColorCountReset: 'Otomatik algılamaya sıfırla',
     ignoreTransparentBackground: 'Saydam arka planı yok say',
     ignoreBackgroundColor: 'Arka plan rengini yok say',
     colorsToUse: 'Kullanılacak renkler',

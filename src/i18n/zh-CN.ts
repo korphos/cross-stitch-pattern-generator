@@ -122,7 +122,9 @@ const zhCN: typeof enUS = {
   },
   palettePanel: {
     title: '调色板',
-    mergeSimilar: '合并相近颜色',
+    targetColorCount: '目标颜色数量',
+    targetColorCountAuto: '自动',
+    targetColorCountReset: '恢复自动检测',
     ignoreTransparentBackground: '忽略透明背景',
     ignoreBackgroundColor: '忽略背景色',
     colorsToUse: '使用的颜色',

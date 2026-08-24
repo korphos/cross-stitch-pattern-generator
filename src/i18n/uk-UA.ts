@@ -128,7 +128,9 @@ const ukUA: typeof enUS = {
   },
   palettePanel: {
     title: 'Палітра',
-    mergeSimilar: 'Об’єднати схожі кольори',
+    targetColorCount: 'Цільова кількість кольорів',
+    targetColorCountAuto: 'Авто',
+    targetColorCountReset: 'Повернутися до автоматичного визначення',
     ignoreTransparentBackground: 'Ігнорувати прозорий фон',
     ignoreBackgroundColor: 'Ігнорувати колір фону',
     colorsToUse: 'Кольори для використання',

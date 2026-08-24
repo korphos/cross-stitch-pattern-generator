@@ -129,7 +129,9 @@ const frFR: typeof enUS = {
   },
   palettePanel: {
     title: 'Palette',
-    mergeSimilar: 'Fusionner les couleurs similaires',
+    targetColorCount: 'Nombre de couleurs visé',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Revenir à la détection automatique',
     ignoreTransparentBackground: 'Ignorer le fond transparent',
     ignoreBackgroundColor: 'Ignorer la couleur de fond',
     colorsToUse: 'Couleurs à utiliser',

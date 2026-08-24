@@ -54,7 +54,7 @@ export function parseProjectFile(text: string): PersistedProject {
     cellAssignment,
     fabricCount,
     strands,
-    clusterThreshold,
+    targetColorCount,
     paletteMode,
     activeTab,
     fileName,
@@ -69,8 +69,7 @@ export function parseProjectFile(text: string): PersistedProject {
     !Array.isArray(palette) ||
     !Array.isArray(cellAssignment) ||
     typeof fabricCount !== 'number' ||
-    typeof strands !== 'number' ||
-    typeof clusterThreshold !== 'number'
+    typeof strands !== 'number'
   ) {
     throw new Error(MISSING_PROJECT_DATA_ERROR)
   }
@@ -80,7 +79,11 @@ export function parseProjectFile(text: string): PersistedProject {
     fileName: typeof fileName === 'string' ? fileName : null,
     // Older exported files may predate square-only stitches (separate cellWidth/cellHeight) - migrate.
     grid: migrateLegacyGrid(grid),
-    clusterThreshold,
+    // Older exported files predate the merge-threshold-to-target-count switch entirely, so the
+    // property is missing outright (as opposed to present and explicitly null, meaning "auto") -
+    // default that missing case to the palette size it already has, so nothing changes until the
+    // user touches the field.
+    targetColorCount: targetColorCount === undefined ? palette.length : targetColorCount,
     fabricCount,
     strands,
     paletteMode: paletteMode === 'ownedOnly' ? 'ownedOnly' : 'best',

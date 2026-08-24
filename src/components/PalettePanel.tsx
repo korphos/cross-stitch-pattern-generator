@@ -1,5 +1,6 @@
-import type { Dispatch } from 'react'
+import { useEffect, useState, type Dispatch } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Wand2 } from 'lucide-react'
 import type { PatternProject } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit } from '../lib/physicalSize'
@@ -13,6 +14,11 @@ interface Props {
   sizeUnit: SizeUnit
 }
 
+/** Rebuilding the palette for a new target re-clusters every color in the image, which can take a
+ * noticeable moment on a busy photo - debouncing keeps that off the critical path of every
+ * keystroke, firing once typing actually pauses. */
+const TARGET_COLOR_COUNT_DEBOUNCE_MS = 400
+
 export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
   const { t } = useTranslation()
   const grid = project.confirmedGrid!
@@ -23,23 +29,57 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
   const notOwnedCount = project.palette?.filter((p) => !p.owned).length ?? 0
   const backgroundIsTransparent = (project.backgroundColor?.a ?? 255) < ALPHA_BACKGROUND_THRESHOLD
 
+  // Local draft so every keystroke updates the field instantly, independent of the debounced
+  // dispatch below - re-synced whenever the project's actual value changes from elsewhere (the
+  // reset-to-auto button, a fresh image/grid/crop resample, undo, an imported project, ...).
+  const [targetDraft, setTargetDraft] = useState(project.targetColorCount == null ? '' : String(project.targetColorCount))
+  useEffect(() => {
+    setTargetDraft(project.targetColorCount == null ? '' : String(project.targetColorCount))
+  }, [project.targetColorCount])
+
+  useEffect(() => {
+    const parsed = targetDraft === '' ? null : Math.max(1, Math.round(Number(targetDraft)))
+    if (parsed !== null && !Number.isFinite(parsed)) return
+    if (parsed === project.targetColorCount) return
+    const handle = setTimeout(() => {
+      if (!confirmDestructiveEdit(project.history.past.length)) {
+        // Cancelled - snap the field back to what's actually in effect instead of leaving it
+        // showing a value that was never applied.
+        setTargetDraft(project.targetColorCount == null ? '' : String(project.targetColorCount))
+        return
+      }
+      dispatch({ type: 'SET_TARGET_COLOR_COUNT', targetColorCount: parsed })
+    }, TARGET_COLOR_COUNT_DEBOUNCE_MS)
+    return () => clearTimeout(handle)
+  }, [targetDraft, project.targetColorCount, project.history.past.length, dispatch])
+
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4">
       <h2 className="text-sm font-semibold text-neutral-100">{t('palettePanel.title')}</h2>
 
       <label className="flex flex-col gap-1 text-sm text-neutral-300">
-        {t('palettePanel.mergeSimilar')}
-        <input
-          type="range"
-          min={0}
-          max={20}
-          step={0.1}
-          value={project.clusterThreshold}
-          onChange={(e) => {
-            if (!confirmDestructiveEdit(project.history.past.length)) return
-            dispatch({ type: 'SET_CLUSTER_THRESHOLD', threshold: Number(e.target.value) })
-          }}
-        />
+        {t('palettePanel.targetColorCount')}
+        <div className="flex items-center gap-2">
+          <input
+            type="number"
+            min={1}
+            step={1}
+            placeholder={t('palettePanel.targetColorCountAuto')}
+            value={targetDraft}
+            onChange={(e) => setTargetDraft(e.target.value)}
+            className="w-full rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1 text-neutral-100 placeholder:text-neutral-500"
+          />
+          {targetDraft !== '' && (
+            <button
+              type="button"
+              title={t('palettePanel.targetColorCountReset')}
+              onClick={() => setTargetDraft('')}
+              className="shrink-0 rounded-md border border-neutral-600 p-1.5 text-neutral-300 hover:bg-neutral-800"
+            >
+              <Wand2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </label>
 
       {project.backgroundColor && (

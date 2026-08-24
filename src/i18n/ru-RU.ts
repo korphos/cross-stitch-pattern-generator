@@ -128,7 +128,9 @@ const ruRU: typeof enUS = {
   },
   palettePanel: {
     title: 'Палитра',
-    mergeSimilar: 'Объединить похожие цвета',
+    targetColorCount: 'Целевое количество цветов',
+    targetColorCountAuto: 'Авто',
+    targetColorCountReset: 'Вернуться к автоматическому определению',
     ignoreTransparentBackground: 'Игнорировать прозрачный фон',
     ignoreBackgroundColor: 'Игнорировать цвет фона',
     colorsToUse: 'Используемые цвета',

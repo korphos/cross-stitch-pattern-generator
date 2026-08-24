@@ -124,7 +124,9 @@ const enUS = {
   },
   palettePanel: {
     title: 'Palette',
-    mergeSimilar: 'Merge similar colors',
+    targetColorCount: 'Target number of colors',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Reset to auto-detected count',
     ignoreTransparentBackground: 'Ignore transparent background',
     ignoreBackgroundColor: 'Ignore background color',
     colorsToUse: 'Colors to use',

@@ -128,7 +128,9 @@ const plPL: typeof enUS = {
   },
   palettePanel: {
     title: 'Paleta',
-    mergeSimilar: 'Scal podobne kolory',
+    targetColorCount: 'Docelowa liczba kolorów',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Przywróć automatyczne wykrywanie',
     ignoreTransparentBackground: 'Ignoruj przezroczyste tło',
     ignoreBackgroundColor: 'Ignoruj kolor tła',
     colorsToUse: 'Kolory do użycia',

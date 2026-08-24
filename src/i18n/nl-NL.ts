@@ -128,7 +128,9 @@ const nlNL: typeof enUS = {
   },
   palettePanel: {
     title: 'Palet',
-    mergeSimilar: 'Vergelijkbare kleuren samenvoegen',
+    targetColorCount: 'Gewenst aantal kleuren',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Terug naar automatische detectie',
     ignoreTransparentBackground: 'Transparante achtergrond negeren',
     ignoreBackgroundColor: 'Achtergrondkleur negeren',
     colorsToUse: 'Te gebruiken kleuren',

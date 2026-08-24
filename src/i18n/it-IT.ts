@@ -128,7 +128,9 @@ const itIT: typeof enUS = {
   },
   palettePanel: {
     title: 'Tavolozza',
-    mergeSimilar: 'Unisci colori simili',
+    targetColorCount: 'Numero di colori desiderato',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Ripristina il rilevamento automatico',
     ignoreTransparentBackground: 'Ignora lo sfondo trasparente',
     ignoreBackgroundColor: 'Ignora il colore di sfondo',
     colorsToUse: 'Colori da usare',

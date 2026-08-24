@@ -8,7 +8,7 @@ import { migrateLegacyGrid } from './gridDetection'
  * Everything needed to fully reconstruct the app on reload. The raw pixel
  * buffer and per-cell sampled colors are NOT stored - they're recomputed
  * from `imageDataUrl` + `grid` on load. `palette`/`cellAssignment` ARE
- * stored as-is (not regenerated from `grid`/`clusterThreshold`) because
+ * stored as-is (not regenerated from `grid`/`targetColorCount`) because
  * manual color edits (recolor/merge) can diverge from what a fresh
  * clustering pass would produce; regenerating them would silently discard
  * those edits on every reload.
@@ -17,7 +17,8 @@ export interface PersistedProject {
   imageDataUrl: string
   fileName: string | null
   grid: DetectedGrid
-  clusterThreshold: number
+  /** null means "auto" - see PatternProject.targetColorCount */
+  targetColorCount: number | null
   fabricCount: number
   strands: number
   paletteMode: PaletteMode
@@ -93,10 +94,24 @@ export async function loadPersistedProject(): Promise<PersistedProject | null> {
       const tx = db.transaction(PROJECT_STORE_NAME, 'readonly')
       const request = tx.objectStore(PROJECT_STORE_NAME).get(PROJECT_RECORD_KEY)
       request.onsuccess = () => {
-        const result = request.result as (PersistedProject & { grid: Record<string, unknown> }) | undefined
+        const result = request.result as
+          | (PersistedProject & { grid: Record<string, unknown>; targetColorCount?: number | null })
+          | undefined
         // A project autosaved before stitches were forced square has a grid with separate
-        // cellWidth/cellHeight instead of one cellSize - migrate it rather than crash.
-        resolve(result ? { ...result, grid: migrateLegacyGrid(result.grid) } : null)
+        // cellWidth/cellHeight instead of one cellSize - migrate it rather than crash. Likewise, a
+        // project autosaved before the merge threshold became a target color count has no
+        // `targetColorCount` property at all (as opposed to one explicitly set to null, meaning
+        // "auto") - default the missing case to the palette size it already has, so nothing
+        // changes until the user actually touches the field.
+        resolve(
+          result
+            ? {
+                ...result,
+                grid: migrateLegacyGrid(result.grid),
+                targetColorCount: result.targetColorCount === undefined ? result.palette.length : result.targetColorCount,
+              }
+            : null,
+        )
       }
       request.onerror = () => reject(request.error)
     })

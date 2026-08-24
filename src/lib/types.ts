@@ -126,7 +126,8 @@ export interface PatternProject {
   cellColors: RGB[] | null
   /** average alpha (0-255) per cell, same indexing as cellColors - lets background detection tell an actually-transparent cell (a PNG cutout's empty margin) apart from an opaque one that merely shares its RGB */
   cellAlpha: number[] | null
-  clusterThreshold: number
+  /** desired final palette size; buildPaletteForTargetCount searches for a merge threshold that lands as close as possible to it. null means "auto" - let buildPaletteAdaptive's default merge threshold decide, which is also what a fresh image/crop/grid resample resets this to. */
+  targetColorCount: number | null
   palette: PaletteEntry[] | null
   /** DMC code (matches a `palette` entry's `dmc.code`) per cell, row-major */
   cellAssignment: string[] | null

@@ -128,7 +128,9 @@ const ptBR: typeof enUS = {
   },
   palettePanel: {
     title: 'Paleta',
-    mergeSimilar: 'Mesclar cores parecidas',
+    targetColorCount: 'Quantidade de cores desejada',
+    targetColorCountAuto: 'Auto',
+    targetColorCountReset: 'Voltar à detecção automática',
     ignoreTransparentBackground: 'Ignorar o fundo transparente',
     ignoreBackgroundColor: 'Ignorar a cor de fundo',
     colorsToUse: 'Cores a usar',

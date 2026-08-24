@@ -14,7 +14,7 @@ import type {
 } from './types'
 import { EMPTY_CELL } from './types'
 import { sampleGridColors, sampleGridAlpha } from './cellSampling'
-import { buildPalette } from './buildPalette'
+import { buildPaletteAdaptive } from './buildPalette'
 import { findBackgroundCells } from './backgroundMask'
 import { mirrorRowMajorHorizontal } from './imageTransform'
 import { assignSymbols, relabelSymbols, contrastTextColor } from './symbolAssignment'
@@ -25,7 +25,7 @@ export type ProjectAction =
   | { type: 'IMAGE_LOADED'; imageData: PixelBuffer; imageDataUrl: string; detectedGrid: DetectedGrid; backgroundColor: RGBA }
   | { type: 'UPDATE_GRID'; grid: DetectedGrid }
   | { type: 'FLIP_IMAGE_HORIZONTAL'; imageData: PixelBuffer; imageDataUrl: string }
-  | { type: 'SET_CLUSTER_THRESHOLD'; threshold: number }
+  | { type: 'SET_TARGET_COLOR_COUNT'; targetColorCount: number | null }
   | { type: 'SET_FABRIC_COUNT'; stitchesPerInch: number }
   | { type: 'SET_STRANDS'; strands: number }
   | { type: 'SET_PALETTE_MODE'; mode: PaletteMode }
@@ -54,7 +54,7 @@ export type ProjectAction =
       imageData: PixelBuffer
       imageDataUrl: string
       grid: DetectedGrid
-      clusterThreshold: number
+      targetColorCount: number | null
       fabricCount: number
       strands: number
       paletteMode: PaletteMode
@@ -69,7 +69,6 @@ export type ProjectAction =
     }
   | { type: 'RESET' }
 
-export const DEFAULT_CLUSTER_THRESHOLD = 2.3
 export const DEFAULT_FABRIC_COUNT = 14
 const MAX_HISTORY = 50
 
@@ -87,7 +86,7 @@ export const initialProject: PatternProject = {
   confirmedGrid: null,
   cellColors: null,
   cellAlpha: null,
-  clusterThreshold: DEFAULT_CLUSTER_THRESHOLD,
+  targetColorCount: null,
   palette: null,
   cellAssignment: null,
   fabricCount: DEFAULT_FABRIC_COUNT,
@@ -151,15 +150,19 @@ function backgroundCellIndicesFor(
 
 /**
  * Re-samples cell colors from the image for `grid` and rebuilds the palette
- * from scratch - there's no separate "confirm" step, grid/threshold edits
- * apply live. This discards any manual color edits (they no longer apply
- * to a re-clustered palette), so the undo history is reset too.
+ * from scratch - there's no separate "confirm" step, grid/crop edits apply
+ * live. This discards any manual color edits (they no longer apply to a
+ * re-clustered palette), so the undo history is reset too. A fresh sample
+ * also means any previously pinned target color count no longer reflects
+ * what's actually in the image, so this always resets to "auto" and lets
+ * buildPaletteAdaptive's default threshold pick a fresh count, rather than
+ * forcing the old pinned number onto unrelated new content.
  */
 function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
-  if (!project.imageData) return { ...project, confirmedGrid: grid }
+  if (!project.imageData) return { ...project, confirmedGrid: grid, targetColorCount: null }
   const cellColors = sampleGridColors(project.imageData, grid)
   const cellAlpha = sampleGridAlpha(project.imageData, grid)
-  const { palette, cellAssignment } = buildPalette(cellColors, project.clusterThreshold, {
+  const { palette, cellAssignment } = buildPaletteAdaptive(cellColors, null, {
     mode: project.paletteMode,
     ownedCodes: new Set(project.ownedThreadCodes),
     symbolStyle: project.symbolStyle,
@@ -172,7 +175,16 @@ function resample(project: PatternProject, grid: DetectedGrid): PatternProject {
       project.cropShape,
     ),
   })
-  return { ...project, confirmedGrid: grid, cellColors, cellAlpha, palette, cellAssignment, history: emptyHistory() }
+  return {
+    ...project,
+    confirmedGrid: grid,
+    cellColors,
+    cellAlpha,
+    targetColorCount: null,
+    palette,
+    cellAssignment,
+    history: emptyHistory(),
+  }
 }
 
 function recomputeCounts(palette: PaletteEntry[], cellAssignment: string[]): PaletteEntry[] {
@@ -243,9 +255,9 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       }
     }
 
-    case 'SET_CLUSTER_THRESHOLD': {
-      if (!project.cellColors) return { ...project, clusterThreshold: action.threshold }
-      const { palette, cellAssignment } = buildPalette(project.cellColors, action.threshold, {
+    case 'SET_TARGET_COLOR_COUNT': {
+      if (!project.cellColors) return { ...project, targetColorCount: action.targetColorCount }
+      const { palette, cellAssignment } = buildPaletteAdaptive(project.cellColors, action.targetColorCount, {
         mode: project.paletteMode,
         ownedCodes: new Set(project.ownedThreadCodes),
         symbolStyle: project.symbolStyle,
@@ -258,7 +270,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
           project.cropShape,
         ),
       })
-      return { ...project, clusterThreshold: action.threshold, palette, cellAssignment, history: emptyHistory() }
+      return { ...project, targetColorCount: action.targetColorCount, palette, cellAssignment, history: emptyHistory() }
     }
 
     case 'SET_FABRIC_COUNT':
@@ -271,7 +283,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'SET_PALETTE_MODE': {
       if (!project.cellColors) return { ...project, paletteMode: action.mode }
-      const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
+      const { palette, cellAssignment } = buildPaletteAdaptive(project.cellColors, project.targetColorCount, {
         mode: action.mode,
         ownedCodes: new Set(project.ownedThreadCodes),
         symbolStyle: project.symbolStyle,
@@ -293,7 +305,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
       if (project.paletteMode === 'ownedOnly') {
         // Which threads get used at all can change, so this is a full
         // regenerate, same as changing the merge threshold.
-        const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
+        const { palette, cellAssignment } = buildPaletteAdaptive(project.cellColors, project.targetColorCount, {
           mode: project.paletteMode,
           ownedCodes: new Set(ownedThreadCodes),
           symbolStyle: project.symbolStyle,
@@ -325,7 +337,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
 
     case 'SET_IGNORE_BACKGROUND': {
       if (!project.cellColors || !project.palette) return { ...project, ignoreBackground: action.ignore }
-      const { palette, cellAssignment } = buildPalette(project.cellColors, project.clusterThreshold, {
+      const { palette, cellAssignment } = buildPaletteAdaptive(project.cellColors, project.targetColorCount, {
         mode: project.paletteMode,
         ownedCodes: new Set(project.ownedThreadCodes),
         symbolStyle: project.symbolStyle,
@@ -502,7 +514,7 @@ export function projectReducer(project: PatternProject, action: ProjectAction): 
         confirmedGrid: action.grid,
         cellColors: sampleGridColors(action.imageData, action.grid),
         cellAlpha: sampleGridAlpha(action.imageData, action.grid),
-        clusterThreshold: action.clusterThreshold,
+        targetColorCount: action.targetColorCount,
         fabricCount: action.fabricCount,
         strands: action.strands,
         paletteMode: action.paletteMode,

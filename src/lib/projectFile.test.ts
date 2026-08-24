@@ -28,7 +28,7 @@ function makeProject(): PersistedProject {
       sampleOffsetX: 0,
       sampleOffsetY: 0,
     },
-    clusterThreshold: 2.3,
+    targetColorCount: 1,
     fabricCount: 14,
     strands: 2,
     paletteMode: 'best',
@@ -77,6 +77,12 @@ describe('projectFile', () => {
     const { cropShape: _cs, ...legacyProject } = makeProject()
     const parsed = parseProjectFile(JSON.stringify({ version: 1, ...legacyProject }))
     expect(parsed.cropShape).toBeNull()
+  })
+
+  it('defaults target color count to the palette size for a file exported before the merge threshold became a target count', () => {
+    const { targetColorCount: _tcc, ...legacyProject } = makeProject()
+    const parsed = parseProjectFile(JSON.stringify({ version: 1, clusterThreshold: 2.3, ...legacyProject }))
+    expect(parsed.targetColorCount).toBe(legacyProject.palette.length)
   })
 
   it('migrates a file exported before stitches were forced square (separate cellWidth/cellHeight)', () => {

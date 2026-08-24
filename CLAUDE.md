@@ -54,7 +54,7 @@ up when you're done with it.
 Manual palette edits (recolor, merge, delete, add) are layered on top of the auto-generated
 palette and preserved independently across `history.past`/`history.future` (undo/redo stack,
 capped at `MAX_HISTORY` in `projectReducer.ts`). Any action that would silently discard those
-edits (changing cluster threshold, palette mode, re-detecting the grid, replacing the image, etc.)
+edits (changing the target color count, palette mode, re-detecting the grid, replacing the image, etc.)
 must go through `confirmDestructiveEdit(project.history.past.length)`
 (`src/lib/confirmDestructive.ts`) first — it's a no-op confirmation when there's nothing to lose.
 Follow this pattern for any new action that regenerates `palette`/`cellAssignment` from scratch.

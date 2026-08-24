@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildPalette } from './buildPalette'
+import { buildPalette, buildPaletteAdaptive, buildPaletteForTargetCount, DEFAULT_CLUSTER_THRESHOLD } from './buildPalette'
 import { dmcColors } from '../data/dmcColors'
 import { EMPTY_CELL } from './types'
 import type { RGB } from './types'
@@ -87,5 +87,51 @@ describe('buildPalette', () => {
     })
     expect(cellAssignment[3]).not.toBe(EMPTY_CELL)
     expect(palette.some((p) => p.count > 0)).toBe(true)
+  })
+})
+
+// Eight DMC colors spread across the full hue/lightness range, each appearing once - distinct
+// enough to match eight different DMC codes with no merging (threshold 0), but close enough to
+// each other in aggregate that raising the ΔE threshold eventually collapses them all the way
+// down to a single cluster, giving buildPaletteForTargetCount real merging to search over.
+const spreadColors: RGB[] = ['310', '666', '699', '824', '972', '550', '3846', 'B5200'].map((code) => {
+  const entry = dmcColors.find((d) => d.code === code)!
+  return { r: entry.r, g: entry.g, b: entry.b }
+})
+
+describe('buildPaletteForTargetCount', () => {
+  it('returns the unmerged palette untouched when it is already at or under the target', () => {
+    const { palette, thresholdUsed } = buildPaletteForTargetCount(spreadColors, spreadColors.length)
+    expect(palette).toHaveLength(spreadColors.length)
+    expect(thresholdUsed).toBe(0)
+  })
+
+  it('does not force extra merging just because the target is larger than the natural count', () => {
+    const { palette, thresholdUsed } = buildPaletteForTargetCount(spreadColors, 100)
+    expect(palette).toHaveLength(spreadColors.length)
+    expect(thresholdUsed).toBe(0)
+  })
+
+  it('raises the merge threshold to land exactly on a smaller target', () => {
+    expect(buildPaletteForTargetCount(spreadColors, 5).palette).toHaveLength(5)
+    expect(buildPaletteForTargetCount(spreadColors, 3).palette).toHaveLength(3)
+  })
+
+  it('merges everything down to a single color for a target of 1', () => {
+    const { palette } = buildPaletteForTargetCount(spreadColors, 1)
+    expect(palette).toHaveLength(1)
+  })
+})
+
+describe('buildPaletteAdaptive', () => {
+  it('uses the default merge threshold when the target is null ("auto")', () => {
+    expect(buildPaletteAdaptive(spreadColors, null)).toEqual({
+      ...buildPalette(spreadColors, DEFAULT_CLUSTER_THRESHOLD),
+      thresholdUsed: DEFAULT_CLUSTER_THRESHOLD,
+    })
+  })
+
+  it('delegates to buildPaletteForTargetCount when given a number', () => {
+    expect(buildPaletteAdaptive(spreadColors, 3)).toEqual(buildPaletteForTargetCount(spreadColors, 3))
   })
 })

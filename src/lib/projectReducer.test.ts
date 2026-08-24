@@ -136,6 +136,54 @@ describe('projectReducer SET_SYMBOL_STYLE', () => {
   })
 })
 
+describe('projectReducer SET_TARGET_COLOR_COUNT', () => {
+  it('just sets the field when no cellColors exist yet', () => {
+    const next = projectReducer(initialProject, { type: 'SET_TARGET_COLOR_COUNT', targetColorCount: 12 })
+    expect(next.targetColorCount).toBe(12)
+    expect(next.palette).toBeNull()
+  })
+})
+
+describe('projectReducer resample resets a pinned target color count back to "auto"', () => {
+  // A pinned target reflects a specific prior image's palette - carrying it over onto fresh
+  // content (a new upload, an edited grid, a new crop) would force that unrelated number onto
+  // colors it was never chosen for, so every resample path drops back to "auto" (null).
+  const imageData = { data: new Uint8ClampedArray([255, 255, 255, 255]), width: 1, height: 1 }
+  const grid = { bbox: { x: 0, y: 0, width: 1, height: 1 }, cellSize: 1, cols: 1, rows: 1, confidence: 1 }
+  const backgroundColor = { r: 255, g: 255, b: 255, a: 255 }
+
+  it('IMAGE_LOADED resets to auto', () => {
+    const project = makeProject({ targetColorCount: 12 })
+    const next = projectReducer(project, {
+      type: 'IMAGE_LOADED',
+      imageData,
+      imageDataUrl: 'data:image/png;base64,x',
+      detectedGrid: grid,
+      backgroundColor,
+    })
+    expect(next.targetColorCount).toBeNull()
+  })
+
+  it('UPDATE_GRID resets to auto', () => {
+    const project = makeProject({ targetColorCount: 12, imageData, confirmedGrid: grid })
+    const next = projectReducer(project, { type: 'UPDATE_GRID', grid })
+    expect(next.targetColorCount).toBeNull()
+  })
+
+  it('APPLY_CROP resets to auto', () => {
+    const project = makeProject({ targetColorCount: 12, imageData, confirmedGrid: grid })
+    const next = projectReducer(project, {
+      type: 'APPLY_CROP',
+      imageData,
+      imageDataUrl: 'data:image/png;base64,cropped',
+      detectedGrid: grid,
+      backgroundColor,
+      cropShape: 'square',
+    })
+    expect(next.targetColorCount).toBeNull()
+  })
+})
+
 describe('projectReducer FLIP_IMAGE_HORIZONTAL', () => {
   function makeFlippableProject(): PatternProject {
     return makeProject({
@@ -211,7 +259,7 @@ describe('projectReducer RESTORE', () => {
     imageData: { data: new Uint8ClampedArray(4), width: 1, height: 1 },
     imageDataUrl: 'data:image/png;base64,x',
     grid: { bbox: { x: 0, y: 0, width: 1, height: 1 }, cellSize: 1, cols: 1, rows: 1, confidence: 1 },
-    clusterThreshold: 2.3,
+    targetColorCount: 30,
     fabricCount: 14,
     strands: 2,
     paletteMode: 'best' as const,
