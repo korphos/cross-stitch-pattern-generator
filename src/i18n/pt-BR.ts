@@ -91,13 +91,17 @@ const ptBR: typeof enUS = {
     sampleHint: 'Clique e arraste em qualquer lugar para mover o ponto de amostragem',
     wizardStart: 'Configuração guiada',
     wizardStepCount: 'Etapa {{step}} de 3',
-    wizardStep1Intro:
-      'Isso define o tamanho de um ponto na sua foto - é a escala sobre a qual o resto da grade é construído. Repita quantas vezes quiser e depois clique em Próximo quando estiver satisfeito com o resultado.',
+    wizardStep1Point1:
+      'Isso define o tamanho de um ponto na sua foto - é a escala sobre a qual o resto da grade é construído. Clique em um ponto.',
+    wizardStep1Point2: 'Agora clique no ponto equivalente do próximo ponto.',
+    wizardStep1Review:
+      'Confira a grade abaixo - se não estiver certa, clique em Repetir; se estiver, em Próximo para continuar.',
     wizardStep2Hint:
       'Arraste a imagem para que o canto superior esquerdo da grade se alinhe com o início do seu padrão - as colunas e linhas se ajustam automaticamente para continuar cobrindo o resto da imagem. Uma alça de canto também redimensiona diretamente, se necessário. Clique em Próximo quando estiver bem posicionada.',
     wizardStep3Hint:
       'Opcional: por padrão, cada ponto lê sua cor bem no centro. Arraste em qualquer lugar da imagem se preferir ler outro ponto, por exemplo o anel de uma miçanga em vez do brilho central. Clique em Concluir quando terminar.',
     wizardNext: 'Próximo',
+    wizardRetry: 'Repetir',
     wizardBack: 'Voltar',
     wizardFinish: 'Concluir',
     wizardExit: 'Sair da configuração guiada',

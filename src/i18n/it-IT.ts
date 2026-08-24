@@ -91,13 +91,17 @@ const itIT: typeof enUS = {
     sampleHint: 'Clicca e trascina in un punto qualsiasi per spostare il punto di campionamento',
     wizardStart: 'Configurazione guidata',
     wizardStepCount: 'Passaggio {{step}} di 3',
-    wizardStep1Intro:
-      'Questo definisce quanto è grande un punto nella tua foto - è la scala su cui si basa il resto della griglia. Ripeti tutte le volte che vuoi, poi clicca su Avanti quando sei soddisfatto del risultato.',
+    wizardStep1Point1:
+      'Questo definisce quanto è grande un punto nella tua foto - è la scala su cui si basa il resto della griglia. Clicca su un punto.',
+    wizardStep1Point2: 'Ora clicca sul punto corrispondente del punto successivo.',
+    wizardStep1Review:
+      'Controlla la griglia qui sotto - se non è corretta, clicca su Riprova, altrimenti su Avanti per continuare.',
     wizardStep2Hint:
       "Trascina l'immagine in modo che l'angolo superiore sinistro della griglia si allinei con l'inizio del tuo schema - colonne e righe si adattano automaticamente per continuare a coprire il resto dell'immagine. Una maniglia d'angolo permette anche di ridimensionarla direttamente, se necessario. Clicca su Avanti una volta posizionata correttamente.",
     wizardStep3Hint:
       "Facoltativo: per impostazione predefinita ogni punto legge il colore esattamente al centro. Trascina in un punto qualsiasi dell'immagine se preferisci leggere da un altro punto, ad esempio l'anello di una perlina invece del riflesso centrale. Clicca su Fine quando hai terminato.",
     wizardNext: 'Avanti',
+    wizardRetry: 'Riprova',
     wizardBack: 'Indietro',
     wizardFinish: 'Fine',
     wizardExit: 'Esci dalla configurazione guidata',

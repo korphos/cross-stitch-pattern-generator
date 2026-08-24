@@ -91,13 +91,17 @@ const nlNL: typeof enUS = {
     sampleHint: 'Klik en sleep ergens om het meetpunt te verplaatsen',
     wizardStart: 'Begeleide instelling',
     wizardStepCount: 'Stap {{step}} van 3',
-    wizardStep1Intro:
-      'Dit bepaalt hoe groot één steek op je foto is - dat is de schaal waarop de rest van het raster wordt gebouwd. Herhaal zo vaak als je wilt en klik daarna op Volgende zodra je tevreden bent met het resultaat.',
+    wizardStep1Point1:
+      'Dit bepaalt hoe groot één steek op je foto is - dat is de schaal waarop de rest van het raster wordt gebouwd. Klik op een punt.',
+    wizardStep1Point2: 'Klik nu op het overeenkomstige punt van de volgende steek.',
+    wizardStep1Review:
+      'Controleer het raster hieronder - klopt het niet, klik dan op Opnieuw, zo ja, klik op Volgende om door te gaan.',
     wizardStep2Hint:
       'Sleep de afbeelding zodat de linkerbovenhoek van het raster overeenkomt met het begin van je patroon - kolommen en rijen passen zich automatisch aan om de rest van de afbeelding te blijven bedekken. Een hoekgreep verandert indien nodig ook direct het formaat. Klik op Volgende zodra het goed gepositioneerd is.',
     wizardStep3Hint:
       'Optioneel: standaard leest elke steek zijn kleur precies in het midden. Sleep ergens op de afbeelding als je liever op een andere plek leest, bijvoorbeeld de rand van een kraal in plaats van de glans in het midden. Klik op Voltooien als je klaar bent.',
     wizardNext: 'Volgende',
+    wizardRetry: 'Opnieuw',
     wizardBack: 'Terug',
     wizardFinish: 'Voltooien',
     wizardExit: 'Begeleide instelling verlaten',

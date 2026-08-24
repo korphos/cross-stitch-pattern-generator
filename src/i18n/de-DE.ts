@@ -91,13 +91,16 @@ const deDE: typeof enUS = {
     sampleHint: 'Klicke und ziehe an einer beliebigen Stelle, um den Abtastpunkt zu verschieben',
     wizardStart: 'Geführte Einrichtung',
     wizardStepCount: 'Schritt {{step}} von 3',
-    wizardStep1Intro:
-      'Das legt fest, wie groß ein Stich auf deinem Foto ist - das ist der Maßstab, auf dem der Rest des Gitters aufbaut. Wiederhole das so oft du möchtest und klicke dann auf Weiter, sobald du mit dem Ergebnis zufrieden bist.',
+    wizardStep1Point1:
+      'Das legt fest, wie groß ein Stich auf deinem Foto ist - das ist der Maßstab, auf dem der Rest des Gitters aufbaut. Klicke auf einen Punkt.',
+    wizardStep1Point2: 'Klicke jetzt auf den entsprechenden Punkt des nächsten Stichs.',
+    wizardStep1Review: 'Überprüfe das Gitter unten - wenn es nicht stimmt, klicke auf Wiederholen, sonst auf Weiter.',
     wizardStep2Hint:
       'Ziehe das Bild so, dass die obere linke Ecke des Gitters mit dem Anfang deines Musters übereinstimmt - Spalten und Zeilen passen sich automatisch an, um weiterhin das restliche Bild abzudecken. Ein Eckgriff ändert bei Bedarf auch direkt die Größe. Klicke auf Weiter, sobald es richtig positioniert ist.',
     wizardStep3Hint:
       'Optional: Standardmäßig liest jeder Stich seine Farbe genau in der Mitte. Ziehe an einer beliebigen Stelle im Bild, wenn du lieber an einer anderen Stelle lesen möchtest, z. B. den Ring einer Perle statt des Lichtreflexes in der Mitte. Klicke auf Fertig, wenn du fertig bist.',
     wizardNext: 'Weiter',
+    wizardRetry: 'Wiederholen',
     wizardBack: 'Zurück',
     wizardFinish: 'Fertig',
     wizardExit: 'Geführte Einrichtung verlassen',

@@ -92,13 +92,17 @@ const frFR: typeof enUS = {
     sampleHint: "Cliquez-glissez n'importe où pour déplacer le point d'échantillonnage",
     wizardStart: 'Configuration guidée',
     wizardStepCount: 'Étape {{step}} sur 3',
-    wizardStep1Intro:
-      "Cela définit la taille d'un point dans votre photo - c'est l'échelle sur laquelle repose le reste de la grille. Recommencez autant de fois que nécessaire, puis cliquez sur Suivant une fois satisfait du résultat.",
+    wizardStep1Point1:
+      "Cela définit la taille d'un point dans votre photo - c'est l'échelle sur laquelle repose le reste de la grille. Cliquez sur un point.",
+    wizardStep1Point2: 'Cliquez maintenant sur le point équivalent de la maille suivante.',
+    wizardStep1Review:
+      "Vérifiez la grille ci-dessous - si elle n'est pas correcte, cliquez sur Réessayer, sinon sur Suivant pour continuer.",
     wizardStep2Hint:
       "Faites glisser l'image pour que le coin supérieur gauche de la grille s'aligne avec le début de votre motif - le nombre de colonnes et de lignes s'ajuste automatiquement pour continuer à couvrir le reste de l'image. Une poignée d'angle permet aussi de redimensionner directement si besoin. Cliquez sur Suivant une fois bien positionné.",
     wizardStep3Hint:
       "Facultatif : par défaut, chaque point lit sa couleur exactement en son centre. Faites glisser n'importe où sur l'image si vous préférez lire un autre endroit, par exemple l'anneau d'une perle plutôt que son reflet central. Cliquez sur Terminer une fois fini.",
     wizardNext: 'Suivant',
+    wizardRetry: 'Réessayer',
     wizardBack: 'Précédent',
     wizardFinish: 'Terminer',
     wizardExit: 'Quitter la configuration guidée',

@@ -91,13 +91,17 @@ const esES: typeof enUS = {
     sampleHint: 'Haz clic y arrastra en cualquier parte para mover el punto de muestreo',
     wizardStart: 'Configuración guiada',
     wizardStepCount: 'Paso {{step}} de 3',
-    wizardStep1Intro:
-      'Esto define el tamaño de una puntada en tu foto - es la escala sobre la que se construye el resto de la cuadrícula. Repite tantas veces como quieras y luego haz clic en Siguiente cuando estés conforme con el resultado.',
+    wizardStep1Point1:
+      'Esto define el tamaño de una puntada en tu foto - es la escala sobre la que se construye el resto de la cuadrícula. Haz clic en un punto.',
+    wizardStep1Point2: 'Ahora haz clic en el punto equivalente de la siguiente puntada.',
+    wizardStep1Review:
+      'Comprueba la cuadrícula de abajo - si no es correcta, haz clic en Reintentar; si lo es, en Siguiente para continuar.',
     wizardStep2Hint:
       'Arrastra la imagen para que la esquina superior izquierda de la cuadrícula coincida con el inicio de tu patrón - las columnas y filas se ajustan automáticamente para seguir cubriendo el resto de la imagen. También puedes arrastrar una esquina para redimensionarla directamente si hace falta. Haz clic en Siguiente cuando esté bien colocada.',
     wizardStep3Hint:
       'Opcional: por defecto, cada puntada lee su color justo en el centro. Arrastra en cualquier parte de la imagen si prefieres leer otro punto, por ejemplo el borde de una mostacilla en vez del reflejo central. Haz clic en Finalizar cuando termines.',
     wizardNext: 'Siguiente',
+    wizardRetry: 'Reintentar',
     wizardBack: 'Atrás',
     wizardFinish: 'Finalizar',
     wizardExit: 'Salir de la configuración guiada',

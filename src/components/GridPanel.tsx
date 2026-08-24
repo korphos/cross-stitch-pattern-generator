@@ -95,6 +95,10 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
   // Calibrate mode: two clicks exactly one stitch apart set the cell size directly.
   const [calibrationPoint, setCalibrationPoint] = useState<ImagePoint | null>(null)
   const [cursorPoint, setCursorPoint] = useState<ImagePoint | null>(null)
+  // True right after a wizard calibration commits, until the user starts a new attempt or moves
+  // on - lets the grid (hidden while actively aiming) reappear so they can judge the result before
+  // deciding to retry or continue.
+  const [justCalibrated, setJustCalibrated] = useState(false)
 
   // Guided setup: null when not running, otherwise which of the 3 steps is active. Walks the
   // same three modes above in order, just with instructions and Back/Next controls instead of
@@ -131,6 +135,7 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
     setModeState(next)
     setCalibrationPoint(null)
     setCursorPoint(null)
+    setJustCalibrated(false)
   }, [])
 
   const zoomAndCenter = useCallback((factor: number) => {
@@ -436,6 +441,9 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
     if (!raw) return
     if (!calibrationPoint) {
       setCalibrationPoint(raw)
+      // Starting a fresh attempt (including a retry after reviewing a previous one) - hide the
+      // grid again while aiming.
+      setJustCalibrated(false)
       return
     }
     const point = snapToDiagonal(calibrationPoint, raw)
@@ -455,11 +463,18 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
     if (next) updateGrid(next)
     // Mid-wizard, stays in calibrate mode instead of auto-advancing - calibration is exploratory
     // and the first attempt often isn't the one the user wants to keep, so only the explicit
-    // "Next" button moves the wizard on. Outside the wizard, a calibration is still a single-shot
-    // gesture that returns to the plain adjust mode right away.
+    // "Next" button moves the wizard on. The grid reappears (see justCalibrated) so the result can
+    // actually be judged before deciding to retry or continue. Outside the wizard, a calibration
+    // is still a single-shot gesture that returns to the plain adjust mode right away.
     if (wizardStep === null) {
       switchMode('adjust')
+    } else {
+      setJustCalibrated(true)
     }
+  }
+
+  function retryCalibration() {
+    setJustCalibrated(false)
   }
 
   const cursorClass =
@@ -490,9 +505,11 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
           style={scale > 1 ? { imageRendering: 'pixelated' } : undefined}
           draggable={false}
         />
-        {/* Hidden while calibrating - the grid lines and sample-point crosshairs clutter exactly
-            the pixel-level detail a calibration click needs to land on precisely. */}
-        {mode !== 'calibrate' && (
+        {/* Hidden while actively aiming a calibration click - the grid lines and sample-point
+            crosshairs clutter exactly the pixel-level detail it needs to land on precisely. Shown
+            again right after a wizard calibration commits (justCalibrated) so the result can be
+            reviewed before retrying or moving on. */}
+        {(mode !== 'calibrate' || justCalibrated) && (
           <>
             <GridOverlay grid={displayGrid} scale={scale} />
             <SamplePointsOverlay grid={displayGrid} scale={scale} />
@@ -572,20 +589,31 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
           </div>
           {/* Explains what this step is for, not just what to click - step 1 in particular does
               nothing self-evident: two clicks setting a "cell size" needs the why (it's the scale
-              for the whole grid) spelled out, not just the mechanical steps. */}
+              for the whole grid) spelled out, not just the mechanical steps. Step 1 has 3 distinct
+              texts for its 3 sub-states (aiming point 1, aiming point 2, reviewing the result) -
+              cramming them into one static sentence left it unclear what to do once the two clicks
+              were done. */}
           <p className="text-xs text-neutral-300">
             {wizardStep === 0
-              ? t('gridControls.wizardStep1Intro')
+              ? justCalibrated
+                ? t('gridControls.wizardStep1Review')
+                : calibrationPoint
+                  ? t('gridControls.wizardStep1Point2')
+                  : t('gridControls.wizardStep1Point1')
               : wizardStep === 1
                 ? t('gridControls.wizardStep2Hint')
                 : t('gridControls.wizardStep3Hint')}
           </p>
-          {wizardStep === 0 && (
-            <p className="text-xs font-medium text-indigo-300">
-              {calibrationPoint ? t('gridControls.calibrateHintStep2') : t('gridControls.calibrateHintStep1')}
-            </p>
-          )}
           <div className="flex justify-end gap-2 pt-1">
+            {wizardStep === 0 && justCalibrated && (
+              <button
+                type="button"
+                onClick={retryCalibration}
+                className="rounded-md border border-neutral-600 px-2 py-1 text-xs text-neutral-100 hover:bg-neutral-800"
+              >
+                {t('gridControls.wizardRetry')}
+              </button>
+            )}
             {wizardStep > 0 && (
               <button
                 type="button"

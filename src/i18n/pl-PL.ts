@@ -91,13 +91,17 @@ const plPL: typeof enUS = {
     sampleHint: 'Kliknij i przeciągnij w dowolnym miejscu, aby przesunąć punkt próbkowania',
     wizardStart: 'Kreator konfiguracji',
     wizardStepCount: 'Krok {{step}} z 3',
-    wizardStep1Intro:
-      'To ustawia, jak duży jest jeden ścieg na Twoim zdjęciu - to skala, na której opiera się reszta siatki. Powtarzaj dowolną liczbę razy, a potem kliknij Dalej, gdy wynik Ci odpowiada.',
+    wizardStep1Point1:
+      'To ustawia, jak duży jest jeden ścieg na Twoim zdjęciu - to skala, na której opiera się reszta siatki. Kliknij jeden punkt.',
+    wizardStep1Point2: 'Teraz kliknij odpowiadający punkt następnego ściegu.',
+    wizardStep1Review:
+      'Sprawdź siatkę poniżej - jeśli jest niepoprawna, kliknij Ponów, jeśli jest OK, kliknij Dalej, aby kontynuować.',
     wizardStep2Hint:
       'Przeciągnij obraz tak, aby lewy górny róg siatki pokrywał się z początkiem wzoru - liczba kolumn i wierszy dostosowuje się automatycznie, aby nadal pokrywać resztę obrazu. Uchwyt w rogu również pozwala bezpośrednio zmienić rozmiar, jeśli trzeba. Kliknij Dalej, gdy siatka będzie dobrze ustawiona.',
     wizardStep3Hint:
       'Opcjonalnie: domyślnie każdy ścieg odczytuje kolor dokładnie ze środka. Przeciągnij w dowolnym miejscu obrazu, jeśli wolisz odczytywać z innego miejsca, np. obwódkę koralika zamiast odblasku na środku. Kliknij Zakończ, gdy skończysz.',
     wizardNext: 'Dalej',
+    wizardRetry: 'Ponów',
     wizardBack: 'Wstecz',
     wizardFinish: 'Zakończ',
     wizardExit: 'Zamknij kreator konfiguracji',

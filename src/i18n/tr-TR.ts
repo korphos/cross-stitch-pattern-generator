@@ -91,13 +91,17 @@ const trTR: typeof enUS = {
     sampleHint: 'Örnekleme noktasını taşımak için herhangi bir yere tıklayıp sürükleyin',
     wizardStart: 'Rehberli kurulum',
     wizardStepCount: 'Adım {{step}}/3',
-    wizardStep1Intro:
-      'Bu, fotoğrafınızda bir karenin ne kadar büyük olduğunu belirler - ızgaranın geri kalanı bu ölçeğe göre oluşturulur. İstediğiniz kadar tekrarlayın, ardından sonuçtan memnun kaldığınızda İleri\'ye tıklayın.',
+    wizardStep1Point1:
+      "Bu, fotoğrafınızda bir karenin ne kadar büyük olduğunu belirler - ızgaranın geri kalanı bu ölçeğe göre oluşturulur. Bir noktaya tıklayın.",
+    wizardStep1Point2: 'Şimdi sonraki karenin eşleşen noktasına tıklayın.',
+    wizardStep1Review:
+      "Aşağıdaki ızgarayı kontrol edin - doğru değilse Yeniden Dene'ye, doğruysa devam etmek için İleri'ye tıklayın.",
     wizardStep2Hint:
       "Görseli, ızgaranın sol üst köşesi deseninizin başlangıcıyla hizalanacak şekilde sürükleyin - sütun ve satır sayısı, görselin geri kalanını kapsamaya devam etmek için otomatik olarak ayarlanır. Gerekirse bir köşe tutamağı da doğrudan yeniden boyutlandırır. Doğru konumlandığında İleri'ye tıklayın.",
     wizardStep3Hint:
       "İsteğe bağlı: varsayılan olarak her kare rengini tam merkezinden okur. Farklı bir noktadan okumak isterseniz (örneğin ortadaki parlama yerine bir boncuğun halkasından), görselde herhangi bir yeri sürükleyin. Bitirdiğinizde Bitir'e tıklayın.",
     wizardNext: 'İleri',
+    wizardRetry: 'Yeniden Dene',
     wizardBack: 'Geri',
     wizardFinish: 'Bitir',
     wizardExit: 'Rehberli kurulumdan çık',

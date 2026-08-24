@@ -87,13 +87,16 @@ const enUS = {
     sampleHint: 'Click and drag anywhere to move the sample point',
     wizardStart: 'Guided setup',
     wizardStepCount: 'Step {{step}} of 3',
-    wizardStep1Intro:
-      "This sets how big one stitch is in your photo - it's the scale the rest of the grid is built from. Repeat as many times as you like, then click Next when you're happy with the result.",
+    wizardStep1Point1:
+      "This sets how big one stitch is in your photo - it's the scale the rest of the grid is built from. Click a point on one stitch.",
+    wizardStep1Point2: 'Now click the matching point on the next stitch.',
+    wizardStep1Review: "Check the grid below - if it's not right, click Retry to try again, or Next to continue.",
     wizardStep2Hint:
       "Drag the image so the grid's top-left corner lines up with where your pattern starts - columns and rows adjust automatically to keep covering the rest of the image. A corner handle also resizes it directly if needed. Click Next once it's positioned correctly.",
     wizardStep3Hint:
       "Optional: each stitch reads its color from its exact center by default. Drag anywhere on the image if you'd rather read from a different spot, e.g. a bead's ring instead of its center highlight. Click Finish when you're done.",
     wizardNext: 'Next',
+    wizardRetry: 'Retry',
     wizardBack: 'Back',
     wizardFinish: 'Finish',
     wizardExit: 'Exit guided setup',
