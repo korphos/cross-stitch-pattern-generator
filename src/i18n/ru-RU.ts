@@ -21,6 +21,7 @@ const ruRU: typeof enUS = {
     transparent: 'Прозрачный',
     deltaE: 'ΔE {{value}}',
     colors: 'Цвета',
+    colorsWithCount: 'Цвета ({{count}})',
     colorsCount_one: '{{count}} цвет',
     colorsCount_other: '{{count}} цветов',
     loading: 'Загрузка…',
@@ -133,7 +134,7 @@ const ruRU: typeof enUS = {
   palettePanel: {
     title: 'Палитра',
     targetColorCount: 'Целевое количество цветов',
-    targetColorCountAuto: 'Авто',
+    targetColorCountAuto: 'Авто ({{count}})',
     targetColorCountReset: 'Вернуться к автоматическому определению',
     ignoreTransparentBackground: 'Игнорировать прозрачный фон',
     ignoreBackgroundColor: 'Игнорировать цвет фона',

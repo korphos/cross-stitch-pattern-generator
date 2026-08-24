@@ -21,6 +21,7 @@ const itIT: typeof enUS = {
     transparent: 'Trasparente',
     deltaE: 'ΔE {{value}}',
     colors: 'Colori',
+    colorsWithCount: 'Colori ({{count}})',
     colorsCount_one: '{{count}} colore',
     colorsCount_other: '{{count}} colori',
     loading: 'Caricamento…',
@@ -133,7 +134,7 @@ const itIT: typeof enUS = {
   palettePanel: {
     title: 'Tavolozza',
     targetColorCount: 'Numero di colori desiderato',
-    targetColorCountAuto: 'Auto',
+    targetColorCountAuto: 'Auto ({{count}})',
     targetColorCountReset: 'Ripristina il rilevamento automatico',
     ignoreTransparentBackground: 'Ignora lo sfondo trasparente',
     ignoreBackgroundColor: 'Ignora il colore di sfondo',

@@ -19,6 +19,7 @@ const enUS = {
     transparent: 'Transparent',
     deltaE: 'ΔE {{value}}',
     colors: 'Colors',
+    colorsWithCount: 'Colors ({{count}})',
     colorsCount_one: '{{count}} color',
     colorsCount_other: '{{count}} colors',
     loading: 'Loading…',
@@ -128,7 +129,7 @@ const enUS = {
   palettePanel: {
     title: 'Palette',
     targetColorCount: 'Target number of colors',
-    targetColorCountAuto: 'Auto',
+    targetColorCountAuto: 'Auto ({{count}})',
     targetColorCountReset: 'Reset to auto-detected count',
     ignoreTransparentBackground: 'Ignore transparent background',
     ignoreBackgroundColor: 'Ignore background color',

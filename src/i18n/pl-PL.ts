@@ -21,6 +21,7 @@ const plPL: typeof enUS = {
     transparent: 'Przezroczyste',
     deltaE: 'ΔE {{value}}',
     colors: 'Kolory',
+    colorsWithCount: 'Kolory ({{count}})',
     colorsCount_one: '{{count}} kolor',
     colorsCount_other: '{{count}} kolorów',
     loading: 'Wczytywanie…',
@@ -133,7 +134,7 @@ const plPL: typeof enUS = {
   palettePanel: {
     title: 'Paleta',
     targetColorCount: 'Docelowa liczba kolorów',
-    targetColorCountAuto: 'Auto',
+    targetColorCountAuto: 'Auto ({{count}})',
     targetColorCountReset: 'Przywróć automatyczne wykrywanie',
     ignoreTransparentBackground: 'Ignoruj przezroczyste tło',
     ignoreBackgroundColor: 'Ignoruj kolor tła',

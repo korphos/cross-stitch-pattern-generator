@@ -21,6 +21,7 @@ const nlNL: typeof enUS = {
     transparent: 'Transparant',
     deltaE: 'ΔE {{value}}',
     colors: 'Kleuren',
+    colorsWithCount: 'Kleuren ({{count}})',
     colorsCount_one: '{{count}} kleur',
     colorsCount_other: '{{count}} kleuren',
     loading: 'Bezig met laden…',
@@ -133,7 +134,7 @@ const nlNL: typeof enUS = {
   palettePanel: {
     title: 'Palet',
     targetColorCount: 'Gewenst aantal kleuren',
-    targetColorCountAuto: 'Auto',
+    targetColorCountAuto: 'Auto ({{count}})',
     targetColorCountReset: 'Terug naar automatische detectie',
     ignoreTransparentBackground: 'Transparante achtergrond negeren',
     ignoreBackgroundColor: 'Achtergrondkleur negeren',

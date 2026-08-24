@@ -21,6 +21,7 @@ const trTR: typeof enUS = {
     transparent: 'Saydam',
     deltaE: 'ΔE {{value}}',
     colors: 'Renkler',
+    colorsWithCount: 'Renkler ({{count}})',
     colorsCount_one: '{{count}} renk',
     colorsCount_other: '{{count}} renk',
     loading: 'Yükleniyor…',
@@ -133,7 +134,7 @@ const trTR: typeof enUS = {
   palettePanel: {
     title: 'Palet',
     targetColorCount: 'Hedef renk sayısı',
-    targetColorCountAuto: 'Otomatik',
+    targetColorCountAuto: 'Otomatik ({{count}})',
     targetColorCountReset: 'Otomatik algılamaya sıfırla',
     ignoreTransparentBackground: 'Saydam arka planı yok say',
     ignoreBackgroundColor: 'Arka plan rengini yok say',

@@ -21,6 +21,7 @@ const ptBR: typeof enUS = {
     transparent: 'Transparente',
     deltaE: 'ΔE {{value}}',
     colors: 'Cores',
+    colorsWithCount: 'Cores ({{count}})',
     colorsCount_one: '{{count}} cor',
     colorsCount_other: '{{count}} cores',
     loading: 'Carregando…',
@@ -133,7 +134,7 @@ const ptBR: typeof enUS = {
   palettePanel: {
     title: 'Paleta',
     targetColorCount: 'Quantidade de cores desejada',
-    targetColorCountAuto: 'Auto',
+    targetColorCountAuto: 'Auto ({{count}})',
     targetColorCountReset: 'Voltar à detecção automática',
     ignoreTransparentBackground: 'Ignorar o fundo transparente',
     ignoreBackgroundColor: 'Ignorar a cor de fundo',

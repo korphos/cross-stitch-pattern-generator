@@ -21,6 +21,7 @@ const esES: typeof enUS = {
     transparent: 'Transparente',
     deltaE: 'ΔE {{value}}',
     colors: 'Colores',
+    colorsWithCount: 'Colores ({{count}})',
     colorsCount_one: '{{count}} color',
     colorsCount_other: '{{count}} colores',
     loading: 'Cargando…',
@@ -133,7 +134,7 @@ const esES: typeof enUS = {
   palettePanel: {
     title: 'Paleta',
     targetColorCount: 'Número de colores objetivo',
-    targetColorCountAuto: 'Auto',
+    targetColorCountAuto: 'Auto ({{count}})',
     targetColorCountReset: 'Volver a la detección automática',
     ignoreTransparentBackground: 'Ignorar el fondo transparente',
     ignoreBackgroundColor: 'Ignorar el color de fondo',

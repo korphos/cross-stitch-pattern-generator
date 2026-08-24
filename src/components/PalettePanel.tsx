@@ -64,7 +64,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
             type="number"
             min={1}
             step={1}
-            placeholder={t('palettePanel.targetColorCountAuto')}
+            placeholder={t('palettePanel.targetColorCountAuto', { count: project.palette?.length ?? 0 })}
             value={targetDraft}
             onChange={(e) => setTargetDraft(e.target.value)}
             className="w-full rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1 text-neutral-100 placeholder:text-neutral-500"

@@ -38,7 +38,7 @@ export function DmcColorList({
     <div className="flex h-full flex-col">
       {(onAddColor || onOpenEyedropper) && (
         <div className="flex shrink-0 items-center justify-between border-b border-neutral-800 px-3 py-2">
-          <h2 className="text-sm font-semibold text-neutral-100">{t('common.colors')}</h2>
+          <h2 className="text-sm font-semibold text-neutral-100">{t('common.colorsWithCount', { count: palette.length })}</h2>
           <div className="flex gap-1.5">
             {onOpenEyedropper && (
               <button

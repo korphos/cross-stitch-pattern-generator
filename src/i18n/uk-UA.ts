@@ -21,6 +21,7 @@ const ukUA: typeof enUS = {
     transparent: 'Прозорий',
     deltaE: 'ΔE {{value}}',
     colors: 'Кольори',
+    colorsWithCount: 'Кольори ({{count}})',
     colorsCount_one: '{{count}} колір',
     colorsCount_other: '{{count}} кольорів',
     loading: 'Завантаження…',
@@ -133,7 +134,7 @@ const ukUA: typeof enUS = {
   palettePanel: {
     title: 'Палітра',
     targetColorCount: 'Цільова кількість кольорів',
-    targetColorCountAuto: 'Авто',
+    targetColorCountAuto: 'Авто ({{count}})',
     targetColorCountReset: 'Повернутися до автоматичного визначення',
     ignoreTransparentBackground: 'Ігнорувати прозорий фон',
     ignoreBackgroundColor: 'Ігнорувати колір фону',

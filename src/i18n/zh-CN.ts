@@ -21,6 +21,7 @@ const zhCN: typeof enUS = {
     transparent: '透明',
     deltaE: 'ΔE {{value}}',
     colors: '颜色',
+    colorsWithCount: '颜色 ({{count}})',
     colorsCount_one: '{{count}} 种颜色',
     colorsCount_other: '{{count}} 种颜色',
     loading: '加载中…',
@@ -126,7 +127,7 @@ const zhCN: typeof enUS = {
   palettePanel: {
     title: '调色板',
     targetColorCount: '目标颜色数量',
-    targetColorCountAuto: '自动',
+    targetColorCountAuto: '自动 ({{count}})',
     targetColorCountReset: '恢复自动检测',
     ignoreTransparentBackground: '忽略透明背景',
     ignoreBackgroundColor: '忽略背景色',
