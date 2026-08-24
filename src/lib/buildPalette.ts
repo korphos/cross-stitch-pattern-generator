@@ -16,7 +16,7 @@ export interface BuildPaletteOptions {
   ownedCodes: ReadonlySet<string>
   /** indices into `cellColors` to leave blank (EMPTY_CELL) instead of matching to a thread - see `findBackgroundCells` */
   backgroundCellIndices?: ReadonlySet<number>
-  /** defaults to 'letters' - see SymbolStyle */
+  /** defaults to 'icons' - see SymbolStyle */
   symbolStyle?: SymbolStyle
 }
 
@@ -109,7 +109,7 @@ function assemblePalette(
     finishAlternative: findFinishAlternative(acc.dmc),
   }))
 
-  const withSymbols = assignSymbols(merged, options.symbolStyle ?? 'letters')
+  const withSymbols = assignSymbols(merged, options.symbolStyle ?? 'icons')
   const palette: PaletteEntry[] = withSymbols.map((entry) => ({
     ...entry,
     textColor: contrastTextColor(entry.color),

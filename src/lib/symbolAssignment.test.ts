@@ -2,10 +2,19 @@ import { describe, expect, it } from 'vitest'
 import { LETTER_SYMBOL_POOL, ICON_SYMBOL_POOL, assignSymbols, relabelSymbols, contrastTextColor } from './symbolAssignment'
 
 describe('LETTER_SYMBOL_POOL', () => {
-  it('excludes visually confusable characters, keeping one representative per group', () => {
-    for (const ch of ['O', 'Q', '0', '1', 'I', 'L', 'l']) {
-      expect(LETTER_SYMBOL_POOL.includes(ch)).toBe(false)
+  it('pushes visually confusable Latin characters to the very end of the pool', () => {
+    const confusable = ['O', 'Q', 'I', 'L', 'l', '0', '1']
+    const lastConfusableIndex = LETTER_SYMBOL_POOL.length - 1
+    const firstConfusableIndex = LETTER_SYMBOL_POOL.length - confusable.length
+    for (const ch of confusable) {
+      const index = LETTER_SYMBOL_POOL.indexOf(ch)
+      expect(index).toBeGreaterThanOrEqual(firstConfusableIndex)
+      expect(index).toBeLessThanOrEqual(lastConfusableIndex)
     }
+  })
+
+  it('has at least 150 distinct glyphs, drawn from Latin, Greek, and Cyrillic', () => {
+    expect(LETTER_SYMBOL_POOL.length).toBeGreaterThanOrEqual(150)
   })
 
   it('has no duplicate glyphs', () => {
@@ -14,6 +23,10 @@ describe('LETTER_SYMBOL_POOL', () => {
 })
 
 describe('ICON_SYMBOL_POOL', () => {
+  it('has at least 150 distinct glyphs', () => {
+    expect(ICON_SYMBOL_POOL.length).toBeGreaterThanOrEqual(150)
+  })
+
   it('has no duplicate glyphs', () => {
     expect(new Set(ICON_SYMBOL_POOL).size).toBe(ICON_SYMBOL_POOL.length)
   })

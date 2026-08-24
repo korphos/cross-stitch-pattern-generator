@@ -132,7 +132,7 @@ export function SettingsPage({
             <h2 className="mb-2 text-sm font-semibold">{t('settingsPage.symbolStyle')}</h2>
             <p className="mb-2 text-xs text-neutral-500">{t('settingsPage.symbolStyleHelp')}</p>
             <div className="flex flex-col gap-2">
-              {(['letters', 'icons'] as const).map((style) => (
+              {(['icons', 'letters'] as const).map((style) => (
                 <button
                   key={style}
                   type="button"
