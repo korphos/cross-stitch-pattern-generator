@@ -37,7 +37,7 @@ describe('assignSymbols', () => {
     const entries = [{ count: 3 }, { count: 50 }, { count: 12 }]
     const result = assignSymbols(entries)
     expect(result[0].count).toBe(50)
-    expect(result[0].symbol).toBe(LETTER_SYMBOL_POOL[0])
+    expect(result[0].symbol).toBe(ICON_SYMBOL_POOL[0])
     expect(result[1].count).toBe(12)
     expect(result[2].count).toBe(3)
   })

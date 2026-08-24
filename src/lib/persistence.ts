@@ -41,7 +41,7 @@ export interface AppSettings {
   /** 'color' (default) prints each thread's actual color; 'blackAndWhite' prints symbols only,
    * to save ink - opt-in since most people printing a pattern want the color reference. */
   printColorMode: PrintColorMode
-  /** 'letters' (default) or 'icons' - see SymbolStyle. */
+  /** 'icons' (default) or 'letters' - see SymbolStyle. */
   symbolStyle: SymbolStyle
 }
 
@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   sizeUnit: 'cm',
   printMode: 'auto',
   printColorMode: 'color',
-  symbolStyle: 'letters',
+  symbolStyle: 'icons',
 }
 
 const DB_NAME = 'cross-stitch-pattern-generator'

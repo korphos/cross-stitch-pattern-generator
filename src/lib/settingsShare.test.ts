@@ -5,7 +5,7 @@ import { allDmcColors } from '../data/dmcSpecialtyColors'
 describe('settingsShare', () => {
   it('round-trips an empty inventory', () => {
     const decoded = decodeSettings(encodeSettings({ ownedThreadCodes: [], sizeUnit: 'cm', printMode: 'auto', printColorMode: 'color', symbolStyle: 'letters' }))
-    expect(decoded).toEqual({ ownedThreadCodes: [], sizeUnit: 'cm', printMode: 'auto', printColorMode: 'color', symbolStyle: 'letters' })
+    expect(decoded).toEqual({ ownedThreadCodes: [], sizeUnit: 'cm', printMode: 'auto', printColorMode: 'color', symbolStyle: 'icons' })
   })
 
   it('round-trips a handful of owned codes and the size unit', () => {

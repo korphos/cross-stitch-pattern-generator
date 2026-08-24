@@ -91,7 +91,7 @@ export function decodeSettings(token: string): AppSettings | null {
     // Print mode/color and symbol style are local device/paper preferences, not worth the
     // wire-format bytes to carry cross-device - a shared link always lands on the defaults and
     // the recipient can change them themselves in Settings.
-    return { ownedThreadCodes, sizeUnit, printMode: 'auto', printColorMode: 'color', symbolStyle: 'letters' }
+    return { ownedThreadCodes, sizeUnit, printMode: 'auto', printColorMode: 'color', symbolStyle: 'icons' }
   } catch {
     return null
   }

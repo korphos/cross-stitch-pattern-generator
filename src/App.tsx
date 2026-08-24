@@ -187,7 +187,7 @@ function App() {
           if (effectiveSettings.ownedThreadCodes.length > 0) {
             dispatch({ type: 'SET_OWNED_THREADS', codes: effectiveSettings.ownedThreadCodes })
           }
-          if (effectiveSettings.symbolStyle !== 'letters') {
+          if (effectiveSettings.symbolStyle !== 'icons') {
             dispatch({ type: 'SET_SYMBOL_STYLE', style: effectiveSettings.symbolStyle })
           }
         }

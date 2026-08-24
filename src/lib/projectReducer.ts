@@ -93,7 +93,7 @@ export const initialProject: PatternProject = {
   strands: defaultStrandsFor(DEFAULT_FABRIC_COUNT),
   paletteMode: 'best',
   ownedThreadCodes: [],
-  symbolStyle: 'letters',
+  symbolStyle: 'icons',
   backgroundColor: null,
   ignoreBackground: true,
   cropShape: null,

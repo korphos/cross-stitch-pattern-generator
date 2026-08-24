@@ -97,10 +97,10 @@ export type CropShape = 'square' | 'rectangle' | 'circle' | 'oval' | null
  */
 export type PaletteMode = 'best' | 'ownedOnly'
 
-/** 'letters' (default) assigns A, B, C... glyphs; 'icons' assigns distinct Unicode shapes
- * (circles, squares, stars...) for users who find same-shaped letters harder to tell apart on a
- * printed grid - see symbolAssignment.ts. */
-export type SymbolStyle = 'letters' | 'icons'
+/** 'icons' (default) assigns distinct Unicode shapes (circles, squares, stars...), easier to tell
+ * apart on a printed grid than same-shaped letters; 'letters' assigns A, B, C... glyphs instead -
+ * see symbolAssignment.ts. */
+export type SymbolStyle = 'icons' | 'letters'
 
 /**
  * Sentinel `cellAssignment` value meaning "no stitch" - a blank square

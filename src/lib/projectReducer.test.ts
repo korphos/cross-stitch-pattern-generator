@@ -36,7 +36,7 @@ describe('projectReducer ADD_COLOR', () => {
   })
 
   it('does not disturb the symbol of existing entries', () => {
-    const project = makeProject()
+    const project = makeProject({ symbolStyle: 'letters' })
     const next = projectReducer(project, { type: 'ADD_COLOR', dmc: newDmc })
     const existing = next.palette?.find((p) => p.dmc.code === '310')
     expect(existing?.symbol).toBe(project.palette![0].symbol)
