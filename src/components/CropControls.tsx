@@ -11,8 +11,8 @@ interface Props {
 }
 
 const SHAPES: { value: CropShapeChoice; labelKey: string; swatchClassName: string }[] = [
-  { value: 'square', labelKey: 'cropControls.shapeSquare', swatchClassName: 'h-4 w-4 rounded-sm' },
   { value: 'rectangle', labelKey: 'cropControls.shapeRectangle', swatchClassName: 'h-3 w-5 rounded-sm' },
+  { value: 'square', labelKey: 'cropControls.shapeSquare', swatchClassName: 'h-4 w-4 rounded-sm' },
   { value: 'circle', labelKey: 'cropControls.shapeCircle', swatchClassName: 'h-4 w-4 rounded-full' },
   { value: 'oval', labelKey: 'cropControls.shapeOval', swatchClassName: 'h-3 w-5 rounded-full' },
 ]

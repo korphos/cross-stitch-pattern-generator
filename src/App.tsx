@@ -84,7 +84,7 @@ function App() {
   const [sharedSettingsNotice, setSharedSettingsNotice] = useState(false)
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
   const dragCounterRef = useRef(0)
-  const [cropShapeChoice, setCropShapeChoice] = useState<CropShapeChoice>('square')
+  const [cropShapeChoice, setCropShapeChoice] = useState<CropShapeChoice>('rectangle')
   // Incremented (never read for its value) each time GridControls' wizard button is clicked -
   // GridPanel owns the actual wizard state machine and just watches this to (re)start it, so the
   // button can live in the sidebar without lifting the grid mode/step state itself up here.
