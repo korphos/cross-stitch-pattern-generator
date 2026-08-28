@@ -7,6 +7,7 @@ import type { ProjectAction } from '../lib/projectReducer'
 import { detectGrid } from '../lib/gridDetection'
 import { applyGridFieldPatch } from '../lib/gridGeometry'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
+import { captureGridAdjusted } from '../lib/posthog'
 
 interface Props {
   project: PatternProject
@@ -23,14 +24,15 @@ export function GridControls({ project, dispatch, onStartWizard }: Props) {
   const sampleOffsetStep = Math.max(0.05, Math.round((grid.cellSize / 20) * 100) / 100)
   const [pixelsPerStitch, setPixelsPerStitch] = useState(() => Math.max(1, Math.round(grid.cellSize)))
 
-  function updateGrid(next: typeof grid) {
+  function updateGrid(next: typeof grid, method: 'field' | 'redetect' | 'pixel_grid') {
     if (!confirmDestructiveEdit(project.history.past.length)) return
     dispatch({ type: 'UPDATE_GRID', grid: next })
+    captureGridAdjusted(method)
   }
 
   function setField(patch: Partial<{ offsetX: number; offsetY: number; cellSize: number; cols: number; rows: number }>) {
     const next = applyGridFieldPatch(grid, imageData.width, imageData.height, patch)
-    if (next) updateGrid(next)
+    if (next) updateGrid(next, 'field')
   }
 
   function setSampleOffset(patch: Partial<{ sampleOffsetX: number; sampleOffsetY: number }>) {
@@ -39,7 +41,7 @@ export function GridControls({ project, dispatch, onStartWizard }: Props) {
     const sampleOffsetX = clamp(patch.sampleOffsetX ?? grid.sampleOffsetX ?? 0)
     const sampleOffsetY = clamp(patch.sampleOffsetY ?? grid.sampleOffsetY ?? 0)
     if (!Number.isFinite(sampleOffsetX) || !Number.isFinite(sampleOffsetY)) return
-    updateGrid({ ...grid, sampleOffsetX, sampleOffsetY })
+    updateGrid({ ...grid, sampleOffsetX, sampleOffsetY }, 'field')
   }
 
   // For an already-pixelated source image (e.g. a small pre-made sprite/chart) where every
@@ -50,15 +52,18 @@ export function GridControls({ project, dispatch, onStartWizard }: Props) {
     const n = Math.max(1, Math.round(pixelsPerStitch))
     const cols = Math.max(1, Math.floor(imageData.width / n))
     const rows = Math.max(1, Math.floor(imageData.height / n))
-    updateGrid({
-      bbox: { x: 0, y: 0, width: cols * n, height: rows * n },
-      cellSize: n,
-      cols,
-      rows,
-      confidence: 1,
-      sampleOffsetX: 0,
-      sampleOffsetY: 0,
-    })
+    updateGrid(
+      {
+        bbox: { x: 0, y: 0, width: cols * n, height: rows * n },
+        cellSize: n,
+        cols,
+        rows,
+        confidence: 1,
+        sampleOffsetX: 0,
+        sampleOffsetY: 0,
+      },
+      'pixel_grid',
+    )
   }
 
   return (
@@ -118,7 +123,7 @@ export function GridControls({ project, dispatch, onStartWizard }: Props) {
       <button
         type="button"
         className="mt-2 rounded-md border border-neutral-600 px-3 py-2 text-sm text-neutral-100 hover:bg-neutral-800"
-        onClick={() => updateGrid(detectGrid(imageData))}
+        onClick={() => updateGrid(detectGrid(imageData), 'redetect')}
       >
         {t('gridControls.redetect')}
       </button>

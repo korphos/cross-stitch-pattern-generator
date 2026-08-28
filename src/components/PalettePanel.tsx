@@ -7,6 +7,7 @@ import { FABRIC_COUNTS, computePhysicalSize, formatPhysicalSize, type SizeUnit }
 import { estimateThreadUsage } from '../lib/threadEstimate'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
 import { ALPHA_BACKGROUND_THRESHOLD } from '../lib/backgroundMask'
+import posthog from '../lib/posthog'
 
 interface Props {
   project: PatternProject
@@ -49,6 +50,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
         return
       }
       dispatch({ type: 'SET_TARGET_COLOR_COUNT', targetColorCount: parsed })
+      posthog?.capture('target_color_count_set', { target_color_count: parsed })
     }, TARGET_COLOR_COUNT_DEBOUNCE_MS)
     return () => clearTimeout(handle)
   }, [targetDraft, project.targetColorCount, project.history.past.length, dispatch])
@@ -90,6 +92,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
             onChange={(e) => {
               if (!confirmDestructiveEdit(project.history.past.length)) return
               dispatch({ type: 'SET_IGNORE_BACKGROUND', ignore: e.target.checked })
+              posthog?.capture('ignore_background_toggled', { ignore: e.target.checked })
             }}
             className="h-4 w-4 accent-indigo-500"
           />
@@ -117,6 +120,7 @@ export function PalettePanel({ project, dispatch, sizeUnit }: Props) {
           onChange={(e) => {
             if (!confirmDestructiveEdit(project.history.past.length)) return
             dispatch({ type: 'SET_PALETTE_MODE', mode: e.target.value as 'best' | 'ownedOnly' })
+            posthog?.capture('palette_mode_changed', { mode: e.target.value })
           }}
           className="rounded-md border border-neutral-600 bg-neutral-900 px-2 py-1 text-neutral-100"
         >

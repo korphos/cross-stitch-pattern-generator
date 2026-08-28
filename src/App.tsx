@@ -471,15 +471,18 @@ function App() {
         if (key === 'z' && !e.shiftKey) {
           e.preventDefault()
           dispatch({ type: 'UNDO' })
+          posthog?.capture('undo', { source: 'keyboard' })
         } else if (key === 'y' || (key === 'z' && e.shiftKey)) {
           e.preventDefault()
           dispatch({ type: 'REDO' })
+          posthog?.capture('redo', { source: 'keyboard' })
         }
         return
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedCellIndices.length > 0) {
         e.preventDefault()
         dispatch({ type: 'RECOLOR_CELLS', cellIndices: selectedCellIndices, dmcCode: EMPTY_CELL })
+        posthog?.capture('cells_recolored', { cell_count: selectedCellIndices.length, cleared: true })
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -580,8 +583,14 @@ function App() {
               onPrint={handlePrint}
               canUndo={project.history.past.length > 0}
               canRedo={project.history.future.length > 0}
-              onUndo={() => dispatch({ type: 'UNDO' })}
-              onRedo={() => dispatch({ type: 'REDO' })}
+              onUndo={() => {
+                dispatch({ type: 'UNDO' })
+                posthog?.capture('undo', { source: 'button' })
+              }}
+              onRedo={() => {
+                dispatch({ type: 'REDO' })
+                posthog?.capture('redo', { source: 'button' })
+              }}
               onSettings={() => setView('settings')}
               canExport={project.palette !== null}
               onExport={handleExport}
@@ -679,9 +688,13 @@ function App() {
                         cols={project.confirmedGrid!.cols}
                         palette={project.palette}
                         currentCode={selectedCurrentCode}
-                        onPick={(dmcCode) =>
+                        onPick={(dmcCode) => {
                           dispatch({ type: 'RECOLOR_CELLS', cellIndices: selectedCellIndices, dmcCode })
-                        }
+                          posthog?.capture('cells_recolored', {
+                            cell_count: selectedCellIndices.length,
+                            cleared: dmcCode === EMPTY_CELL,
+                          })
+                        }}
                         onClose={() => {
                           setSelectedCellIndices([])
                           setRangeAnchor(null)

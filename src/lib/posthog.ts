@@ -22,3 +22,15 @@ if (posthogKey && posthogHost) {
 }
 
 export default posthogKey && posthogHost ? posthog : undefined
+
+// Grid adjustments (drag, wheel, manual field edits) can fire many times in quick succession
+// during a single tweak - debounced so only the settled result after a pause is captured,
+// instead of one event per keystroke/tick.
+const GRID_ADJUSTED_DEBOUNCE_MS = 800
+let gridAdjustedTimeout: ReturnType<typeof setTimeout> | undefined
+
+export function captureGridAdjusted(method: string) {
+  if (!posthogKey || !posthogHost) return
+  clearTimeout(gridAdjustedTimeout)
+  gridAdjustedTimeout = setTimeout(() => posthog.capture('grid_adjusted', { method }), GRID_ADJUSTED_DEBOUNCE_MS)
+}

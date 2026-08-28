@@ -12,6 +12,7 @@ import type { PatternProject, DetectedGrid } from '../lib/types'
 import type { ProjectAction } from '../lib/projectReducer'
 import { applyGridFieldPatch } from '../lib/gridGeometry'
 import { confirmDestructiveEdit } from '../lib/confirmDestructive'
+import { captureGridAdjusted } from '../lib/posthog'
 
 interface Props {
   project: PatternProject
@@ -124,9 +125,10 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
   unsavedEditCountRef.current = project.history.past.length
 
   const updateGrid = useCallback(
-    (next: DetectedGrid) => {
+    (next: DetectedGrid, method: 'drag' | 'sample' | 'wheel' | 'calibrate') => {
       if (!confirmDestructiveEdit(unsavedEditCountRef.current)) return
       dispatch({ type: 'UPDATE_GRID', grid: next })
+      captureGridAdjusted(method)
     },
     [dispatch],
   )
@@ -273,13 +275,14 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
   )
 
   const handlePointerUp = useCallback(() => {
+    const dragMode = dragRef.current?.mode
     dragRef.current = null
     window.removeEventListener('pointermove', handlePointerMove)
     window.removeEventListener('pointerup', handlePointerUp)
     const finalGrid = latestGridRef.current
     latestGridRef.current = null
     setPreviewGrid(null)
-    if (finalGrid) updateGrid(finalGrid)
+    if (finalGrid) updateGrid(finalGrid, dragMode === 'sample' ? 'sample' : 'drag')
   }, [handlePointerMove, updateGrid])
 
   const startDrag = useCallback(
@@ -317,7 +320,7 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
         const finalGrid = latestGridRef.current
         latestGridRef.current = null
         setPreviewGrid(null)
-        if (finalGrid) updateGrid(finalGrid)
+        if (finalGrid) updateGrid(finalGrid, 'wheel')
       }, 180)
     },
     [updateGrid],
@@ -460,7 +463,7 @@ export function GridPanel({ project, dispatch, onFlipHorizontal, wizardTrigger }
     const cols = Math.max(1, Math.round((imageData.width - grid.bbox.x) / distance))
     const rows = Math.max(1, Math.round((imageData.height - grid.bbox.y) / distance))
     const next = applyGridFieldPatch(grid, imageData.width, imageData.height, { cellSize: distance, cols, rows })
-    if (next) updateGrid(next)
+    if (next) updateGrid(next, 'calibrate')
     // Mid-wizard, stays in calibrate mode instead of auto-advancing - calibration is exploratory
     // and the first attempt often isn't the one the user wants to keep, so only the explicit
     // "Next" button moves the wizard on. The grid reappears (see justCalibrated) so the result can
