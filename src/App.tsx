@@ -45,6 +45,7 @@ import { EyedropperDialog } from './components/EyedropperDialog'
 import { ZoomControls } from './components/ZoomControls'
 import { SettingsPage } from './components/SettingsPage'
 import { PrintablePage } from './components/PrintablePage'
+import posthog from './lib/posthog'
 
 const DEFAULT_CELL_PX = 24
 const MIN_CELL_PX = 6
@@ -257,7 +258,14 @@ function App() {
         const backgroundColor = detectBackgroundColor(imageData)
         setSourceFileName(file.name)
         dispatch({ type: 'IMAGE_LOADED', imageData, imageDataUrl: dataUrl, detectedGrid, backgroundColor })
+        posthog?.capture('image_loaded', {
+          image_width: imageData.width,
+          image_height: imageData.height,
+          detected_grid_confidence: detectedGrid.confidence,
+        })
       } catch (e) {
+        const errorCode = e instanceof Error && ERROR_CODE_KEYS[e.message] ? e.message : 'unknown'
+        posthog?.capture('image_load_failed', { error_code: errorCode })
         setUploadError(describeError(e, 'errors.imageLoadGeneric'))
       } finally {
         setIsUploading(false)
@@ -293,6 +301,11 @@ function App() {
       backgroundColor,
       cropShape: cropShapeChoice,
     })
+    posthog?.capture('crop_applied', {
+      crop_shape: cropShapeChoice,
+      crop_width: cropWidth,
+      crop_height: cropHeight,
+    })
   }, [project.imageData, project.history.past.length, cropSelection, cropShapeChoice])
 
   const handleUndoCrop = useCallback(() => dispatch({ type: 'UNDO_CROP' }), [])
@@ -322,6 +335,11 @@ function App() {
     a.download = `${base}${PROJECT_FILE_EXTENSION}`
     a.click()
     URL.revokeObjectURL(url)
+    posthog?.capture('project_exported', {
+      grid_columns: project.confirmedGrid.cols,
+      grid_rows: project.confirmedGrid.rows,
+      palette_color_count: project.palette.length,
+    })
   }, [project, sourceFileName])
 
   const handleImportFile = useCallback(
@@ -350,7 +368,14 @@ function App() {
           palette: persisted.palette,
           cellAssignment: persisted.cellAssignment,
         })
+        posthog?.capture('project_imported', {
+          grid_columns: persisted.grid.cols,
+          grid_rows: persisted.grid.rows,
+          palette_color_count: persisted.palette.length,
+        })
       } catch (e) {
+        const errorCode = e instanceof Error && ERROR_CODE_KEYS[e.message] ? e.message : 'unknown'
+        posthog?.capture('project_import_failed', { error_code: errorCode })
         setUploadError(describeError(e, 'errors.importGeneric'))
       } finally {
         setIsImporting(false)
@@ -371,8 +396,13 @@ function App() {
       window.removeEventListener('afterprint', restoreTitle)
     }
     window.addEventListener('afterprint', restoreTitle)
+    posthog?.capture('pattern_print_requested', {
+      grid_columns: project.confirmedGrid?.cols,
+      grid_rows: project.confirmedGrid?.rows,
+      palette_color_count: project.palette?.length,
+    })
     window.print()
-  }, [sourceFileName])
+  }, [project.confirmedGrid, project.palette, sourceFileName])
 
   const handleToggleOwned = useCallback(
     (code: string) => {
@@ -595,7 +625,10 @@ function App() {
                   <GridControls
                     project={project}
                     dispatch={dispatch}
-                    onStartWizard={() => setGridWizardTrigger((t) => t + 1)}
+                    onStartWizard={() => {
+                      setGridWizardTrigger((t) => t + 1)
+                      posthog?.capture('grid_wizard_started')
+                    }}
                   />
                 )}
                 {hasImage && project.activeTab === 'palette' && (
@@ -691,7 +724,10 @@ function App() {
                     onHoverCode={setHoveredCode}
                     highlightCode={hoveredCode}
                     ownedCodes={new Set(settings.ownedThreadCodes)}
-                    onAddColor={(dmc) => dispatch({ type: 'ADD_COLOR', dmc })}
+                    onAddColor={(dmc) => {
+                      dispatch({ type: 'ADD_COLOR', dmc })
+                      posthog?.capture('palette_color_added', { source: 'color_list' })
+                    }}
                     onOpenEyedropper={() => setShowEyedropper(true)}
                   />
                 )}
@@ -718,14 +754,17 @@ function App() {
           otherEntries={project.palette.filter((p) => p.dmc.code !== editingEntry.dmc.code)}
           onMergeInto={(toCode) => {
             dispatch({ type: 'MERGE_COLOR_INTO', fromCode: editingEntry.dmc.code, toCode })
+            posthog?.capture('palette_color_merged')
             setEditingCode(null)
           }}
           onRecolor={(newDmc) => {
             dispatch({ type: 'RECOLOR_PALETTE_ENTRY', code: editingEntry.dmc.code, newDmc })
+            posthog?.capture('palette_color_recolored')
             setEditingCode(null)
           }}
           onDelete={() => {
             dispatch({ type: 'DELETE_COLOR', code: editingEntry.dmc.code })
+            posthog?.capture('palette_color_deleted')
             setEditingCode(null)
           }}
           onClose={() => setEditingCode(null)}
@@ -741,6 +780,7 @@ function App() {
           ownedCodes={new Set(settings.ownedThreadCodes)}
           onAdd={(dmc) => {
             dispatch({ type: 'ADD_COLOR', dmc })
+            posthog?.capture('palette_color_added', { source: 'eyedropper' })
             setShowEyedropper(false)
           }}
           onClose={() => setShowEyedropper(false)}

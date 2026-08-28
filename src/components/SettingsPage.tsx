@@ -8,6 +8,7 @@ import type { SymbolStyle } from '../lib/types'
 import { ICON_SYMBOL_POOL, LETTER_SYMBOL_POOL } from '../lib/symbolAssignment'
 import { encodeSettings, SETTINGS_SHARE_PARAM } from '../lib/settingsShare'
 import { SUPPORTED_LANGUAGES } from '../i18n'
+import posthog from '../lib/posthog'
 
 interface Props {
   ownedCodes: ReadonlySet<string>
@@ -56,6 +57,7 @@ export function SettingsPage({
       encodeSettings({ ownedThreadCodes: [...ownedCodes], sizeUnit, printMode, printColorMode, symbolStyle }),
     )
     void navigator.clipboard.writeText(url.toString()).then(() => {
+      posthog?.capture('settings_shared', { owned_thread_count: ownedCodes.size })
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
